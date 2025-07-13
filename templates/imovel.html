@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{{ imovel.titulo }} | Bresolin Imóveis</title>
+  <link rel="stylesheet" href="/static/css/imovel.css">
+</head>
+
+<body>
+
+  <header>
+    <button class="btn-voltar" onclick="history.back()">
+      <img src="/static/img/icons8-back-arrow-100.svg" alt="Voltar">
+    </button>
+
+    <a href="/">
+      <div class="title_container">
+        <h1>BRESOLIN</h1>
+        <h2>IMÓVEIS</h2>
+      </div>
+    </a>
+  </header>
+
+  <main class="conteudo-imovel">
+
+
+    <!-- Imagem principal -->
+    {% if imovel.imagem %}
+    {% if imagens %}
+    {% set secundarias = imagens | selectattr("tipo", "equalto", "secundaria") | list %}
+    {% set plantas = imagens | selectattr("tipo", "equalto", "planta") | list %}
+    {% endif %}
+    <img class="imagem-principal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
+    {% endif %}
+
+    <!-- Galeria de imagens secundárias -->
+    {% if secundarias %}
+    <div class="galeria">
+      <h3>Mais imagens</h3>
+      <div class="galeria-imagens-scroll">
+        {% for img in secundarias %}
+        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Título -->
+    <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
+
+    <!-- Preço -->
+    {% if imovel.preco %}
+    <p class="preco">R$ {{ '%.2f' | format(imovel.preco) | replace('.', ',') }}</p>
+    {% endif %}
+
+    <!-- Descrição -->
+    {% if imovel.descricao %}
+    <p class="descricao">{{ imovel.descricao }}</p>
+    {% endif %}
+
+    <!-- Campos adicionais -->
+    <div class="campos-adicionais">
+      {% if imovel.pretensao %}<p><strong>Pretensão:</strong> {{ imovel.pretensao|capitalize }}</p>{% endif %}
+      {% if imovel.tipo %}<p><strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</p>{% endif %}
+      {% if imovel.area %}<p><strong>Área:</strong> {{ imovel.area }} m²</p>{% endif %}
+      {% if imovel.quartos %}<p><strong>Quartos:</strong> {{ imovel.quartos }}</p>{% endif %}
+      {% if imovel.suites %}<p><strong>Suítes:</strong> {{ imovel.suites }}</p>{% endif %}
+      {% if imovel.banheiros %}<p><strong>Banheiros:</strong> {{ imovel.banheiros }}</p>{% endif %}
+      {% if imovel.vagas %}<p><strong>Vagas de Garagem:</strong> {{ imovel.vagas }}</p>{% endif %}
+      {% if imovel.andar %}<p><strong>Andar:</strong> {{ imovel.andar }}</p>{% endif %}
+      {% if imovel.endereco %}<p><strong>Endereço:</strong> {{ imovel.endereco }}</p>{% endif %}
+      {% if imovel.bairro %}<p><strong>Bairro:</strong> {{ imovel.bairro }}</p>{% endif %}
+      {% if imovel.cidade %}<p><strong>Cidade:</strong> {{ imovel.cidade }}</p>{% endif %}
+      {% if imovel.uf %}<p><strong>UF:</strong> {{ imovel.uf }}</p>{% endif %}
+      {% if imovel.link %}
+      <p><strong>Ver no mapa:</strong> <a href="{{ imovel.link }}" target="_blank">Abrir localização</a></p>
+      {% endif %}
+    </div>
+
+    <!-- Plantas -->
+    {% if plantas %}
+    <div class="galeria">
+      <h3>Plantas</h3>
+      <div class="galeria-imagens-scroll">
+        {% for img in plantas %}
+        <img src="{{ img.url }}" alt="Planta do imóvel">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+
+  </main>
+
+
+  <script src="/static/js/imovel.js"></script>
+</body>
+
+</html>
