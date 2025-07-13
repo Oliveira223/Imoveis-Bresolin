@@ -65,6 +65,7 @@ def api_imoveis():
 
         if request.method == 'POST':
             data = request.json
+            data['ativo'] = bool(data.get('ativo', True))  # força booleano
             con.execute(text('''
                 INSERT INTO imoveis (
                     condominio_id, titulo, descricao, preco, imagem,
