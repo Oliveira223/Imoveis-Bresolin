@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo | Bresolin</title>
+  <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+
+<body>
+  <h1>Painel Administrativo</h1>
+
+  <!-- CONDOMÍNIOS -->
+  <section>
+    <h2>Cadastrar Condomínio</h2>
+    <form id="form-condominio">
+      <input type="text" name="nome" placeholder="Nome do condomínio" required>
+      <input type="text" name="descricao" placeholder="Descrição">
+      <input type="text" name="imagem" placeholder="URL da imagem principal">
+      <input type="text" name="bairro" placeholder="Bairro">
+      <input type="text" name="cidade" placeholder="Cidade">
+      <input type="text" name="uf" placeholder="UF">
+      <select name="estagio" id="estagio-select">
+        <option value="">Estágio da obra</option>
+        <option value="PRONTA">PRONTA</option>
+        <option value="EM CONSTRUÇÃO">EM CONSTRUÇÃO</option>
+      </select>
+      <input type="text" name="lancamento" placeholder="Data de lançamento (texto)">
+      <input type="text" name="entrega" id="entrega-input" placeholder="Previsão de entrega" disabled>
+      <input type="number" name="total_unidades" placeholder="Total de unidades">
+      <input type="number" name="n_andares" placeholder="Nº de andares">
+      <div class="input-icon">
+        <input type="number" name="area_laje" placeholder="Área da laje">
+        <span class="suffix">m²</span>
+      </div>
+      <input type="text" name="ri" placeholder="Registro de Incorporação (RI)">
+      <input type="text" name="iptu" placeholder="IPTU">
+      <label class="label-data">Última atualização:</label>
+      <input type="date" name="atualizado_em">
+      <button type="submit">Cadastrar Condomínio</button>
+    </form>
+  </section>
+
+  <!-- IMÓVEIS -->
+  <section>
+    <h2>Cadastrar Imóvel</h2>
+    <form id="form-imovel">
+      <input type="text" name="titulo" placeholder="Título do imóvel" required>
+      <textarea name="descricao" placeholder="Descrição"></textarea>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+        <div style="flex: 1 1 300px;">
+          <label>Imagem principal:</label>
+          <input type="file" id="file-imagem">
+          <input type="text" name="imagem" id="input-imagem" placeholder="Ou informe uma URL da imagem">
+        </div>
+
+        <div>
+          <img id="preview-imagem" class="img-preview" style="display: none; max-height: 140px; max-width: 200px;">
+        </div>
+      </div>
+
+      <label>Imagens secundárias:</label>
+      <input type="file" id="file-secundarias" multiple accept="image/*">
+      <div id="lista-secundarias" class="galeria-preview"></div>
+
+      <div class="input-icon">
+        <span class="prefix">R$</span>
+        <input type="number" name="preco" placeholder="Preço">
+      </div>
+      <input type="text" name="link" placeholder="Link externo (ex: Google Maps)">
+      <select name="tipo">
+        <option value="">Tipo</option>
+        <option value="Casa">Casa</option>
+        <option value="Apartamento">Apartamento</option>
+        <option value="Terreno">Terreno</option>
+      </select>
+      <select name="pretensao">
+        <option value="">Finalidade</option>
+        <option value="Venda">Venda</option>
+        <option value="Aluguel">Aluguel</option>
+      </select>
+      <input type="number" name="quartos" placeholder="Quartos">
+      <input type="number" name="suites" placeholder="Suítes">
+      <input type="number" name="banheiros" placeholder="Banheiros">
+      <input type="number" name="vagas" placeholder="Vagas">
+      <div class="input-icon">
+        <input type="number" name="area" step="0.1" placeholder="Área">
+        <span class="suffix">m²</span>
+      </div>
+      <input type="number" name="andar" placeholder="Andar">
+      <input type="text" name="endereco" placeholder="Endereço">
+      <input type="text" name="bairro" placeholder="Bairro">
+      <input type="text" name="cidade" placeholder="Cidade">
+      <input type="text" name="uf" placeholder="UF">
+      <select name="condominio_id" id="condominio-select">
+        <option value="">Sem condomínio</option>
+      </select>
+      <label><input type="checkbox" name="ativo" checked> Ativo</label>
+      <button type="submit">Cadastrar Imóvel</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Imóveis Cadastrados</h2>
+    <div id="lista-admin"></div>
+  </section>
+
+  <script src="/static/js/admin.js"></script>
+</body>
+
+</html>

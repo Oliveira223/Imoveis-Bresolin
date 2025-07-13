@@ -1,0 +1,340 @@
+/* ========================
+   Reset e Comportamentos
+=========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  color-scheme: light only;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+
+
+/* ========================
+   Links e Ancoras
+=========================== */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:active,
+a:hover {
+  color: inherit;
+}
+
+.campos-adicionais a {
+  color: #0077bb;
+  text-decoration: underline;
+}
+
+.campos-adicionais a:hover {
+  color: #005f99;
+}
+
+
+
+/* ========================
+   Fontes Customizadas
+=========================== */
+
+/* Extra Light */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-ExtraLight.woff2') format('woff2'),
+       url('/static/fonts/spectral/Spectral-ExtraLight.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* Regular */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-Regular.woff2') format('woff2'),
+       url('/static/fonts/spectral/Spectral-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-Bold.woff2') format('woff2'),
+       url('/static/fonts/spectral/Spectral-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+/* ========================
+   Header e Branding
+=========================== */
+
+header {
+  background-color: #1d1d1d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  color: white;
+  position: relative;
+}
+
+header h1 {
+  margin-top: 1rem;
+  font-family: 'Spectral';
+  font-weight: 100;
+  font-size: 4vw;
+  letter-spacing: 2.25vw;
+}
+
+header h2 {
+  margin-top: 0.25rem;
+  font-family: 'Spectral';
+  font-weight: 100;
+  font-size: 2vw;
+  letter-spacing: 1vw;
+  margin-bottom: 1rem;
+}
+
+.title_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-voltar {
+  position: absolute;
+  top: 2vw;
+  left: 2vw;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btn-voltar img {
+  width: 8vw;
+  height: 8vw;
+  filter: invert(1);
+  transition: transform 0.2s;
+}
+
+.btn-voltar:hover img {
+  transform: scale(1.1);
+}
+
+
+
+/* ========================
+   Conteúdo do Imóvel
+=========================== */
+
+.conteudo-imovel {
+  margin: 10vw auto;
+  padding: 0 1rem;
+  text-align: center;
+  max-width: 900px;
+}
+
+.imagem-principal {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 1vw;
+}
+
+.titulo-imovel {
+  font-size: 3.5rem;
+  margin-top: 2vw;
+}
+
+.preco {
+  font-size: 2rem;
+  color: green;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.descricao {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+
+
+/* ========================
+   Campos Adicionais
+=========================== */
+
+.campos-adicionais {
+  text-align: left;
+  margin: 2rem auto;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  padding: 0 1rem;
+}
+
+
+
+/* ========================
+   Galeria de Imagens
+=========================== */
+
+.galeria {
+  margin-top: 3rem;
+}
+
+.galeria h3 {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.galeria-imagens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.galeria-imagens img {
+  width: 200px;
+  border-radius: 6px;
+  transition: transform 0.2s;
+  object-fit: cover;
+}
+
+.galeria-imagens img:hover {
+  transform: scale(1.05);
+}
+
+/* ========================
+   Carrossel de Imagens Secundárias
+=========================== */
+
+.galeria-imagens-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 1rem 0;
+  scroll-snap-type: x mandatory;
+}
+
+.galeria-imagens-scroll img {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.galeria-imagens-scroll img:hover {
+  transform: scale(1.05);
+}
+
+.galeria-imagens-scroll {
+  scrollbar-width: auto;
+}
+
+
+/* ========================
+   Visualizador Fullscreen
+=========================== */
+
+#imagem-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#imagem-viewer img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+}
+
+#imagem-viewer .navegacao {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+#imagem-viewer .prev {
+  left: 2vw;
+}
+
+#imagem-viewer .next {
+  right: 2vw;
+}
+
+#imagem-viewer .fechar {
+  position: absolute;
+  top: 2vw;
+  right: 2vw;
+  font-size: 2.2rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+
+/* ========================
+   Responsividade
+=========================== */
+
+@media (max-width: 768px) {
+  .titulo-imovel {
+    font-size: 2.2rem;
+  }
+
+  .preco {
+    font-size: 1.4rem;
+  }
+
+  .campos-adicionais {
+    font-size: 1rem;
+  }
+
+  .btn-voltar img {
+    width: 10vw;
+    height: 10vw;
+  }
+}

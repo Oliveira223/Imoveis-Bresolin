@@ -1,0 +1,245 @@
+/* =========================
+   Estilos Gerais da Página
+   ========================= */
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #f4f6f8;
+  color: #222;
+  margin: 0;
+  padding: 2rem;
+}
+
+/* Títulos */
+h1, h2 {
+  text-align: center;
+  color: #005b8f;
+  margin-bottom: 1.5rem;
+}
+
+/* =========================
+   Estilização de Seções
+   ========================= */
+
+section {
+  background: #ffffff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =========================
+   Formulários e Inputs
+   ========================= */
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+form input,
+form select,
+form textarea {
+  flex: 1 1 48%;
+  padding: 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+/* Textarea menor como input padrão */
+form textarea {
+  min-height: 42px;
+  resize: vertical;
+}
+
+/* Campo para data */
+.label-data {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #555;
+  flex: 1 1 100%;
+  margin-top: 1rem;
+}
+
+/* =========================
+   Prefixos e Sufixos (R$ / m²)
+   ========================= */
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  flex: 1 1 48%;
+  gap: 0.5rem;
+}
+
+.input-icon .prefix,
+.input-icon .suffix {
+  font-size: 0.95rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.input-icon input {
+  flex: 1;
+  padding: 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Botões de Ação por Tipo
+   ========================= */
+
+.btn-editar {
+  background-color: #0077cc;
+}
+
+.btn-editar:hover {
+  background-color: #005fa3;
+}
+
+.btn-toggle {
+  background-color: #0077cc;
+}
+
+.btn-toggle:hover {
+  background-color: #005fa3;
+}
+
+.btn-excluir {
+  background-color: #ff4444;
+}
+
+.btn-excluir:hover {
+  background-color: #cc2222;
+}
+/* =========================
+   Lista de Imóveis (Cards)
+   ========================= */
+
+#lista-admin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.imovel-admin {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 280px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-items: center;
+  text-align: center;
+}
+
+.imovel-admin b {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.imovel-admin button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+/* =========================
+   Miniatura de Imagem
+   ========================= */
+
+.img-miniatura {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.img-placeholder {
+  background-color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   Preview de Imagem no Formulário
+   ========================= */
+
+.img-preview {
+  max-width: 100%;
+  max-height: 220px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  object-fit: contain;
+}
+
+/* =========================
+   Galeria de Imagens Secundárias (Preview com contador)
+   ========================= */
+
+.galeria-preview {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-top: 0.8rem;
+  overflow-x: auto;
+}
+
+.galeria-preview img {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.preview-contador {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ccc;
+  font-size: 0.9rem;
+  color: #333;
+  border-radius: 6px;
+  width: 100px;
+  height: 75px;
+  font-weight: bold;
+}
+
+/* =========================
+   Responsividade
+   ========================= */
+
+@media (max-width: 768px) {
+  form input,
+  form select,
+  form textarea,
+  .input-icon {
+    flex: 1 1 100%;
+  }
+}
