@@ -1,3 +1,4 @@
+
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
@@ -181,32 +182,6 @@ def api_condominios():
             '''), data)
             return '', 201
 
-# ==============================
-# Upload de Imagens
-# ==============================
-@app.route('/upload', methods=['POST'])
-def upload_imagem():
-    if 'arquivo' not in request.files:
-        return jsonify({'erro': 'Nenhum arquivo enviado'}), 400
-
-    file = request.files['arquivo']
-    if file.filename == '':
-        return jsonify({'erro': 'Arquivo vazio'}), 400
-
-    filename = secure_filename(file.filename)
-    ext = os.path.splitext(filename)[1]
-    nome_unico = f"{uuid4().hex}{ext}"
-
-    extensoes_permitidas = {'.jpg', '.jpeg', '.png', '.webp'}
-    if ext.lower() not in extensoes_permitidas:
-        return jsonify({'erro': 'Extensão não permitida'}), 400
-
-    caminho_absoluto = os.path.join(app.config['UPLOAD_FOLDER'], nome_unico)
-    file.save(caminho_absoluto)
-
-    url_publica = f'/static/img/uploads/{nome_unico}'
-    print("[DEBUG] Imagem salva em:", url_publica)
-    return jsonify({'url': url_publica})
 
 # ==============================
 # Inicialização do Servidor
