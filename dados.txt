@@ -1,3 +1,21 @@
 Páginas Locais
 > Página inicial: http://localhost:5000/
 > Painel do admin: http://localhost:5000/admin
+
+
+Rodar programa
+> gunicorn backend.app:app
+
+
+(psql) 
+
+| Pergunta                           | O que digitar                                           |
+| ---------------------------------- | ------------------------------------------------------- |
+| `Server [localhost]:`              | `dpg-d1pik63uibrs73dpto50-a.oregon-postgres.render.com` |
+| `Database [postgres]:`             | `bresolin`                                              |
+| `Port [5432]:`                     | `5432`                                                  |
+| `Username [postgres]:`             | `bresolin_user`                                         |
+| `Password for user bresolin_user:` | `0p7QgP2uBSV8i4WlbFoxIef0IuUpHNAJ`                      |
+
+
+> SELECT * FROM imoveis;
