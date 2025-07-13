@@ -11,12 +11,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==============================
-# Configurações e caminhos
+# Configurações de caminhos
 # ==============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, '..', 'static', 'img', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# ==============================
+# Inicialização do Flask
+# ==============================
 app = Flask(
     __name__,
     static_folder=os.path.join(BASE_DIR, '..', 'static'),
@@ -25,9 +28,14 @@ app = Flask(
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # ==============================
-# Conexão com o banco PostgreSQL do Render
+# Conexão com o banco PostgreSQL
 # ==============================
 DATABASE_URL = os.environ.get('DATABASE_URL')
+print("[INFO] DATABASE_URL:", DATABASE_URL)
+
+if not DATABASE_URL:
+    raise Exception("A variável de ambiente DATABASE_URL não está definida.")
+
 engine = create_engine(DATABASE_URL)
 
 # ==============================
@@ -44,7 +52,7 @@ def admin():
 @app.route('/imovel/<int:imovel_id>')
 def pagina_imovel(imovel_id):
     with engine.connect() as con:
-        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id AND ativo = 1'), {'id': imovel_id})
+        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id AND ativo = TRUE'), {'id': imovel_id})
         imovel = imovel_result.mappings().first()
 
         if not imovel:
@@ -60,7 +68,7 @@ def pagina_imovel(imovel_id):
 # ==============================
 @app.route('/api/imoveis', methods=['GET', 'POST'])
 def api_imoveis():
-    with engine.connect() as con:
+    with engine.begin() as con:
         if request.method == 'GET':
             result = con.execute(text('SELECT * FROM imoveis'))
             imoveis = [dict(row._mapping) for row in result]
@@ -68,7 +76,11 @@ def api_imoveis():
 
         if request.method == 'POST':
             data = request.json
-            data['ativo'] = bool(data.get('ativo', True))  # força booleano
+            print("[DEBUG] Dados recebidos para cadastro:", data)
+
+            data['ativo'] = bool(int(data.get('ativo', 1)))
+            data['condominio_id'] = data.get('condominio_id') or None
+
             con.execute(text('''
                 INSERT INTO imoveis (
                     condominio_id, titulo, descricao, preco, imagem,
@@ -80,11 +92,12 @@ def api_imoveis():
                     :area, :endereco, :bairro, :cidade, :uf, :ativo, :link
                 )
             '''), data)
+            print("[DEBUG] Imóvel inserido com sucesso!")
             return '', 201
 
 @app.route('/api/imoveis/<int:imovel_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_imovel_id(imovel_id):
-    with engine.connect() as con:
+    with engine.begin() as con:
         if request.method == 'GET':
             result = con.execute(text('SELECT * FROM imoveis WHERE id = :id'), {'id': imovel_id})
             imovel = result.mappings().first()
@@ -93,6 +106,7 @@ def api_imovel_id(imovel_id):
         elif request.method == 'PUT':
             data = request.json
             data['id'] = imovel_id
+            data['ativo'] = bool(int(data.get('ativo', 1)))
             con.execute(text('''
                 UPDATE imoveis SET
                     condominio_id = :condominio_id, titulo = :titulo, descricao = :descricao, preco = :preco, imagem = :imagem,
@@ -108,8 +122,8 @@ def api_imovel_id(imovel_id):
 
 @app.route('/api/imoveis/<int:imovel_id>/toggle', methods=['POST'])
 def toggle_ativo(imovel_id):
-    with engine.connect() as con:
-        con.execute(text('UPDATE imoveis SET ativo = 1 - ativo WHERE id = :id'), {'id': imovel_id})
+    with engine.begin() as con:
+        con.execute(text('UPDATE imoveis SET ativo = NOT ativo WHERE id = :id'), {'id': imovel_id})
         return '', 204
 
 # ==============================
@@ -117,7 +131,7 @@ def toggle_ativo(imovel_id):
 # ==============================
 @app.route('/api/imoveis/<int:imovel_id>/imagens', methods=['GET', 'POST'])
 def imagens_do_imovel(imovel_id):
-    with engine.connect() as con:
+    with engine.begin() as con:
         if request.method == 'GET':
             result = con.execute(text('SELECT id, url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
             imagens = [dict(row._mapping) for row in result]
@@ -125,7 +139,10 @@ def imagens_do_imovel(imovel_id):
 
         if request.method == 'POST':
             data = request.json
-            con.execute(text('INSERT INTO imagens_imovel (imovel_id, url, tipo) VALUES (:imovel_id, :url, :tipo)'), {
+            con.execute(text('''
+                INSERT INTO imagens_imovel (imovel_id, url, tipo)
+                VALUES (:imovel_id, :url, :tipo)
+            '''), {
                 'imovel_id': imovel_id,
                 'url': data.get('url'),
                 'tipo': data.get('tipo')
@@ -134,7 +151,7 @@ def imagens_do_imovel(imovel_id):
 
 @app.route('/api/imagens/<int:imagem_id>', methods=['DELETE'])
 def deletar_imagem(imagem_id):
-    with engine.connect() as con:
+    with engine.begin() as con:
         con.execute(text('DELETE FROM imagens_imovel WHERE id = :id'), {'id': imagem_id})
         return '', 204
 
@@ -143,7 +160,7 @@ def deletar_imagem(imagem_id):
 # ==============================
 @app.route('/api/condominios', methods=['GET', 'POST'])
 def api_condominios():
-    with engine.connect() as con:
+    with engine.begin() as con:
         if request.method == 'GET':
             result = con.execute(text('SELECT * FROM condominios'))
             condominios = [dict(row._mapping) for row in result]
@@ -165,7 +182,7 @@ def api_condominios():
             return '', 201
 
 # ==============================
-# Upload de Imagens (usado pelo painel admin)
+# Upload de Imagens
 # ==============================
 @app.route('/upload', methods=['POST'])
 def upload_imagem():
@@ -188,6 +205,7 @@ def upload_imagem():
     file.save(caminho_absoluto)
 
     url_publica = f'/static/img/uploads/{nome_unico}'
+    print("[DEBUG] Imagem salva em:", url_publica)
     return jsonify({'url': url_publica})
 
 # ==============================
@@ -195,4 +213,5 @@ def upload_imagem():
 # ==============================
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    print(f"[INFO] Servidor iniciado em http://localhost:{port}")
     app.run(host='0.0.0.0', port=port)
