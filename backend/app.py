@@ -7,6 +7,9 @@ import os
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # ==============================
 # Configurações e caminhos
 # ==============================
