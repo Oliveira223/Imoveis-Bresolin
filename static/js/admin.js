@@ -7,10 +7,10 @@ document.getElementById('estagio-select').onchange = function () {
 };
 
 // ===========================
-// Upload de imagem via arquivo
+// Upload de imagem principal via Cloudinary
 // ===========================
 
-document.getElementById('file-imagem').onchange = function () {
+document.getElementById('file-imagem').onchange = async function () {
   const file = this.files[0];
   const preview = document.getElementById('preview-imagem');
 
@@ -19,7 +19,7 @@ document.getElementById('file-imagem').onchange = function () {
     return;
   }
 
-  // Mostrar preview da imagem
+  // Mostrar preview da imagem local
   const reader = new FileReader();
   reader.onload = function (e) {
     preview.src = e.target.result;
@@ -27,26 +27,30 @@ document.getElementById('file-imagem').onchange = function () {
   };
   reader.readAsDataURL(file);
 
-  // Fazer upload automático para o servidor
+  // Enviar para Cloudinary
   const formData = new FormData();
-  formData.append('arquivo', file);
-  fetch('/upload', {
+  formData.append('file', file);
+  formData.append('upload_preset', 'bresolin');
+
+  const cloudName = 'dexpbb2dd';
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
     method: 'POST',
     body: formData
-  })
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('input-imagem').value = data.url;
-    });
+  });
+
+  const data = await res.json();
+  document.getElementById('input-imagem').value = data.secure_url;
 };
 
 // ===========================
 // Armazenamento temporário das imagens secundárias
 // ===========================
+
 const imagensSecundariasTemp = [];
 
 // ===========================
-// Upload de imagens secundárias (preview + envio com contador)
+// Upload de imagens secundárias (Cloudinary)
 // ===========================
 
 document.getElementById('file-secundarias').onchange = function () {
@@ -56,40 +60,39 @@ document.getElementById('file-secundarias').onchange = function () {
   imagensSecundariasTemp.length = 0;
 
   const limitePreview = 4;
+  const cloudName = 'dexpbb2dd';
 
-  files.forEach((file, index) => {
+  files.forEach(async (file, index) => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('arquivo', file);
+    formData.append('file', file);
+    formData.append('upload_preset', 'bresolin');
 
-    fetch('/upload', {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: 'POST',
       body: formData
-    })
-      .then(res => res.json())
-      .then(data => {
-        imagensSecundariasTemp.push(data.url);
+    });
 
-        // Mostrar preview apenas das 4 primeiras
-        if (index < limitePreview) {
-          const img = document.createElement('img');
-          img.src = data.url;
-          galeria.appendChild(img);
-        }
+    const data = await res.json();
+    imagensSecundariasTemp.push(data.secure_url);
 
-        // Se for a última imagem mostrada e houver mais, exibe o contador
-        if (index === limitePreview - 1 && files.length > limitePreview) {
-          const restante = files.length - limitePreview;
-          const span = document.createElement('div');
-          span.className = 'preview-contador';
-          span.textContent = `+ ${restante} foto${restante > 1 ? 's' : ''}`;
-          galeria.appendChild(span);
-        }
-      });
+    // Mostrar preview das primeiras
+    if (index < limitePreview) {
+      const img = document.createElement('img');
+      img.src = data.secure_url;
+      galeria.appendChild(img);
+    }
+
+    if (index === limitePreview - 1 && files.length > limitePreview) {
+      const restante = files.length - limitePreview;
+      const span = document.createElement('div');
+      span.className = 'preview-contador';
+      span.textContent = `+ ${restante} foto${restante > 1 ? 's' : ''}`;
+      galeria.appendChild(span);
+    }
   });
 };
-
 
 // ===========================
 // Cadastro de Condomínio
@@ -121,8 +124,7 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
     return;
   }
 
-  // Conversões
-  data.ativo = this.ativo.checked ? true : false; // <- aqui corrigido para booleano
+  data.ativo = this.ativo.checked;
   data.condominio_id = data.condominio_id || null;
   data.preco = parseFloat(data.preco) || 0;
   data.area = parseFloat(data.area) || 0;
@@ -166,7 +168,7 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
 };
 
 // ===========================
-// Lista de Imóveis Cadastrados
+// Listagem e Ações
 // ===========================
 
 function listarImoveis() {
@@ -176,13 +178,10 @@ function listarImoveis() {
       const lista = document.getElementById('lista-admin');
       lista.innerHTML = '';
       imoveis.forEach(imovel => {
-
-        // Miniatura da imagem
         const imagemHtml = imovel.imagem
           ? `<img src="${imovel.imagem}" alt="${imovel.titulo}" class="img-miniatura">`
           : `<div class="img-miniatura img-placeholder">Sem imagem</div>`;
 
-        // HTML do card
         lista.innerHTML += `
           <div class="imovel-admin">
             ${imagemHtml}
@@ -200,10 +199,6 @@ function listarImoveis() {
     });
 }
 
-// ===========================
-// Lista de Condomínios
-// ===========================
-
 function listarCondominios() {
   fetch('/api/condominios')
     .then(r => r.json())
@@ -219,10 +214,6 @@ function listarCondominios() {
     });
 }
 
-// ===========================
-// Ações: Excluir / Alternar Ativo
-// ===========================
-
 function removerImovel(id) {
   if (!confirm("Tem certeza que deseja excluir este imóvel?")) return;
   fetch(`/api/imoveis/${id}`, { method: 'DELETE' })
@@ -237,10 +228,6 @@ function alternarAtivo(id) {
 function editarImovel(id) {
   alert("Funcionalidade de edição ainda não implementada.");
 }
-
-// ===========================
-// Inicialização
-// ===========================
 
 listarImoveis();
 listarCondominios();
