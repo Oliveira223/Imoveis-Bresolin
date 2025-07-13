@@ -112,7 +112,7 @@ document.getElementById('form-condominio').onsubmit = function (e) {
 // Cadastro de Imóvel
 // ===========================
 
-document.getElementById('form-imovel').onsubmit = function (e) {
+document.getElementById('form-imovel').onsubmit = async function (e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(this));
 
@@ -121,7 +121,8 @@ document.getElementById('form-imovel').onsubmit = function (e) {
     return;
   }
 
-  data.ativo = this.ativo.checked ? 1 : 0;
+  // Conversões
+  data.ativo = this.ativo.checked ? true : false; // <- aqui corrigido para booleano
   data.condominio_id = data.condominio_id || null;
   data.preco = parseFloat(data.preco) || 0;
   data.area = parseFloat(data.area) || 0;
@@ -131,30 +132,37 @@ document.getElementById('form-imovel').onsubmit = function (e) {
   data.vagas = parseInt(data.vagas) || 0;
   data.andar = parseInt(data.andar) || 0;
 
-  fetch('/api/imoveis', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-    .then(() => fetch('/api/imoveis')) // buscar todos para pegar o último ID
-    .then(r => r.json())
-    .then(lista => {
-      const novoImovel = lista.sort((a, b) => b.id - a.id)[0];
-
-      // Enviar imagens secundárias para este imóvel
-      imagensSecundariasTemp.forEach(url => {
-        fetch(`/api/imoveis/${novoImovel.id}/imagens`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url, tipo: 'secundaria' })
-        });
-      });
-
-      this.reset();
-      document.getElementById('lista-secundarias').innerHTML = '';
-      imagensSecundariasTemp.length = 0;
-      listarImoveis();
+  try {
+    const res = await fetch('/api/imoveis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     });
+
+    if (!res.ok) throw new Error('Erro ao cadastrar imóvel');
+
+    const lista = await fetch('/api/imoveis').then(r => r.json());
+    const novoImovel = lista.sort((a, b) => b.id - a.id)[0];
+
+    // Enviar imagens secundárias
+    await Promise.all(imagensSecundariasTemp.map(url =>
+      fetch(`/api/imoveis/${novoImovel.id}/imagens`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, tipo: 'secundaria' })
+      })
+    ));
+
+    alert("Imóvel cadastrado com sucesso!");
+    this.reset();
+    document.getElementById('lista-secundarias').innerHTML = '';
+    imagensSecundariasTemp.length = 0;
+    listarImoveis();
+
+  } catch (err) {
+    console.error(err);
+    alert("Ocorreu um erro ao cadastrar o imóvel.");
+  }
 };
 
 // ===========================

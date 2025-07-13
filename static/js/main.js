@@ -10,7 +10,7 @@ fetch('/api/imoveis')
 
     // Exibe os 6 imóveis ATIVOS mais recentes (ID maior primeiro)
     const recentes = imoveis
-      .filter(imovel => imovel.ativo === 1)         // Filtra apenas os ativos
+      .filter(imovel => !!imovel.ativo)         // Filtra apenas os ativos
       .sort((a, b) => b.id - a.id)                   // Ordena do mais recente pro mais antigo
       .slice(0, 6);                                  // Pega os 6 primeiros
 
