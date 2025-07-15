@@ -57,7 +57,7 @@
 
     <!-- Descrição -->
     {% if imovel.descricao %}
-    <p class="descricao">{{ imovel.descricao }}</p>
+    <p>{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
     {% endif %}
 
     <!-- Campos adicionais -->

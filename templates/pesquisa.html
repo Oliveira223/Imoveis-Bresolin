@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pesquisa | Bresolin Imóveis</title>
+    <link rel="stylesheet" href="/static/css/components/card_imovel.css">
+    <link rel="stylesheet" href="/static/css/pesquisa.css" />
+</head>
+
+<body>
+
+    <!-- ===========================
+       Cabeçalho com logo e voltar
+  ============================ -->
+    <header>
+        <button class="btn-voltar" onclick="history.back()">
+            <img src="/static/img/icons8-back-arrow-100.svg" alt="Voltar">
+        </button>
+
+        <a href="/">
+            <div class="title_container">
+                <h1>BRESOLIN</h1>
+                <h2>IMÓVEIS</h2>
+            </div>
+        </a>
+    </header>
+
+    <!-- ===========================
+       Corpo principal
+  ============================ -->
+    <main class="conteudo-pesquisa">
+
+        <!-- Painel lateral de filtros -->
+        <aside class="filtros">
+            <h3>Filtrar Imóveis</h3>
+            <form action="/pesquisa" method="get">
+                <input type="hidden" name="termo" value="{{ termo }}">
+
+                <div class="campo">
+                    <label for="cidade">Cidade</label>
+                    <input type="text" name="cidade" id="cidade" value="{{ cidade }}" placeholder="Ex: Porto Alegre">
+                </div>
+
+                <div class="campo">
+                    <label for="tipo">Tipo de imóvel</label>
+                    <select name="tipo" id="tipo">
+
+                        <option value="">Todos</option>
+                        <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
+                        <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento</option>
+
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="max_preco">Preço Máximo</label>
+                    <input type="number" name="max_preco" id="max_preco" value="{{ max_preco }}"
+                        placeholder="Ex: 500000">
+                </div>
+
+                <div class="campo">
+                    <label for="id">ID do imóvel</label>
+                    <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}" placeholder="Ex: 123">
+                </div>
+
+                <div class="campo">
+                    <label for="quartos">Quartos</label>
+                    <input type="number" name="quartos" id="quartos" value="{{ request.args.get('quartos', '') }}"
+                        min="0">
+                </div>
+
+                <div class="campo">
+                    <label for="banheiros">Banheiros</label>
+                    <input type="number" name="banheiros" id="banheiros" value="{{ request.args.get('banheiros', '') }}"
+                        min="0">
+                </div>
+
+                <div class="campo">
+                    <label for="vagas">Vagas de garagem</label>
+                    <input type="number" name="vagas" id="vagas" value="{{ request.args.get('vagas', '') }}" min="0">
+                </div>
+
+                <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
+            </form>
+        </aside>
+
+
+
+        <!-- Área dos resultados -->
+        <section class="resultados">
+            {% if imoveis %}
+            {% for imovel in imoveis %}
+            {% include 'partials/card_imovel.html' %}
+            {% endfor %}
+            {% else %}
+            <p class="nenhum-encontrado">Nenhum imóvel encontrado.</p>
+            {% endif %}
+        </section>
+
+    </main>
+
+</body>
+
+</html>

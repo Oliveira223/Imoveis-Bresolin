@@ -1,0 +1,252 @@
+/* ========================
+   Reset e Comportamentos
+=========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  color-scheme: light only;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+
+
+/* ========================
+   Links e Ancoras
+=========================== */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:active,
+a:hover {
+  color: inherit;
+}
+
+
+/* ========================
+   Fontes Customizadas
+=========================== */
+
+/* Extra Light */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-ExtraLight.woff2') format('woff2'),
+    url('/static/fonts/spectral/Spectral-ExtraLight.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* Regular */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-Regular.woff2') format('woff2'),
+    url('/static/fonts/spectral/Spectral-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Spectral';
+  src: url('/static/fonts/spectral/Spectral-Bold.woff2') format('woff2'),
+    url('/static/fonts/spectral/Spectral-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+/* ========================
+   Header e Branding
+=========================== */
+
+header {
+  background-color: #1d1d1d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  color: white;
+  position: relative;
+}
+
+header h1 {
+  margin-top: 1rem;
+  font-family: 'Spectral';
+  font-weight: 100;
+  font-size: 4vw;
+  letter-spacing: 2.25vw;
+}
+
+header h2 {
+  margin-top: 0.25rem;
+  font-family: 'Spectral';
+  font-weight: 100;
+  font-size: 2vw;
+  letter-spacing: 1vw;
+  margin-bottom: 1rem;
+}
+
+.title_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-voltar {
+  position: absolute;
+  top: 2vw;
+  left: 2vw;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btn-voltar img {
+  width: 8vw;
+  height: 8vw;
+  filter: invert(1);
+  transition: transform 0.2s;
+}
+
+.btn-voltar:hover img {
+  transform: scale(1.1);
+}
+
+
+/* ===========================
+   Filtros - layout e estilo
+=========================== */
+
+.filtros {
+  flex: 1;
+  max-width: 300px;
+  background: #f8f8f8;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.filtros h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.filtros .campo {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.filtros label {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.filtros input,
+.filtros select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.btn-filtrar {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1d1d1d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-filtrar:hover {
+  background-color: #333;
+}
+
+/* ===========================
+   Layout principal da página de pesquisa
+=========================== */
+
+.conteudo-pesquisa {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Área dos resultados (cards) */
+.resultados {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+
+/* ===========================
+   Nenhum imóvel encontrado
+=========================== */
+
+.nenhum-encontrado {
+  font-size: 1.2rem;
+  color: #888;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+}
+
+
+
+/* ========================
+   Responsividade
+=========================== */
+
+@media (max-width: 768px) {
+  .titulo-imovel {
+    font-size: 2.2rem;
+  }
+
+  .preco {
+    font-size: 1.4rem;
+  }
+
+  .campos-adicionais {
+    font-size: 1rem;
+  }
+
+  .btn-voltar img {
+    width: 10vw;
+    height: 10vw;
+  }
+}
