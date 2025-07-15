@@ -4,12 +4,20 @@
 # ==============================
 from flask import Flask, render_template, request, jsonify
 from sqlalchemy import create_engine, text
-import os
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 
 from dotenv import load_dotenv
 load_dotenv()
+
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL")  # <- agora sim, pega do .env
+
+if not DATABASE_URL:
+    raise Exception("A variável de ambiente DATABASE_URL não está definida.")
+
+engine = create_engine(DATABASE_URL)
 
 # ==============================
 # Configurações de caminhos
@@ -64,6 +72,88 @@ def pagina_imovel(imovel_id):
 
     return render_template('imovel.html', imovel=imovel, imagens=imagens)
 
+
+# ================================
+# Carregando mini card dos imoveis
+# =================================
+
+@app.route('/api/card/<int:imovel_id>')
+def api_card(imovel_id):
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM imoveis WHERE id = :id"), {"id": imovel_id})
+        imovel = result.fetchone()
+
+    if not imovel:
+        return "Imóvel não encontrado", 404
+
+    return render_template('partials/card_imovel.html', imovel=imovel)
+
+
+# ==============================
+# Pesquisas com filtro
+# ===============================
+@app.route('/pesquisa')
+def pagina_pesquisa():
+    termo     = request.args.get('termo', '')
+    cidade    = request.args.get('cidade', '')
+    tipo      = request.args.get('tipo', '')
+    max_preco = request.args.get('max_preco', '')
+    id_       = request.args.get('id', '')
+    quartos   = request.args.get('quartos', '')
+    banheiros = request.args.get('banheiros', '')
+    vagas     = request.args.get('vagas', '')
+
+    query = "SELECT * FROM imoveis WHERE ativo = true"
+    params = {}
+
+    if termo:
+        query += """
+        AND (
+            titulo ILIKE :termo OR
+            descricao ILIKE :termo OR
+            cidade ILIKE :termo OR
+            bairro ILIKE :termo OR
+            endereco ILIKE :termo OR
+            CAST(id AS TEXT) ILIKE :termo
+        )"""
+        params['termo'] = f"%{termo}%"
+
+    if cidade:
+        query += " AND cidade ILIKE :cidade"
+        params['cidade'] = f"%{cidade}%"
+
+    if tipo:
+        query += " AND tipo ILIKE :tipo"
+        params['tipo'] = tipo
+
+    if max_preco:
+        query += " AND preco <= :max_preco"
+        params['max_preco'] = max_preco
+
+    if id_:
+        query += " AND CAST(id AS TEXT) ILIKE :id"
+        params['id'] = f"%{id_}%"
+
+    if quartos:
+        query += " AND quartos = :quartos"
+        params['quartos'] = quartos
+
+    if banheiros:
+        query += " AND banheiros = :banheiros"
+        params['banheiros'] = banheiros
+
+    if vagas:
+        query += " AND vagas = :vagas"
+        params['vagas'] = vagas
+
+    with engine.connect() as conn:
+        resultado = conn.execute(text(query), params).mappings()
+        imoveis = [dict(row) for row in resultado]
+
+    return render_template("pesquisa.html", imoveis=imoveis, termo=termo, cidade=cidade, tipo=tipo,
+                           max_preco=max_preco, id=id_, quartos=quartos, banheiros=banheiros, vagas=vagas)
+
+
 # ==============================
 # API - CRUD de Imóveis
 # ==============================
@@ -71,7 +161,7 @@ def pagina_imovel(imovel_id):
 def api_imoveis():
     with engine.begin() as con:
         if request.method == 'GET':
-            result = con.execute(text('SELECT * FROM imoveis'))
+            result = con.execute(text('SELECT * FROM imoveis ORDER BY id DESC'))
             imoveis = [dict(row._mapping) for row in result]
             return jsonify(imoveis)
 
@@ -186,7 +276,13 @@ def api_condominios():
 # ==============================
 # Inicialização do Servidor
 # ==============================
+
+# if __name__ == '__main__':
+#     port = int(os.environ.get("PORT", 5000))
+#     print(f"[INFO] Servidor iniciado em http://localhost:{port}")
+#     app.run(host='0.0.0.0', port=port)
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     print(f"[INFO] Servidor iniciado em http://localhost:{port}")
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)

@@ -1,0 +1,27 @@
+<!-- ===========================
+     Componente de Card de Imóvel
+=========================== -->
+
+<a href="/imovel/{{ imovel.id }}" class="card-link">
+
+  <div class="card-container">
+    
+    <div class="card-imagem"> 
+      <img src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
+    </div>
+
+    <div class="card-info">
+      <h2>{{ imovel.titulo }}</h2>
+      {% if imovel.descricao %}
+         <h3>{{ imovel.descricao[:120].replace('\n', ' ') }}...</h3>
+      {% endif %}
+    </div>
+
+    <div class="card-preco">
+      <p>R$ {{ "{:,.2f}".format(imovel.preco) }}</p>
+    </div>
+    
+
+  </div>
+
+</a>

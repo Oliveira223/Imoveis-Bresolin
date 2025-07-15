@@ -1,18 +1,25 @@
 bresolin_imoveis/
 │
-├── static/
-│   ├── css/                  # Páginas
-|   |   ├── main.css
-│   │   └── style.css         
+├── static/                     # Páginas
+|   | └── css/
+|   |      ├── pesquisa.css
+|   |      ├── index.css
+|   |      └── components/
+|   |           └── card_imovel.css
+|   |
 │   ├── js/
 │   │   ├── main.js           # JS do site público
 │   │   └── admin.js          # JS da área admin
 │   └── img/                  # Imagens estáticas (ex: logo)
 │
-├── templates/                 # Estilos
-│     ├── admin.html
-│     ├── index.html
-|     └── imovel.html
+├── templates/                  
+|       ├── admin.html
+|       ├── imovel.html
+|       ├── index.html
+|       ├── pesquisa.html
+|       └── partials/
+|             └── card_imovel.html
+|
 |
 ├── database/
 │   └── imoveis.db            # Banco de dados SQLite

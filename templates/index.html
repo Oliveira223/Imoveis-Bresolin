@@ -2,16 +2,18 @@
 <html lang="pt-br">
 
 <head>
+  <title>Bresolin Imóveis</title>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#191a1d" />
+  <meta name="viewport"     content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color"  content="#191a1d" />
   <meta name="color-scheme" content="light" />
 
-  <link rel="icon" href="/static/img/icon.png" type="image/png" />
+  <link rel="icon"          href="/static/img/icon.png" type="image/png" />
   <link rel="shortcut icon" href="/static/img/icon.png" type="image/png" />
+  <link rel="stylesheet"    href="/static/css/components/card_imovel.css">
+  <link rel="stylesheet"    href="/static/css/style.css" />
 
-  <title>Bresolin Imóveis</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
 <body>
@@ -25,27 +27,38 @@
 
 
       <div>
-        <form id="form-busca" action="/buscar" method="GET">
+        <form id="form-busca" action="/pesquisa" method="GET">
+         
+          <!-- Pretensão-->
           <div class="form-group">
             <label for="pretensao">Pretensão</label>
             <select name="pretensao" id="pretensao" required>
+
               <option value="comprar">Comprar</option>
               <option value="alugar">Alugar</option>
+
             </select>
           </div>
+
+          <!-- Tipo de Imóvel -->
           <div class="form-group">
             <label for="tipo">Tipo de imóvel</label>
             <select name="tipo" id="tipo" required>
+
               <option value="casa">Casa</option>
               <option value="apartamento">Apartamento</option>
               <option value="loft">Loft</option>
+
             </select>
           </div>
+
+          <!-- Palavras chaves -->
           <div class="form-group">
-            <label for="q">Palavras-chave</label>
-            <input type="text" name="q" id="q" placeholder="Digite região, bairro ou ID" />
+            <label for="termo">Palavras-chave</label>
+            <input type="text" name="termo" id="termo" placeholder="Digite região, bairro ou ID" />
           </div>
           
+          <!-- Botão-->
           <button type="submit">Encontrar Imóvel</button>
         </form>
       </div>
@@ -53,10 +66,9 @@
     </div>
   </section>
 
-  <!-- LISTA DE IMÓVEIS RECENTES -->
+  <!-- Lista de imóveis recentes via cs -->
   <main>
     <section id="lista-imoveis">
-      <!-- Cards gerados por JS -->
     </section>
   </main>
 
