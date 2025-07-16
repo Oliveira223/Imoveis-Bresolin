@@ -167,6 +167,10 @@ def api_imoveis():
 
         if request.method == 'POST':
             data = request.json
+            for campo in ['entrega', 'estagio', 'campo_extra1', 'campo_extra2']:
+                 if campo not in data:
+                    data[campo] = None
+            
             print("[DEBUG] Dados recebidos para cadastro:", data)
 
             data['ativo'] = bool(int(data.get('ativo', 1)))
@@ -176,11 +180,13 @@ def api_imoveis():
                 INSERT INTO imoveis (
                     condominio_id, titulo, descricao, preco, imagem,
                     tipo, pretensao, quartos, suites, banheiros, vagas,
-                    area, endereco, bairro, cidade, uf, ativo, link
+                    area, endereco, bairro, cidade, uf, ativo, link, 
+                    estagio, campo_extra1, campo_extra2, entrega, banheiros_com_chuveiro
                 ) VALUES (
                     :condominio_id, :titulo, :descricao, :preco, :imagem,
                     :tipo, :pretensao, :quartos, :suites, :banheiros, :vagas,
-                    :area, :endereco, :bairro, :cidade, :uf, :ativo, :link
+                    :area, :endereco, :bairro, :cidade, :uf, :ativo, :link,
+                    :estagio, :campo_extra1, :campo_extra2, :entrega, :banheiros_com_chuveiro
                 )
             '''), data)
             print("[DEBUG] Imóvel inserido com sucesso!")
@@ -200,9 +206,28 @@ def api_imovel_id(imovel_id):
             data['ativo'] = bool(int(data.get('ativo', 1)))
             con.execute(text('''
                 UPDATE imoveis SET
-                    condominio_id = :condominio_id, titulo = :titulo, descricao = :descricao, preco = :preco, imagem = :imagem,
-                    tipo = :tipo, pretensao = :pretensao, quartos = :quartos, suites = :suites, banheiros = :banheiros, vagas = :vagas,
-                    area = :area, endereco = :endereco, bairro = :bairro, cidade = :cidade, uf = :uf, ativo = :ativo, link = :link
+                    condominio_id    = :condominio_id, 
+                    titulo           = :titulo, 
+                    descricao        = :descricao,
+                    preco            = :preco,
+                    imagem           = :imagem,
+                    tipo             = :tipo, 
+                    pretensao        = :pretensao, 
+                    quartos          = :quartos, 
+                    suites           = :suites,
+                    banheiros        = :banheiros, 
+                    vagas            = :vagas,
+                    area             = :area,
+                    endereco         = :endereco,
+                    bairro           = :bairro,
+                    cidade           = :cidade, 
+                    uf               = :uf, 
+                    ativo            = :ativo, 
+                    link             = :link,   
+                    estagio          = :estagio,
+                    campo_extra1     = :campo_extra1,
+                    campo_extra2     = :campo_extra2,
+                    entrega          = :entrega
                 WHERE id = :id
             '''), data)
             return '', 204

@@ -1,9 +1,9 @@
 // ===========================
-// Habilita o campo de entrega conforme estágio da obra
+// Habilita campo de entrega conforme estágio do imóvel
 // ===========================
 
-document.getElementById('estagio-select').onchange = function () {
-  document.getElementById('entrega-input').disabled = this.value !== 'EM CONSTRUÇÃO';
+document.getElementById('estagio-imovel-select').onchange = function () {
+  document.getElementById('entrega-imovel-input').disabled = this.value !== 'EM CONSTRUÇÃO';
 };
 
 // ===========================
@@ -19,7 +19,7 @@ document.getElementById('file-imagem').onchange = async function () {
     return;
   }
 
-  // Mostrar preview da imagem local
+  // Preview local
   const reader = new FileReader();
   reader.onload = function (e) {
     preview.src = e.target.result;
@@ -33,7 +33,6 @@ document.getElementById('file-imagem').onchange = async function () {
   formData.append('upload_preset', 'bresolin');
 
   const cloudName = 'dexpbb2dd';
-
   const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
     method: 'POST',
     body: formData
@@ -44,14 +43,10 @@ document.getElementById('file-imagem').onchange = async function () {
 };
 
 // ===========================
-// Armazenamento temporário das imagens secundárias
+// Upload de imagens secundárias (Cloudinary)
 // ===========================
 
 const imagensSecundariasTemp = [];
-
-// ===========================
-// Upload de imagens secundárias (Cloudinary)
-// ===========================
 
 document.getElementById('file-secundarias').onchange = function () {
   const files = Array.from(this.files);
@@ -77,7 +72,6 @@ document.getElementById('file-secundarias').onchange = function () {
     const data = await res.json();
     imagensSecundariasTemp.push(data.secure_url);
 
-    // Mostrar preview das primeiras
     if (index < limitePreview) {
       const img = document.createElement('img');
       img.src = data.secure_url;
@@ -95,21 +89,54 @@ document.getElementById('file-secundarias').onchange = function () {
 };
 
 // ===========================
-// Cadastro de Condomínio
+// Envio de plantas
 // ===========================
 
-document.getElementById('form-condominio').onsubmit = function (e) {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(this));
-  fetch('/api/condominios', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(() => {
-    this.reset();
-    listarCondominios();
+const plantasTemp = [];
+
+document.getElementById('file-plantas').onchange = function () {
+  const files = Array.from(this.files);
+  const galeria = document.getElementById('lista-plantas');
+  galeria.innerHTML = '';
+  plantasTemp.length = 0;
+
+  const limitePreview = 4;
+  const cloudName = 'dexpbb2dd';
+
+  files.forEach(async (file, index) => {
+    if (!file) return;
+
+    // Upload para Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'bresolin');
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    plantasTemp.push(data.secure_url);
+
+    // Preview das imagens
+    if (index < limitePreview) {
+      const img = document.createElement('img');
+      img.src = data.secure_url;
+      galeria.appendChild(img);
+    }
+
+    // Mostrar contador de imagens extras
+    if (index === limitePreview - 1 && files.length > limitePreview) {
+      const restante = files.length - limitePreview;
+      const span = document.createElement('div');
+      span.className = 'preview-contador';
+      span.textContent = `+ ${restante} planta${restante > 1 ? 's' : ''}`;
+      galeria.appendChild(span);
+    }
   });
 };
+
 
 // ===========================
 // Cadastro de Imóvel
@@ -119,22 +146,36 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(this));
 
-  if (!data.titulo) {
-    alert("O título do imóvel é obrigatório.");
+  // Validação mínima
+  if (!data.tipo) {
+    alert("O tipo do imóvel é obrigatório.");
     return;
   }
 
+  // Conversões e tratamentos
   data.ativo = this.ativo.checked;
   data.condominio_id = data.condominio_id || null;
   data.preco = parseFloat(data.preco) || 0;
   data.area = parseFloat(data.area) || 0;
   data.quartos = parseInt(data.quartos) || 0;
-  data.suites = parseInt(data.suites) || 0;
-  data.banheiros = parseInt(data.banheiros) || 0;
   data.vagas = parseInt(data.vagas) || 0;
   data.andar = parseInt(data.andar) || 0;
+  data.suites = parseInt(data.suites) || 0;
+  data.banheiros = parseInt(data.banheiros) || 0;
+  data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
+
+  // Forçar campos que podem estar desabilitados ou ausentes
+  data.entrega = document.getElementById('entrega-imovel-input').value || null;
+  data.imagem = data.imagem?.trim() || "/static/img/casa_padrao.png";
+
+  // Campos opcionais de texto
+  data.estagio = data.estagio || null;
+  data.campo_extra1 = data.campo_extra1 || null;
+  data.campo_extra2 = data.campo_extra2 || null;
+  data.link = data.link || null;
 
   try {
+    // Enviar imóvel principal
     const res = await fetch('/api/imoveis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -143,6 +184,7 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
 
     if (!res.ok) throw new Error('Erro ao cadastrar imóvel');
 
+    // Obter o último imóvel cadastrado
     const lista = await fetch('/api/imoveis').then(r => r.json());
     const novoImovel = lista.sort((a, b) => b.id - a.id)[0];
 
@@ -152,6 +194,16 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, tipo: 'secundaria' })
+      })
+    ));
+
+
+    //enviar plantas
+    await Promise.all(plantasTemp.map(url =>
+      fetch(`/api/imoveis/${novoImovel.id}/imagens`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, tipo: 'planta' })
       })
     ));
 
@@ -168,7 +220,7 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
 };
 
 // ===========================
-// Listagem e Ações
+// Listar imóveis
 // ===========================
 
 function listarImoveis() {
@@ -187,17 +239,18 @@ function listarImoveis() {
             ${imagemHtml}
             <b>${imovel.titulo}</b> (ID ${imovel.id})<br>
             ${imovel.ativo ? 'Ativo' : 'Inativo'}<br><br>
-
             <button class="btn-editar" onclick="editarImovel(${imovel.id})">Editar</button>
-            <button class="btn-toggle" onclick="alternarAtivo(${imovel.id})">
-              ${imovel.ativo ? 'Desativar' : 'Ativar'}
-            </button>
+            <button class="btn-toggle" onclick="alternarAtivo(${imovel.id})">${imovel.ativo ? 'Desativar' : 'Ativar'}</button>
             <button class="btn-excluir" onclick="removerImovel(${imovel.id})">Excluir</button>
           </div>
         `;
       });
     });
 }
+
+// ===========================
+// Listar condomínios
+// ===========================
 
 function listarCondominios() {
   fetch('/api/condominios')
@@ -214,20 +267,36 @@ function listarCondominios() {
     });
 }
 
-function removerImovel(id) {
-  if (!confirm("Tem certeza que deseja excluir este imóvel?")) return;
-  fetch(`/api/imoveis/${id}`, { method: 'DELETE' })
-    .then(() => listarImoveis());
-}
+// ===========================
+// Alternar visibilidade
+// ===========================
 
 function alternarAtivo(id) {
   fetch(`/api/imoveis/${id}/toggle`, { method: 'POST' })
     .then(() => listarImoveis());
 }
 
+// ===========================
+// Remover imóvel
+// ===========================
+
+function removerImovel(id) {
+  if (!confirm("Tem certeza que deseja excluir este imóvel?")) return;
+  fetch(`/api/imoveis/${id}`, { method: 'DELETE' })
+    .then(() => listarImoveis());
+}
+
+// ===========================
+// Placeholder para edição
+// ===========================
+
 function editarImovel(id) {
   alert("Funcionalidade de edição ainda não implementada.");
 }
+
+// ===========================
+// Inicialização
+// ===========================
 
 listarImoveis();
 listarCondominios();
