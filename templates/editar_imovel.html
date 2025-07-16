@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Imóvel #{{ imovel.id }} | Bresolin</title>
+    <link rel="stylesheet" href="/static/css/editar_imovel.css">
+</head>
+
+<body>
+
+    <header>
+        <button class="btn-voltar" onclick="history.back()">
+            <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+        </button>
+        <h1>Editar Imóvel</h1>
+    </header>
+
+    <main class="conteudo-imovel">
+        <form id="form-editar-imovel">
+            <input type="hidden" name="id" value="{{ imovel.id }}">
+
+            <!-- =========================
+            Dados básicos
+            ========================== -->
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ imovel.titulo }}" required>
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao">{{ imovel.descricao }}</textarea>
+
+            <label for="preco">Preço:</label>
+            <input type="number" id="preco" name="preco" step="0.01" value="{{ imovel.preco or '' }}">
+
+            <label for="area">Área (m²):</label>
+            <input type="number" id="area" name="area" value="{{ imovel.area or '' }}">
+
+            <!-- =========================
+            Imagem principal
+            ========================== -->
+            <label for="file-imagem-principal">Imagem principal (upload):</label>
+            <input type="file" id="file-imagem-principal" accept="image/*">
+            <input type="hidden" name="imagem" id="input-imagem-principal" value="{{ imovel.imagem or '' }}">
+
+            {% if imovel.imagem %}
+            <label>Prévia da imagem principal:</label>
+            <img id="preview-imagem-principal" src="{{ imovel.imagem }}"
+                style="max-height: 200px; margin:1rem 0; display: block;">
+            {% else %}
+            <label>Prévia da imagem principal:</label>
+            <img id="preview-imagem-principal" style="max-height: 200px; margin:1rem 0; display: none;">
+            {% endif %}
+
+
+            <!-- =========================
+             Imagens secundárias
+            ========================== -->
+            <label>Imagens secundárias:</label>
+            <input type="file" id="file-secundarias" multiple accept="image/*">
+            <div id="galeria-secundarias" class="galeria-preview">
+                {% for img in imagens if img.tipo == 'secundaria' %}
+                <div class="imagem-container">
+                    <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
+                    <img src="{{ img.url }}" class="thumb-secundaria">
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="btn-excluir-secundarias">Excluir imagens selecionadas</button>
+
+            <!-- =========================
+            Plantas
+            ========================== -->
+            <label>Plantas:</label>
+            <input type="file" id="file-plantas" multiple accept="image/*">
+            <div id="galeria-plantas" class="galeria-preview">
+                {% for img in imagens if img.tipo == 'planta' %}
+                <div class="imagem-container">
+                    <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
+                    <img src="{{ img.url }}" class="thumb-secundaria">
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="btn-excluir-plantas">Excluir plantas selecionadas</button>
+
+            <!-- =========================
+            Seleções
+            ========================== -->
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" required>
+                <option value="">Selecione</option>
+                {% for tipo in ['Casa', 'Apartamento', 'Terreno', 'Cobertura'] %}
+                <option value="{{ tipo }}" {% if imovel.tipo==tipo %}selected{% endif %}>{{ tipo }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="pretensao">Finalidade:</label>
+            <select id="pretensao" name="pretensao">
+                <option value="">Selecione</option>
+                {% for valor in ['Venda', 'Aluguel'] %}
+                <option value="{{ valor }}" {% if imovel.pretensao==valor %}selected{% endif %}>{{ valor }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- =========================
+            Campos numéricos
+            ========================== -->
+            <label for="quartos">Quartos:</label>
+            <input type="number" id="quartos" name="quartos" value="{{ imovel.quartos or '' }}">
+
+            <label for="suites">Suítes:</label>
+            <input type="number" id="suites" name="suites" value="{{ imovel.suites or '' }}">
+
+            <label for="banheiros">Banheiros:</label>
+            <input type="number" id="banheiros" name="banheiros" value="{{ imovel.banheiros or '' }}">
+
+            <label for="banheiros_com_chuveiro">Banheiros com chuveiro:</label>
+            <input type="number" id="banheiros_com_chuveiro" name="banheiros_com_chuveiro"
+                value="{{ imovel.banheiros_com_chuveiro or '' }}">
+
+            <label for="vagas">Vagas de garagem:</label>
+            <input type="number" id="vagas" name="vagas" value="{{ imovel.vagas or '' }}">
+
+            <label for="andar">Andar:</label>
+            <input type="number" id="andar" name="andar" value="{{ imovel.andar or '' }}">
+
+            <!-- =========================
+            Endereço
+            ========================== -->
+            <label for="endereco">Endereço:</label>
+            <input type="text" id="endereco" name="endereco" value="{{ imovel.endereco or '' }}">
+
+            <label for="bairro">Bairro:</label>
+            <input type="text" id="bairro" name="bairro" value="{{ imovel.bairro or '' }}">
+
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" name="cidade" value="{{ imovel.cidade or '' }}">
+
+            <label for="uf">UF:</label>
+            <input type="text" id="uf" name="uf" maxlength="2" value="{{ imovel.uf or '' }}">
+
+            <!-- =========================
+            Extras e links
+            ========================== -->
+            <label for="link">Link externo (ex: Google Maps):</label>
+            <input type="text" id="link" name="link" value="{{ imovel.link or '' }}">
+
+            <label for="campo_extra1">Campo Extra 1:</label>
+            <input type="text" id="campo_extra1" name="campo_extra1" value="{{ imovel.campo_extra1 or '' }}">
+
+            <label for="campo_extra2">Campo Extra 2:</label>
+            <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
+
+            <label for="estagio">Estágio da obra:</label>
+            <select id="estagio" name="estagio">
+                <option value="">Selecione</option>
+                <option value="PRONTA" {% if imovel.estagio=='PRONTA' %}selected{% endif %}>PRONTA</option>
+                <option value="EM CONSTRUÇÃO" {% if imovel.estagio=='EM CONSTRUÇÃO' %}selected{% endif %}>EM CONSTRUÇÃO
+                </option>
+            </select>
+
+            <label for="entrega">Previsão de entrega:</label>
+            <input type="text" id="entrega" name="entrega" value="{{ imovel.entrega or '' }}">
+
+            <!-- =========================
+            Ativo
+             ========================== -->
+            <label><input type="checkbox" name="ativo" {% if imovel.ativo %}checked{% endif %}> Imóvel ativo</label>
+
+            <br><br>
+            <button type="submit">Salvar alterações</button>
+        </form>
+    </main>
+
+    <script src="/static/js/editar_imovel.js"></script>
+</body>
+
+</html>

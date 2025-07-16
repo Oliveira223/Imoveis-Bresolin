@@ -153,26 +153,26 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
   }
 
   // Conversões e tratamentos
-  data.ativo = this.ativo.checked;
-  data.condominio_id = data.condominio_id || null;
-  data.preco = parseFloat(data.preco) || 0;
-  data.area = parseFloat(data.area) || 0;
-  data.quartos = parseInt(data.quartos) || 0;
-  data.vagas = parseInt(data.vagas) || 0;
-  data.andar = parseInt(data.andar) || 0;
-  data.suites = parseInt(data.suites) || 0;
-  data.banheiros = parseInt(data.banheiros) || 0;
+  data.ativo                  = this.ativo.checked;
+  data.condominio_id          = data.condominio_id                    || null;
+  data.preco                  = parseFloat(data.preco)                || 0;
+  data.area                   = parseFloat(data.area)                 || 0;
+  data.quartos                = parseInt(data.quartos)                || 0;
+  data.vagas                  = parseInt(data.vagas)                  || 0;
+  data.andar                  = parseInt(data.andar)                  || 0;
+  data.suites                 = parseInt(data.suites)                 || 0;
+  data.banheiros              = parseInt(data.banheiros)              || 0;
   data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
 
   // Forçar campos que podem estar desabilitados ou ausentes
   data.entrega = document.getElementById('entrega-imovel-input').value || null;
-  data.imagem = data.imagem?.trim() || "/static/img/casa_padrao.png";
+  data.imagem  = data.imagem?.trim()                                   || "/static/img/casa_padrao.png";
 
   // Campos opcionais de texto
-  data.estagio = data.estagio || null;
-  data.campo_extra1 = data.campo_extra1 || null;
-  data.campo_extra2 = data.campo_extra2 || null;
-  data.link = data.link || null;
+  data.estagio       = data.estagio      || null;
+  data.campo_extra1  = data.campo_extra1 || null;
+  data.campo_extra2  = data.campo_extra2 || null;
+  data.link          = data.link         || null;
 
   try {
     // Enviar imóvel principal
@@ -239,9 +239,11 @@ function listarImoveis() {
             ${imagemHtml}
             <b>${imovel.titulo}</b> (ID ${imovel.id})<br>
             ${imovel.ativo ? 'Ativo' : 'Inativo'}<br><br>
+
             <button class="btn-editar" onclick="editarImovel(${imovel.id})">Editar</button>
             <button class="btn-toggle" onclick="alternarAtivo(${imovel.id})">${imovel.ativo ? 'Desativar' : 'Ativar'}</button>
             <button class="btn-excluir" onclick="removerImovel(${imovel.id})">Excluir</button>
+
           </div>
         `;
       });
@@ -291,7 +293,7 @@ function removerImovel(id) {
 // ===========================
 
 function editarImovel(id) {
-  alert("Funcionalidade de edição ainda não implementada.");
+  window.location.href = `/admin/imovel/${id}/editar`;
 }
 
 // ===========================
