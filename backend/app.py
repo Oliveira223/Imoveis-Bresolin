@@ -1,33 +1,37 @@
-
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
+
 from flask import Flask, render_template, request, jsonify
 from sqlalchemy import create_engine, text
 from werkzeug.utils import secure_filename
 from uuid import uuid4
-
 from dotenv import load_dotenv
-load_dotenv()
-
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL")  # <- agora sim, pega do .env
+# ==============================
+# Carrega variáveis de ambiente do .env
+# ==============================
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise Exception("A variável de ambiente DATABASE_URL não está definida.")
 
+# ==============================
+# Cria engine de conexão com o PostgreSQL
+# ==============================
 engine = create_engine(DATABASE_URL)
 
 # ==============================
-# Configurações de caminhos
+# Configurações de diretórios e uploads
 # ==============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, '..', 'static', 'img', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==============================
-# Inicialização do Flask
+# Inicialização do aplicativo Flask
 # ==============================
 app = Flask(
     __name__,
@@ -36,28 +40,23 @@ app = Flask(
 )
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# ==============================
-# Conexão com o banco PostgreSQL
-# ==============================
-DATABASE_URL = os.environ.get('DATABASE_URL')
 print("[INFO] DATABASE_URL:", DATABASE_URL)
-
-if not DATABASE_URL:
-    raise Exception("A variável de ambiente DATABASE_URL não está definida.")
-
-engine = create_engine(DATABASE_URL)
 
 # ==============================
 # Rotas HTML (Frontend)
 # ==============================
+
+# Página inicial
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Painel administrativo
 @app.route('/admin')
 def admin():
     return render_template('admin.html')
 
+# Página de detalhes do imóvel
 @app.route('/imovel/<int:imovel_id>')
 def pagina_imovel(imovel_id):
     with engine.connect() as con:
@@ -72,11 +71,9 @@ def pagina_imovel(imovel_id):
 
     return render_template('imovel.html', imovel=imovel, imagens=imagens)
 
-
-# ================================
-# Carregando mini card dos imoveis
-# =================================
-
+# ==============================
+# API - Renderização do mini-card reutilizável
+# ==============================
 @app.route('/api/card/<int:imovel_id>')
 def api_card(imovel_id):
     with engine.connect() as conn:
@@ -88,10 +85,9 @@ def api_card(imovel_id):
 
     return render_template('partials/card_imovel.html', imovel=imovel)
 
-
 # ==============================
-# Pesquisas com filtro
-# ===============================
+# Página de Pesquisa com Filtros
+# ==============================
 @app.route('/pesquisa')
 def pagina_pesquisa():
     termo     = request.args.get('termo', '')
@@ -106,6 +102,7 @@ def pagina_pesquisa():
     query = "SELECT * FROM imoveis WHERE ativo = true"
     params = {}
 
+    # Filtros dinâmicos
     if termo:
         query += """
         AND (
@@ -153,10 +150,11 @@ def pagina_pesquisa():
     return render_template("pesquisa.html", imoveis=imoveis, termo=termo, cidade=cidade, tipo=tipo,
                            max_preco=max_preco, id=id_, quartos=quartos, banheiros=banheiros, vagas=vagas)
 
-
 # ==============================
 # API - CRUD de Imóveis
 # ==============================
+
+# Lista ou cadastra imóvel
 @app.route('/api/imoveis', methods=['GET', 'POST'])
 def api_imoveis():
     with engine.begin() as con:
@@ -168,9 +166,9 @@ def api_imoveis():
         if request.method == 'POST':
             data = request.json
             for campo in ['entrega', 'estagio', 'campo_extra1', 'campo_extra2']:
-                 if campo not in data:
+                if campo not in data:
                     data[campo] = None
-            
+
             print("[DEBUG] Dados recebidos para cadastro:", data)
 
             data['ativo'] = bool(int(data.get('ativo', 1)))
@@ -192,6 +190,7 @@ def api_imoveis():
             print("[DEBUG] Imóvel inserido com sucesso!")
             return '', 201
 
+# Detalha, edita ou remove imóvel específico
 @app.route('/api/imoveis/<int:imovel_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_imovel_id(imovel_id):
     with engine.begin() as con:
@@ -204,6 +203,7 @@ def api_imovel_id(imovel_id):
             data = request.json
             data['id'] = imovel_id
             data['ativo'] = bool(int(data.get('ativo', 1)))
+            data['condominio_id'] = data.get('condominio_id') or None 
             con.execute(text('''
                 UPDATE imoveis SET
                     condominio_id    = :condominio_id, 
@@ -236,6 +236,7 @@ def api_imovel_id(imovel_id):
             con.execute(text('DELETE FROM imoveis WHERE id = :id'), {'id': imovel_id})
             return '', 204
 
+# Alterna o status ativo/inativo do imóvel
 @app.route('/api/imoveis/<int:imovel_id>/toggle', methods=['POST'])
 def toggle_ativo(imovel_id):
     with engine.begin() as con:
@@ -245,6 +246,8 @@ def toggle_ativo(imovel_id):
 # ==============================
 # API - Imagens do Imóvel
 # ==============================
+
+# Lista ou adiciona imagens ao imóvel
 @app.route('/api/imoveis/<int:imovel_id>/imagens', methods=['GET', 'POST'])
 def imagens_do_imovel(imovel_id):
     with engine.begin() as con:
@@ -265,6 +268,7 @@ def imagens_do_imovel(imovel_id):
             })
             return '', 201
 
+# Deleta uma imagem específica
 @app.route('/api/imagens/<int:imagem_id>', methods=['DELETE'])
 def deletar_imagem(imagem_id):
     with engine.begin() as con:
@@ -297,16 +301,26 @@ def api_condominios():
             '''), data)
             return '', 201
 
+# ==============================
+# Página de Edição de Imóvel
+# ==============================
+@app.route('/admin/imovel/<int:imovel_id>/editar')
+def editar_imovel(imovel_id):
+    with engine.connect() as con:
+        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id'), {'id': imovel_id})
+        imovel = imovel_result.mappings().first()
+
+        if not imovel:
+            return render_template('404.html', mensagem="Imóvel não encontrado"), 404
+
+        imagens_result = con.execute(text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
+        imagens = [dict(row._mapping) for row in imagens_result]
+
+    return render_template('editar_imovel.html', imovel=imovel, imagens=imagens)
 
 # ==============================
 # Inicialização do Servidor
 # ==============================
-
-# if __name__ == '__main__':
-#     port = int(os.environ.get("PORT", 5000))
-#     print(f"[INFO] Servidor iniciado em http://localhost:{port}")
-#     app.run(host='0.0.0.0', port=port)
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     print(f"[INFO] Servidor iniciado em http://localhost:{port}")
