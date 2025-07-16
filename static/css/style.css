@@ -84,37 +84,44 @@ a:hover {
 .hero {
   display: flex;
   flex-direction: column;
-  justify-content: baseline;   /* alinha verticalmente */
   align-items: center;         /* alinha horizontalmente */
+  
+  width: 100vw;
   height: 100vh;
   background: radial-gradient(circle, #303030 0%, #1d1d1d 70%);
   color: white;
-  text-align: center;
-  padding: 2rem 1rem;
 }
 
 .hero-content {
   max-width: 700px;
-  margin: 0 auto;
+  width: 100%;
+  text-align: center; /* Centraliza os textos */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza os elementos internos */
+}
+
+.hero-title{
+  font-family: 'Spectral';
+  margin-top: 8rem;
+  margin-bottom: 1rem;
+  margin-left: 0.8rem;
+  
 }
 
 /* BRESOLIN */
 .hero h1 {
-  margin-top: 5rem;
-  font-family: 'Spectral';
-  font-weight: 100;
   font-size: 2rem;
   letter-spacing: 1.2rem;
+  font-weight: 100;
 }
 
 /*IMOVEIS*/
 .hero h2 {
-  margin-top: 0.25rem;
-  font-family: 'Spectral';
-  font-weight: 100;
+  margin-left: 0.2rem;
   font-size: 1rem;
-  letter-spacing: 1.2rem;
-  margin-bottom: 1rem;
+  letter-spacing: 0.8rem;
+  font-weight: 100;
 }
 
 .hero p {
@@ -127,12 +134,16 @@ a:hover {
 
 
 #form-busca {
+  width: 15rem;
   margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
+  align-items: center; /* <- adicionado */
   gap: 1.2rem;
-  max-width: 480px;
-  padding: 1.75rem;
+  
+  padding: 2rem;
+  padding-left: 2.6rem;
+  padding-right: 2.6em;
   background: rgba(117, 116, 116, 0.04);
   border-radius: 12px;
   box-shadow: 0.25rem 0.25rem 2rem rgba(0, 0, 0, 0.719);
@@ -146,6 +157,7 @@ a:hover {
   padding: 0.6rem 1rem 0.4rem;
   box-shadow: 0 2px 6px #0002;
   border: 1px solid #ccc;
+  width: 100%;
 }
 
 .form-group label {
@@ -155,6 +167,7 @@ a:hover {
   color: rgba(53, 52, 52, 0.719);
   margin-bottom: 0.3rem;
   text-align: left;
+  width: 100%;  
 }
 
 .form-group select,
@@ -181,6 +194,7 @@ a:hover {
 }
 
 #form-busca button {
+  width: 100%;
   margin-top: 1rem;
   padding: 0.9rem;
   border-radius: 8px;

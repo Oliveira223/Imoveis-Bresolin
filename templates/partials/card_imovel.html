@@ -5,22 +5,82 @@
 <a href="/imovel/{{ imovel.id }}" class="card-link">
 
   <div class="card-container">
-    
-    <div class="card-imagem"> 
-      <img src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
+
+    <!-- 50% | Imagem -->
+    <div class="card-imagem">
+      <img src="{{ imovel.imagem or '/static/img/generic_house.jpg' }}" alt="{{ imovel.titulo }}">
     </div>
 
-    <div class="card-info">
-      <h2>{{ imovel.titulo }}</h2>
-      {% if imovel.descricao %}
-         <h3>{{ imovel.descricao[:120].replace('\n', ' ') }}...</h3>
+    <!-- 10% | Tipo & ID-->
+    <div class="card-info_principal">
+      {% if imovel.tipo %}
+      <h1>{{ imovel.tipo}}</p>
+        {% endif %}
+
+        {% if imovel.id %}
+        <h2>ID: {{ imovel.id}} </p>
+          {% endif %}
+
+    </div>
+
+    <!-- 20% | Pretensão | Bairro x | em Y -->
+    <div class="card-info_secundaria">
+
+      <!-- Pretensão -->
+      {% if imovel.pretensao %}
+      <p class="pretensao">{{ imovel.pretensao }}</p>
+      {% endif %}
+
+      <!-- Bairro -->
+      {% if imovel.bairro %}
+      <p>Bairro {{ imovel.bairro }}</p>
+      {% endif %}
+
+      <!-- Cidade -->
+      {% if imovel.cidade %}
+      <p>Em {{ imovel.cidade }}</p>
       {% endif %}
     </div>
 
+    <!-- 10% | Preço -->
     <div class="card-preco">
       <p>R$ {{ "{:,.2f}".format(imovel.preco) }}</p>
     </div>
-    
+
+    <!-- 15% | Ícones -->
+    <div class="card-icones">
+
+      {% if imovel.quartos %}
+      <div class="info-item">
+        <img src="/static/img/icons/icons8-bed-100.svg" alt="Quartos" class="info-icon">
+        <span>{{ imovel.quartos }}</span>
+      </div>
+      {% endif %}
+
+      {% if imovel.banheiros %}
+      <div class="info-item">
+        <img src="/static/img/icons/icons8-bathroom-100.svg" alt="Banheiro" class="info-icon">
+        <span>{{ imovel.banheiros }}</span>
+      </div>
+      {% endif %}
+
+      {% if imovel.vagas %}
+      <div class="info-item">
+        <img src="/static/img/icons/icons8-car-90.svg" alt="Vaga" class="info-icon">
+        <span>{{ imovel.vagas }}</span>
+      </div>
+      {% endif %}
+
+
+      {% if imovel.area %}
+      <div class="info-item">
+        <img src="/static/img/icons/square_foot_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Área"
+          class="info-icon">
+        <span>{{ imovel.area }} m²</span>
+      </div>
+      {% endif %}
+
+    </div>
 
   </div>
 
