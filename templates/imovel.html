@@ -52,7 +52,7 @@
 
     <!-- Preço -->
     {% if imovel.preco %}
-    <p class="preco">R$ {{ '%.2f' | format(imovel.preco) | replace('.', ',') }}</p>
+    <p class="preco">R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
     {% endif %}
 
     <!-- Descrição -->
