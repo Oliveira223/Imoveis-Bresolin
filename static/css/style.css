@@ -260,8 +260,31 @@ a:hover {
   margin: 2rem;
 }
 
+/* ================================
+   Tela de carregamento
+   ================================ */
+.loading-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #1d1d1d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease;
+}
 
+.logo-animate {
+  width: 100px;
+  height: auto;
+}
 
+.logo-animate path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
 /* ================================
    Rodapé estilo cartão de visita
    ================================ */
