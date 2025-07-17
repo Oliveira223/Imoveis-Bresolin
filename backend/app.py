@@ -90,19 +90,30 @@ def api_card(imovel_id):
 # ==============================
 @app.route('/pesquisa')
 def pagina_pesquisa():
-    termo     = request.args.get('termo', '')
-    cidade    = request.args.get('cidade', '')
-    tipo      = request.args.get('tipo', '')
-    max_preco = request.args.get('max_preco', '')
-    id_       = request.args.get('id', '')
-    quartos   = request.args.get('quartos', '')
-    banheiros = request.args.get('banheiros', '')
-    vagas     = request.args.get('vagas', '')
+    termo      = request.args.get('termo', '')
+    cidade     = request.args.get('cidade', '')
+    uf         = request.args.get('uf', '')
+    bairro     = request.args.get('bairro', '')
+    tipo       = request.args.get('tipo', '')
+    quartos    = request.args.get('quartos', '')
+    banheiros  = request.args.get('banheiros', '')
+    vagas      = request.args.get('vagas', '')
+    area_min   = request.args.get('area_min', '')
+    area_max   = request.args.get('area_max', '')
+    estagio    = request.args.get('estagio', '')
+    entrega    = request.args.get('entrega', '')
+    
+    max_preco = request.args.get('max_preco', '').replace('.', '')
+    if max_preco.isdigit():
+        max_preco = int(max_preco)
+    else:
+        max_preco = ''
+    id_        = request.args.get('id', '')
 
     query = "SELECT * FROM imoveis WHERE ativo = true"
     params = {}
 
-    # Filtros dinâmicos
+    # Filtro por termo genérico
     if termo:
         query += """
         AND (
@@ -115,9 +126,18 @@ def pagina_pesquisa():
         )"""
         params['termo'] = f"%{termo}%"
 
+    # Filtros específicos
     if cidade:
         query += " AND cidade ILIKE :cidade"
         params['cidade'] = f"%{cidade}%"
+
+    if uf:
+        query += " AND uf ILIKE :uf"
+        params['uf'] = uf
+
+    if bairro:
+        query += " AND bairro ILIKE :bairro"
+        params['bairro'] = f"%{bairro}%"
 
     if tipo:
         query += " AND tipo ILIKE :tipo"
@@ -126,6 +146,14 @@ def pagina_pesquisa():
     if max_preco:
         query += " AND preco <= :max_preco"
         params['max_preco'] = max_preco
+
+    if area_min:
+        query += " AND area >= :area_min"
+        params['area_min'] = area_min
+
+    if area_max:
+        query += " AND area <= :area_max"
+        params['area_max'] = area_max
 
     if id_:
         query += " AND CAST(id AS TEXT) ILIKE :id"
@@ -143,12 +171,27 @@ def pagina_pesquisa():
         query += " AND vagas = :vagas"
         params['vagas'] = vagas
 
+    if estagio:
+        query += " AND estagio ILIKE :estagio"
+        params['estagio'] = estagio
+
+    if entrega:
+        query += " AND entrega ILIKE :entrega"
+        params['entrega'] = entrega
+
+    # Execução da consulta
     with engine.connect() as conn:
         resultado = conn.execute(text(query), params).mappings()
         imoveis = [dict(row) for row in resultado]
 
-    return render_template("pesquisa.html", imoveis=imoveis, termo=termo, cidade=cidade, tipo=tipo,
-                           max_preco=max_preco, id=id_, quartos=quartos, banheiros=banheiros, vagas=vagas)
+    # Retorno com os filtros reaplicados
+    return render_template("pesquisa.html", imoveis=imoveis,
+                           termo=termo, cidade=cidade, uf=uf, bairro=bairro, tipo=tipo,
+                           max_preco=max_preco, id=id_, quartos=quartos,
+                           banheiros=banheiros, vagas=vagas,
+                           area_min=area_min, area_max=area_max,
+                           estagio=estagio, entrega=entrega)
+
 
 # ==============================
 # API - CRUD de Imóveis
