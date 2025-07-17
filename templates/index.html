@@ -5,14 +5,14 @@
   <title>Bresolin Imóveis</title>
 
   <meta charset="UTF-8" />
-  <meta name="viewport"     content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color"  content="#191a1d" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#191a1d" />
   <meta name="color-scheme" content="light" />
 
-  <link rel="icon"          href="/static/img/icon.png" type="image/png" />
+  <link rel="icon" href="/static/img/icon.png" type="image/png" />
   <link rel="shortcut icon" href="/static/img/icon.png" type="image/png" />
-  <link rel="stylesheet"    href="/static/css/components/card_imovel.css">
-  <link rel="stylesheet"    href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/components/card_imovel.css">
+  <link rel="stylesheet" href="/static/css/style.css" />
 
 </head>
 
@@ -23,8 +23,8 @@
     <div class="hero-content">
 
       <div class="hero-title">
-        <h2>IMÓVEIS</h2>
         <h1>BRESOLIN</h1>
+        <h2>NEGÓCIOS IMOBILIÁRIOS</h2>
       </div>
 
       <p>Encontre o imóvel ideal para você</p>
@@ -32,7 +32,7 @@
 
       <div>
         <form id="form-busca" action="/pesquisa" method="GET">
-         
+
           <!-- Pretensão-->
           <div class="form-group">
             <label for="pretensao">Pretensão</label>
@@ -61,7 +61,7 @@
             <label for="termo">Palavras-chave</label>
             <input type="text" name="termo" id="termo" placeholder="Digite região, bairro ou ID" />
           </div>
-          
+
           <!-- Botão-->
           <button type="submit">Encontrar Imóvel</button>
         </form>
@@ -75,6 +75,45 @@
     <section id="lista-imoveis">
     </section>
   </main>
+
+  <!----------------------  Rodapé  ----------------->
+<footer class="footer">
+  <div class="footer_container">
+
+    <!-- Ícone da casa -->
+    <div class="footer_logo">
+      <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Ícone Casa">
+    </div>
+
+    <!-- Informações de contato -->
+    <div class="footer_info">
+      <div class="info_item">
+        <img src="/static/img/icons/icon_user.svg" alt="">
+        <p>Otávio Bresolin</p>
+      </div>
+      <div class="info_item">
+        <img src="/static/img/icons/icon_phone.svg" alt="">
+        <p>(51) 98170-2045</p>
+      </div>
+      <div class="info_item">
+        <img src="/static/img/icons/icon_instagram.svg" alt="">
+        <p>@bresolin.imoveis</p>
+      </div>
+      <div class="info_item">
+        <img src="/static/img/icons/icon_mail.svg" alt="">
+        <p>otavio.bresolin@creci.org.br</p>
+      </div>
+      <div class="info_item">
+        <img src="/static/img/icons/icons8-casa-100.svg" alt="">
+        <p>Creci nº 82905</p>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
+</footer>
+
 
   <script src="/static/js/main.js"></script>
 </body>

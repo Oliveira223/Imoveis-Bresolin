@@ -37,48 +37,98 @@
             <form action="/pesquisa" method="get">
                 <input type="hidden" name="termo" value="{{ termo }}">
 
+                <!-- TIPO -->
+                <div class="campo">
+                    <label for="tipo">Tipo de imóvel</label>
+                    <select name="tipo" id="tipo">
+                        <option value="">Todos</option>
+                        <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
+                        <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento</option>
+                        <option value="terreno" {% if tipo=='terreno' %}selected{% endif %}>Terreno</option>
+                    </select>
+                </div>
+
+                <!-- CIDADE -->
                 <div class="campo">
                     <label for="cidade">Cidade</label>
                     <input type="text" name="cidade" id="cidade" value="{{ cidade }}" placeholder="Ex: Porto Alegre">
                 </div>
 
+                <!-- BAIRRO -->
                 <div class="campo">
-                    <label for="tipo">Tipo de imóvel</label>
-                    <select name="tipo" id="tipo">
-
-                        <option value="">Todos</option>
-                        <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
-                        <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento</option>
-
-                    </select>
+                    <label for="bairro">Bairro</label>
+                    <input type="text" name="bairro" id="bairro" value="{{ request.args.get('bairro', '') }}">
                 </div>
 
+                <!-- UF -->
+                <div class="campo">
+                    <label for="uf">UF</label>
+                    <input type="text" name="uf" id="uf" value="{{ request.args.get('uf', '') }}" placeholder="Ex: RS"
+                        maxlength="2">
+                </div>
+
+                <!-- PREÇO MÁXIMO -->
                 <div class="campo">
                     <label for="max_preco">Preço Máximo</label>
-                    <input type="number" name="max_preco" id="max_preco" value="{{ max_preco }}"
-                        placeholder="Ex: 500000">
+                    <input type="text" name="max_preco" id="max_preco" value="{{ max_preco }}"
+                        placeholder="Ex: 500.000">
                 </div>
 
+                <!-- ÁREA MÍNIMA -->
                 <div class="campo">
-                    <label for="id">ID do imóvel</label>
-                    <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}" placeholder="Ex: 123">
+                    <label for="area_min">Área mínima (m²)</label>
+                    <input type="number" name="area_min" id="area_min" value="{{ request.args.get('area_min', '') }}">
                 </div>
 
+                <!-- ÁREA MÁXIMA -->
+                <div class="campo">
+                    <label for="area_max">Área máxima (m²)</label>
+                    <input type="number" name="area_max" id="area_max" value="{{ request.args.get('area_max', '') }}">
+                </div>
+
+                <!-- QUARTOS -->
                 <div class="campo">
                     <label for="quartos">Quartos</label>
                     <input type="number" name="quartos" id="quartos" value="{{ request.args.get('quartos', '') }}"
                         min="0">
                 </div>
 
+                <!-- BANHEIROS -->
                 <div class="campo">
                     <label for="banheiros">Banheiros</label>
                     <input type="number" name="banheiros" id="banheiros" value="{{ request.args.get('banheiros', '') }}"
                         min="0">
                 </div>
 
+                <!-- VAGAS -->
                 <div class="campo">
                     <label for="vagas">Vagas de garagem</label>
                     <input type="number" name="vagas" id="vagas" value="{{ request.args.get('vagas', '') }}" min="0">
+                </div>
+
+                <!-- ESTÁGIO -->
+                <div class="campo">
+                    <label for="estagio">Estágio da obra</label>
+                    <select name="estagio" id="estagio">
+                        <option value="">Todos</option>
+                        <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>Pronta
+                        </option>
+                        <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO' %}selected{%
+                            endif %}>Em construção</option>
+                    </select>
+                </div>
+
+                <!-- ENTREGA -->
+                <div class="campo">
+                    <label for="entrega">Ano de entrega</label>
+                    <input type="text" name="entrega" id="entrega" value="{{ request.args.get('entrega', '') }}"
+                        placeholder="Ex: 2026">
+                </div>
+
+                <!-- ID -->
+                <div class="campo">
+                    <label for="id">ID do imóvel</label>
+                    <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}" placeholder="Ex: 123">
                 </div>
 
                 <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
@@ -100,6 +150,8 @@
 
     </main>
 
+
+    <script src="/static/js/pesquisa.js"></script>
 </body>
 
 </html>
