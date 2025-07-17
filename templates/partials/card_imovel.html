@@ -33,18 +33,18 @@
 
       <!-- Bairro -->
       {% if imovel.bairro %}
-      <p>Bairro {{ imovel.bairro }}</p>
+      <p class="bairro">Bairro {{ imovel.bairro }}</p>
       {% endif %}
 
       <!-- Cidade -->
       {% if imovel.cidade %}
-      <p>Em {{ imovel.cidade }}</p>
+      <p class="cidade">Em {{ imovel.cidade }}</p>
       {% endif %}
     </div>
 
     <!-- 5% | Preço -->
     <div class="card-preco">
-      <p>R$ {{ "{:,.2f}".format(imovel.preco) }}</p>
+      <p>R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
     </div>
 
     <!-- 15% | Ícones -->
@@ -74,7 +74,7 @@
 
       {% if imovel.area %}
       <div class="info-item">
-        <img src="/static/img/icons/square_foot_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Área"
+        <img src="/static/img/icons/icons8-ruler-96.svg" alt="Área"
           class="info-icon">
         <span>{{ imovel.area }} m²</span>
       </div>

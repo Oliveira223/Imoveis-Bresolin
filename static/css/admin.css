@@ -1,25 +1,42 @@
 /* =========================
-   Estilos Gerais da Página
-   ========================= */
+   RESET E COMPORTAMENTO GLOBAL
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  color-scheme: light only;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
   background-color: #f4f6f8;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  overflow-x: hidden;
   color: #222;
-  margin: 0;
   padding: 2rem;
 }
 
-/* Títulos */
+
+
+/* =========================
+   TÍTULOS E SEÇÕES
+========================= */
+
 h1, h2 {
   text-align: center;
   color: #005b8f;
   margin-bottom: 1.5rem;
 }
-
-/* =========================
-   Estilização de Seções
-   ========================= */
 
 section {
   background: #ffffff;
@@ -32,9 +49,11 @@ section {
   margin-right: auto;
 }
 
+
+
 /* =========================
-   Formulários e Inputs
-   ========================= */
+   FORMULÁRIOS
+========================= */
 
 form {
   display: flex;
@@ -55,37 +74,62 @@ form textarea {
   box-sizing: border-box;
 }
 
-/* Textarea menor como input padrão */
 form textarea {
   min-height: 42px;
   resize: vertical;
 }
 
-/* Campo para data */
-.label-data {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #555;
-  flex: 1 1 100%;
-  margin-top: 1rem;
-}
+
 
 /* =========================
-   Prefixos e Sufixos (R$ / m²)
-   ========================= */
+   CAMPO: PREÇO COM R$
+========================= */
+
+.campo-preco-admin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  padding: 0.7rem 0.7rem 0.7rem 2.2rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.prefixo-rs {
+  position: absolute;
+  left: 0.7rem;
+  color: #555;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.preco-digitavel-admin {
+  flex: 1;
+  outline: none;
+  white-space: nowrap;
+  font-family: inherit;
+  color: #333;
+}
+
+.preco-digitavel-admin:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  pointer-events: none;
+}
+
+
+
+/* =========================
+   CAMPO: INPUT COM SUFIXO (ex: m²)
+========================= */
 
 .input-icon {
   display: flex;
   align-items: center;
   flex: 1 1 48%;
   gap: 0.5rem;
-}
-
-.input-icon .prefix,
-.input-icon .suffix {
-  font-size: 0.95rem;
-  color: #666;
-  white-space: nowrap;
 }
 
 .input-icon input {
@@ -97,36 +141,109 @@ form textarea {
   box-sizing: border-box;
 }
 
+.input-icon .prefix,
+.input-icon .suffix {
+  font-size: 0.95rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+
+
 /* =========================
-   Botões de Ação por Tipo
-   ========================= */
+   CAMPOS AUXILIARES
+========================= */
 
-.btn-editar {
-  background-color: #0077cc;
+.label-data {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #555;
+  flex: 1 1 100%;
+  margin-top: 1rem;
 }
 
-.btn-editar:hover {
-  background-color: #005fa3;
+.input-metade {
+  flex: 1 1 48%;
 }
 
-.btn-toggle {
-  background-color: #0077cc;
-}
 
-.btn-toggle:hover {
-  background-color: #005fa3;
-}
 
-.btn-excluir {
-  background-color: #ff4444;
-}
-
-.btn-excluir:hover {
-  background-color: #cc2222;
-}
 /* =========================
-   Lista de Imóveis (Cards)
-   ========================= */
+   GRUPOS: IMAGENS E PLANTAS
+========================= */
+
+.grupo-imagem-principal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.coluna-imagem {
+  flex: 1 1 300px;
+}
+
+.coluna-preview {
+  flex: 0 1 auto;
+}
+
+.img-preview {
+  max-width: 100%;
+  max-height: 220px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  object-fit: contain;
+}
+
+.grupo-galeria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.coluna-galeria {
+  flex: 1 1 48%;
+}
+
+.galeria-preview {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-top: 0.8rem;
+  overflow-x: auto;
+}
+
+.galeria-preview img {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.preview-contador {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ccc;
+  font-size: 0.9rem;
+  color: #333;
+  border-radius: 6px;
+  width: 100px;
+  height: 75px;
+  font-weight: bold;
+}
+
+
+
+/* =========================
+   LISTA DE IMÓVEIS CADASTRADOS
+========================= */
 
 #lista-admin {
   display: flex;
@@ -162,9 +279,24 @@ form textarea {
   color: white;
 }
 
+
+
 /* =========================
-   Miniatura de Imagem
-   ========================= */
+   BOTÕES DE AÇÃO
+========================= */
+
+.btn-editar        { background-color: #0077cc; }
+.btn-editar:hover  { background-color: #005fa3; }
+
+.btn-toggle        { background-color: #0077cc; }
+.btn-toggle:hover  { background-color: #005fa3; }
+
+.btn-excluir       { background-color: #ff4444; }
+.btn-excluir:hover { background-color: #cc2222; }
+
+/* =========================
+   Miniatura de imagem em cards (admin)
+========================= */
 
 .img-miniatura {
   width: 100%;
@@ -184,40 +316,6 @@ form textarea {
   font-size: 0.9rem;
 }
 
-/* =========================
-   Preview de Imagem no Formulário
-   ========================= */
-
-.img-preview {
-  max-width: 100%;
-  max-height: 220px;
-  margin-top: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  object-fit: contain;
-}
-
-/* =========================
-   Galeria de Imagens Secundárias (Preview com contador)
-   ========================= */
-
-.galeria-preview {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: nowrap;
-  align-items: center;
-  margin-top: 0.8rem;
-  overflow-x: auto;
-}
-
-.galeria-preview img {
-  width: 100px;
-  height: 75px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
 .preview-contador {
   display: flex;
   justify-content: center;
@@ -231,15 +329,21 @@ form textarea {
   font-weight: bold;
 }
 
+
 /* =========================
-   Responsividade
-   ========================= */
+   RESPONSIVIDADE
+========================= */
 
 @media (max-width: 768px) {
   form input,
   form select,
   form textarea,
-  .input-icon {
+  .input-icon,
+  .campo-preco-admin {
     flex: 1 1 100%;
+  }
+
+  .img-preview {
+    max-height: 140px;
   }
 }

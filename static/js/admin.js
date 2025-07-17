@@ -153,26 +153,26 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
   }
 
   // Conversões e tratamentos
-  data.ativo                  = this.ativo.checked;
-  data.condominio_id          = data.condominio_id                    || null;
-  data.preco                  = parseFloat(data.preco)                || 0;
-  data.area                   = parseFloat(data.area)                 || 0;
-  data.quartos                = parseInt(data.quartos)                || 0;
-  data.vagas                  = parseInt(data.vagas)                  || 0;
-  data.andar                  = parseInt(data.andar)                  || 0;
-  data.suites                 = parseInt(data.suites)                 || 0;
-  data.banheiros              = parseInt(data.banheiros)              || 0;
+  data.ativo = this.ativo.checked;
+  data.condominio_id = data.condominio_id || null;
+  data.preco = parseFloat(data.preco) || 0;
+  data.area = parseFloat(data.area) || 0;
+  data.quartos = parseInt(data.quartos) || 0;
+  data.vagas = parseInt(data.vagas) || 0;
+  data.andar = parseInt(data.andar) || 0;
+  data.suites = parseInt(data.suites) || 0;
+  data.banheiros = parseInt(data.banheiros) || 0;
   data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
 
   // Forçar campos que podem estar desabilitados ou ausentes
   data.entrega = document.getElementById('entrega-imovel-input').value || null;
-  data.imagem  = data.imagem?.trim()                                   || "/static/img/casa_padrao.png";
+  data.imagem = data.imagem?.trim() || "";
 
   // Campos opcionais de texto
-  data.estagio       = data.estagio      || null;
-  data.campo_extra1  = data.campo_extra1 || null;
-  data.campo_extra2  = data.campo_extra2 || null;
-  data.link          = data.link         || null;
+  data.estagio = data.estagio || null;
+  data.campo_extra1 = data.campo_extra1 || null;
+  data.campo_extra2 = data.campo_extra2 || null;
+  data.link = data.link || null;
 
   try {
     // Enviar imóvel principal
@@ -230,9 +230,11 @@ function listarImoveis() {
       const lista = document.getElementById('lista-admin');
       lista.innerHTML = '';
       imoveis.forEach(imovel => {
-        const imagemHtml = imovel.imagem
+        const imagemEhValida = imovel.imagem && imovel.imagem.trim() !== "";
+
+        const imagemHtml = imagemEhValida
           ? `<img src="${imovel.imagem}" alt="${imovel.titulo}" class="img-miniatura">`
-          : `<div class="img-miniatura img-placeholder">Sem imagem</div>`;
+          : `<img src="/static/img/casa.png" alt="Imagem padrão" class="img-miniatura">`;
 
         lista.innerHTML += `
           <div class="imovel-admin">
@@ -295,6 +297,43 @@ function removerImovel(id) {
 function editarImovel(id) {
   window.location.href = `/admin/imovel/${id}/editar`;
 }
+
+// ===========================
+// Campo Preço com R$ e formatação
+// ===========================
+
+const precoEditavel = document.getElementById('preco-editavel-admin');
+const precoReal = document.getElementById('preco-admin-real');
+
+precoEditavel.addEventListener('input', function () {
+  let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
+  if (texto) {
+    const formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
+    this.innerText = formatado;
+    precoReal.value = texto;
+    reposicionarCursorAntesDaVirgula(this);
+  } else {
+    this.innerText = '';
+    precoReal.value = '';
+  }
+});
+
+precoEditavel.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') e.preventDefault();
+});
+
+function reposicionarCursorAntesDaVirgula(el) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  const node = el.firstChild;
+  if (!node) return;
+  const index = node.textContent.indexOf(',');
+  range.setStart(node, index);
+  range.setEnd(node, index);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
 
 // ===========================
 // Inicialização

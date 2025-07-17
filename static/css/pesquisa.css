@@ -193,6 +193,78 @@ header h2 {
   background-color: #333;
 }
 
+.campo-preco {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.campo-preco input {
+  width: 100%;
+  padding-right: 2.5rem; /* garante espaço interno pro sufixo */
+}
+
+.campo-preco .sufixo {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0.8rem; /* ajuste fino: menor = mais colado */
+  font-size: 0.95rem;
+  color: #666;
+  pointer-events: none;
+  user-select: none;
+}
+
+.campo-preco-dinamico {
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.6rem;
+  background: white;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.preco-digitavel {
+  outline: none;
+  white-space: nowrap;
+}
+
+.sufixo-fixo {
+  color: #666;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+.preco-digitavel:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  pointer-events: none;
+}
+
+.grupo-botoes {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-limpar {
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  background: #eaeaea;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.btn-limpar:hover {
+  background-color: #ddd;
+}
+
 /* ===========================
    Layout principal da página de pesquisa
 =========================== */

@@ -69,9 +69,16 @@
 
                 <!-- PREÇO MÁXIMO -->
                 <div class="campo">
-                    <label for="max_preco">Preço Máximo</label>
-                    <input type="text" name="max_preco" id="max_preco" value="{{ max_preco }}"
-                        placeholder="Ex: 500.000">
+                    <label for="preco-editavel">Preço Máximo</label>
+                    <div class="campo-preco-dinamico">
+                        <div id="preco-editavel" contenteditable="true" class="preco-digitavel"
+                            data-placeholder="Ex: 120.000,00">
+                            {% if max_preco %}
+                            {{ "{:,}".format(max_preco|int).replace(",", ".") }},00
+                            {% endif %}
+                        </div>
+                    </div>
+                    <input type="hidden" name="max_preco" id="max_preco_real">
                 </div>
 
                 <!-- ÁREA MÍNIMA -->
@@ -131,7 +138,10 @@
                     <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}" placeholder="Ex: 123">
                 </div>
 
-                <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
+                <div class="grupo-botoes">
+                    <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
+                    <a href="/pesquisa" class="btn-limpar">Limpar</a>
+                </div>
             </form>
         </aside>
 

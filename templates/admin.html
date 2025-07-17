@@ -10,78 +10,90 @@
 <body>
   <h1>Painel Administrativo</h1>
 
-  <!-- CONDOMÍNIOS -->
+  <!-- ========================
+       Seção: Cadastro de Condomínio
+  ========================= -->
   <section>
     <h2>Cadastrar Condomínio</h2>
     <form id="form-condominio">
-      <input type="text" name="nome" placeholder="Nome do condomínio" required>
-      <input type="text" name="descricao" placeholder="Descrição">
-      <input type="text" name="imagem" placeholder="URL da imagem principal">
-      <input type="text" name="bairro" placeholder="Bairro">
-      <input type="text" name="cidade" placeholder="Cidade">
-      <input type="text" name="uf" placeholder="UF">
+      <input  type="text"   name="nome"          placeholder="Nome do condomínio" required>
+      <input  type="text"   name="descricao"     placeholder="Descrição">
+      <input  type="text"   name="imagem"        placeholder="URL da imagem principal">
+      <input  type="text"   name="bairro"        placeholder="Bairro">
+      <input  type="text"   name="cidade"        placeholder="Cidade">
+      <input  type="text"   name="uf"            placeholder="UF">
+      
       <select name="estagio" id="estagio-select">
         <option value="">Estágio da obra</option>
         <option value="PRONTA">PRONTA</option>
         <option value="EM CONSTRUÇÃO">EM CONSTRUÇÃO</option>
       </select>
-      <input type="text" name="lancamento" placeholder="Data de lançamento (texto)">
-      <input type="text" name="entrega" id="entrega-input" placeholder="Previsão de entrega" disabled>
-      <input type="number" name="total_unidades" placeholder="Total de unidades">
-      <input type="number" name="n_andares" placeholder="Nº de andares">
+
+      <input  type="text"   name="lancamento"    placeholder="Data de lançamento (texto)">
+      <input  type="text"   name="entrega"       id="entrega-input" placeholder="Previsão de entrega" disabled>
+      <input  type="number" name="total_unidades" placeholder="Total de unidades">
+      <input  type="number" name="n_andares"     placeholder="Nº de andares">
+
       <div class="input-icon">
         <input type="number" name="area_laje" placeholder="Área da laje">
-        <span class="suffix">m²</span>
+        <span  class="suffix">m²</span>
       </div>
-      <input type="text" name="ri" placeholder="Registro de Incorporação (RI)">
-      <input type="text" name="iptu" placeholder="IPTU">
+
+      <input  type="text"   name="ri"             placeholder="Registro de Incorporação (RI)">
+      <input  type="text"   name="iptu"           placeholder="IPTU">
       <label class="label-data">Última atualização:</label>
-      <input type="date" name="atualizado_em">
+      <input  type="date"   name="atualizado_em">
       <button type="submit">Cadastrar Condomínio</button>
     </form>
   </section>
 
-  <!-- IMÓVEIS -->
+  <!-- ========================
+       Seção: Cadastro de Imóvel
+  ========================= -->
   <section>
     <h2>Cadastrar Imóvel</h2>
     <form id="form-imovel">
-      <input type="text" name="titulo" placeholder="Título do imóvel">
-      <textarea name="descricao" placeholder="Descrição"></textarea>
+      <input    type="text"     name="titulo"     placeholder="Título do imóvel">
+      <textarea name="descricao"                 placeholder="Descrição"></textarea>
 
-      <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
-        <div style="flex: 1 1 300px;">
+      <!-- Imagem principal -->
+      <div class="grupo-imagem-principal">
+        <div class="coluna-imagem">
           <label>Imagem principal:</label>
-          <input type="file" id="file-imagem">
-          <input type="text" name="imagem" id="input-imagem" placeholder="Ou informe uma URL da imagem">
+          <input type="file"  id="file-imagem">
+          <input type="text"  name="imagem" id="input-imagem" placeholder="Ou informe uma URL da imagem">
         </div>
-
-        <div>
-          <img id="preview-imagem" class="img-preview" style="display: none; max-height: 140px; max-width: 200px;">
+        <div class="coluna-preview">
+          <img id="preview-imagem" class="img-preview">
         </div>
       </div>
 
-      <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start;">
-        <div style="flex: 1 1 48%;">
+      <!-- Imagens e plantas -->
+      <div class="grupo-galeria">
+        <div class="coluna-galeria">
           <label>Imagens secundárias:</label>
           <input type="file" id="file-secundarias" multiple accept="image/*">
-          <div id="lista-secundarias" class="galeria-preview"></div>
+          <div  id="lista-secundarias" class="galeria-preview"></div>
         </div>
-
-        <div style="flex: 1 1 48%;">
+        <div class="coluna-galeria">
           <label>Plantas do imóvel:</label>
           <input type="file" id="file-plantas" multiple accept="image/*">
-          <div id="lista-plantas" class="galeria-preview"></div>
+          <div  id="lista-plantas" class="galeria-preview"></div>
         </div>
       </div>
 
-
-      <div class="input-icon">
-        <span class="prefix">R$</span>
-        <input type="number" name="preco" placeholder="Preço">
+      <!-- Campo de Preço com R$ -->
+      <div class="campo-preco-admin input-metade">
+        <span id="preco-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="Ex: 120.000,00"></span>
+        <span class="prefixo-rs">R$</span>
+        <input type="hidden" name="preco" id="preco-admin-real">
       </div>
 
-      <input type="text" name="link" placeholder="Link externo (ex: Google Maps)">
+      <!-- Link externo -->
+      <input type="text" name="link" placeholder="Link externo (ex: Google Maps)" class="input-metade">
 
+      <!-- Seletores de tipo e finalidade -->
       <select name="tipo" required>
         <option value="">Tipo*</option>
         <option value="Casa">Casa</option>
@@ -96,39 +108,49 @@
         <option value="Aluguel">Aluguel</option>
       </select>
 
+      <!-- Estágio da obra e entrega -->
       <select name="estagio" id="estagio-imovel-select">
         <option value="">Estágio da obra</option>
         <option value="PRONTA">PRONTA</option>
         <option value="EM CONSTRUÇÃO">EM CONSTRUÇÃO</option>
       </select>
-      <input type="text" name="entrega" id="entrega-imovel-input" placeholder="Previsão de entrega" disabled>
+      <input  type="text" name="entrega" id="entrega-imovel-input" placeholder="Previsão de entrega" disabled>
 
+      <!-- Dados do imóvel -->
+      <input type="number" name="quartos"                  placeholder="Quartos">
+      <input type="number" name="suites"                   placeholder="Suítes">
+      <input type="number" name="banheiros"                placeholder="Banheiros">
+      <input type="number" name="banheiros_com_chuveiro"   placeholder="Banheiros C/ Chuveiro">
+      <input type="number" name="vagas"                    placeholder="Vagas">
 
-      <input type="number" name="quartos" placeholder="Quartos">
-      <input type="number" name="suites" placeholder="Suítes">
-      <input type="number" name="banheiros" placeholder="Banheiros">
-      <input type="number" name="banheiros_com_chuveiro" placeholder="Banheiros C/ Chuveiro">
-      <input type="number" name="vagas" placeholder="Vagas">
       <div class="input-icon">
         <input type="number" name="area" step="0.1" placeholder="Área">
         <span class="suffix">m²</span>
       </div>
-      <input type="number" name="andar" placeholder="Andar">
-      <input type="text" name="endereco" placeholder="Endereço">
-      <input type="text" name="bairro" placeholder="Bairro">
-      <input type="text" name="cidade" placeholder="Cidade">
-      <input type="text" name="uf" placeholder="UF">
 
-      <input type="text" name="campo_extra1" placeholder="Campo Extra 1">
-      <input type="text" name="campo_extra2" placeholder="Campo Extra 2">
+      <input type="number" name="andar"      placeholder="Andar">
+      <input type="text"   name="endereco"   placeholder="Endereço">
+      <input type="text"   name="bairro"     placeholder="Bairro">
+      <input type="text"   name="cidade"     placeholder="Cidade">
+      <input type="text"   name="uf"         placeholder="UF">
+
+      <!-- Campos adicionais -->
+      <input  type="text" name="campo_extra1"  placeholder="Campo Extra 1">
+      <input  type="text" name="campo_extra2"  placeholder="Campo Extra 2">
+
+      <!-- Condominio e status -->
       <select name="condominio_id" id="condominio-select">
         <option value="">Sem condomínio</option>
       </select>
+
       <label><input type="checkbox" name="ativo" checked> Ativo</label>
       <button type="submit">Cadastrar Imóvel</button>
     </form>
   </section>
 
+  <!-- ========================
+       Lista de imóveis cadastrados
+  ========================= -->
   <section>
     <h2>Imóveis Cadastrados</h2>
     <div id="lista-admin"></div>
@@ -136,5 +158,4 @@
 
   <script src="/static/js/admin.js"></script>
 </body>
-
 </html>
