@@ -139,18 +139,13 @@
             <label for="uf">UF:</label>
             <input type="text" id="uf" name="uf" maxlength="2" value="{{ imovel.uf or '' }}">
 
+
+            
             <!-- =========================
             Extras e links
             ========================== -->
-            <label for="link">Link externo (ex: Google Maps):</label>
-            <input type="text" id="link" name="link" value="{{ imovel.link or '' }}">
 
-            <label for="campo_extra1">Campo Extra 1:</label>
-            <input type="text" id="campo_extra1" name="campo_extra1" value="{{ imovel.campo_extra1 or '' }}">
-
-            <label for="campo_extra2">Campo Extra 2:</label>
-            <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
-
+            
             <label for="estagio">Estágio da obra:</label>
             <select id="estagio" name="estagio">
                 <option value="">Selecione</option>
@@ -161,6 +156,17 @@
 
             <label for="entrega">Previsão de entrega:</label>
             <input type="text" id="entrega" name="entrega" value="{{ imovel.entrega or '' }}">
+
+
+            <label for="link">Link externo (ex: Google Maps):</label>
+            <input type="text" id="link" name="link" value="{{ imovel.link or '' }}">
+
+            <label for="maps_iframe">Maps Iframe:</label>
+            <input type="text" id="maps_iframe" name="maps_iframe" value="{{ imovel.maps_iframe or '' }}">
+
+            <label for="campo_extra2">Campo Extra 2:</label>
+            <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
+
 
             <!-- =========================
             Ativo

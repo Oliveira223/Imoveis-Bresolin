@@ -62,31 +62,53 @@
 
     <!-- Campos adicionais -->
     <div class="campos-adicionais">
-      {% if imovel.pretensao %}<p>  <strong>Pretensão:</strong>     {{ imovel.pretensao|capitalize }}</p>{% endif %}
-      {% if imovel.tipo %}<p>       <strong>Tipo:</strong>          {{ imovel.tipo|capitalize }}</p>{% endif %}
-      {% if imovel.area %}<p>       <strong>Área:</strong>          {{ imovel.area }} m²</p>{% endif %}
-      {% if imovel.quartos %}<p>    <strong>Quartos:</strong>       {{ imovel.quartos }}</p>{% endif %}
-      {% if imovel.suites %}<p>     <strong>Suítes:</strong>        {{ imovel.suites }}</p>{% endif %}
-      {% if imovel.banheiros %}<p>  <strong>Banheiros:</strong>     {{ imovel.banheiros }}</p>{% endif %}
-      {% if imovel.banheiros %}<p>  <strong>Banheiro C/ Chuveiro:</strong>     {{ imovel.banheiros_com_chuveiro }}</p>{% endif %}
-      {% if imovel.vagas %}<p>      <strong>Vagas:</strong>         {{ imovel.vagas }}</p>{% endif %}
-      {% if imovel.andar %}<p>      <strong>Andar:</strong>         {{ imovel.andar }}</p>{% endif %}
-      {% if imovel.endereco %}<p>   <strong>Endereço:</strong>      {{ imovel.endereco }}</p>{% endif %}
-      {% if imovel.bairro %}<p>     <strong>Bairro:</strong>        {{ imovel.bairro }}</p>{% endif %}
-      {% if imovel.cidade %}<p>     <strong>Cidade:</strong>        {{ imovel.cidade }}</p>{% endif %}
-      {% if imovel.uf %}<p>         <strong>UF:</strong>            {{ imovel.uf }}</p>{% endif %}
-      
-      {% if imovel.link %}
-      <p><strong>Ver no mapa:       </strong> <a href="{{ imovel.link }}" target="_blank">Abrir localização</a></p>
-      {% endif %}
+      {% if imovel.pretensao %}<p> <strong>Pretensão:</strong> {{ imovel.pretensao|capitalize }}</p>{% endif %}
+      {% if imovel.tipo %}<p> <strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</p>{% endif %}
+      {% if imovel.area %}<p> <strong>Área:</strong> {{ imovel.area }} m²</p>{% endif %}
+      {% if imovel.quartos %}<p> <strong>Quartos:</strong> {{ imovel.quartos }}</p>{% endif %}
+      <div class="banheiro_detalhes">
+        <img src="/static/img/icons/curved_arrow.svg" alt="">
+        {% if imovel.suites %}<p> <strong>Suítes:</strong> {{ imovel.suites }}</p>{% endif %}
+      </div>
+      {% if imovel.banheiros %}<p> <strong>Banheiros:</strong> {{ imovel.banheiros }}</p>{% endif %}
+      <div class="banheiro_detalhes">
+        <img src="/static/img/icons/curved_arrow.svg" alt="">
+        {% if imovel.banheiros %}<p> <strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }}</p>{%
+        endif %}
 
-      {% if imovel.estagio %}<p>      <strong>Estágio:</strong>       {{ imovel.estagio }}</p>{% endif %}
-      {% if imovel.campo_extra1 %}<p> <strong>Campo Extra 1:</strong> {{ imovel.campo_extra1 }}</p>{% endif %}
-      {% if imovel.campo_extra2 %}<p> <strong>Campo Extra 2:</strong> {{ imovel.campo_extra2 }}</p>{% endif %}
-      
+      </div>
+      {% if imovel.vagas %}<p> <strong>Vagas:</strong> {{ imovel.vagas }}</p>{% endif %}
+      {% if imovel.andar %}<p> <strong>Andar:</strong> {{ imovel.andar }}</p>{% endif %}
+      {% if imovel.endereco %}<p> <strong>Endereço:</strong> {{ imovel.endereco }}</p>{% endif %}
+      {% if imovel.bairro %}<p> <strong>Bairro:</strong> {{ imovel.bairro }}</p>{% endif %}
+      {% if imovel.cidade %}<p> <strong>Cidade:</strong> {{ imovel.cidade }}</p>{% endif %}
+      {% if imovel.uf %}<p> <strong>UF:</strong> {{ imovel.uf }}</p>{% endif %}
       {% if imovel.entrega and imovel.estagio == 'EM CONSTRUÇÃO' %}
       <p><strong>Previsão de Entrega:</strong> {{ imovel.entrega }}</p>
       {% endif %}
+
+      {% if imovel.estagio %}<p> <strong>Estágio:</strong> {{ imovel.estagio }}</p>{% endif %}
+      {% if imovel.campo_extra2 %}<p> <strong>Campo Extra 2:</strong> {{ imovel.campo_extra2 }}</p>{% endif %}
+     
+      <!-- Botão para abrir o Google Maps em outra aba -->
+      {% if imovel.link %}
+      <p style="margin-top: 1rem;">
+        <a href="{{ imovel.link }}" target="_blank" class="botao-maps">Abrir no Google Maps</a>
+      </p>
+      {% endif %}
+
+      <!-- Mapa incorporado -->
+      {% if imovel.maps_iframe %}
+      <div class="mapa-container">
+        <iframe src="{{ imovel.maps_iframe }}" width="100%" height="300" style="border:0;" allowfullscreen=""
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      {% endif %}
+
+
+
+
     </div>
 
     <!-- Plantas -->

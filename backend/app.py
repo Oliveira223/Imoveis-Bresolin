@@ -208,7 +208,7 @@ def api_imoveis():
 
         if request.method == 'POST':
             data = request.json
-            for campo in ['entrega', 'estagio', 'campo_extra1', 'campo_extra2']:
+            for campo in ['entrega', 'estagio', 'maps_iframe', 'campo_extra2']:
                 if campo not in data:
                     data[campo] = None
 
@@ -222,12 +222,12 @@ def api_imoveis():
                     condominio_id, titulo, descricao, preco, imagem,
                     tipo, pretensao, quartos, suites, banheiros, vagas,
                     area, endereco, bairro, cidade, uf, ativo, link, 
-                    estagio, campo_extra1, campo_extra2, entrega, banheiros_com_chuveiro
+                    estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro
                 ) VALUES (
                     :condominio_id, :titulo, :descricao, :preco, :imagem,
                     :tipo, :pretensao, :quartos, :suites, :banheiros, :vagas,
                     :area, :endereco, :bairro, :cidade, :uf, :ativo, :link,
-                    :estagio, :campo_extra1, :campo_extra2, :entrega, :banheiros_com_chuveiro
+                    :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro
                 )
             '''), data)
             print("[DEBUG] Imóvel inserido com sucesso!")
@@ -268,7 +268,7 @@ def api_imovel_id(imovel_id):
                     ativo            = :ativo, 
                     link             = :link,   
                     estagio          = :estagio,
-                    campo_extra1     = :campo_extra1,
+                    maps_iframe      = :maps_iframe,
                     campo_extra2     = :campo_extra2,
                     entrega          = :entrega
                 WHERE id = :id
