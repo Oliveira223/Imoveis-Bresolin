@@ -6,6 +6,7 @@
     <title>Pesquisa | Imóveis Bresolin</title>
     <link rel="stylesheet" href="/static/css/components/card_imovel.css">
     <link rel="stylesheet" href="/static/css/pesquisa.css" />
+    <link rel="stylesheet" href="/static/css/global.css" />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,34 +39,34 @@
     <!-- ===========================
        Cabeçalho com logo e voltar
   ============================ -->
-  <header>
-  <div class="header-content">
-    
-    <!-- Botão Voltar -->
-    <div class="header-left">
-      <button class="btn-voltar" onclick="history.back()">
-        <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
-      </button>
-    </div>
+    <header>
+        <div class="header-content">
 
-    <!-- Título centralizado -->
-    <div class="header-center">
-      <a href="/">
-        <div class="title_container">
-          <h1>BRESOLIN</h1>
-          <h2>NEGÓCIOS IMOBILIÁRIOS</h2>
+            <!-- Botão Voltar -->
+            <div class="header-left">
+                <button class="btn-voltar" onclick="history.back()">
+                    <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+                </button>
+            </div>
+
+            <!-- Título centralizado -->
+            <div class="header-center">
+                <a href="/">
+                    <div class="title_container">
+                        <h1>BRESOLIN</h1>
+                        <h2>NEGÓCIOS IMOBILIÁRIOS</h2>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Menu direito futuramente -->
+            <div class="header-right">
+                <!-- vazio por enquanto -->
+            </div>
+
         </div>
-      </a>
-    </div>
+    </header>
 
-    <!-- Menu direito futuramente -->
-    <div class="header-right">
-      <!-- vazio por enquanto -->
-    </div>
-
-  </div>
-</header>
-    
 
     <!-- ===========================
        Corpo principal
@@ -200,7 +201,11 @@
             </div>
         </aside>
 
-
+        <!-- Contador de imóveis encontrados -->
+        <p class="contador-imoveis">
+            {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }} {{ 'encontrados' if imoveis|length
+            > 1 else 'encontrado' }}
+        </p>
 
         <!-- Área dos resultados -->
         <section class="resultados">
@@ -214,6 +219,43 @@
         </section>
 
     </main>
+
+    <!----------------------  Rodapé  ----------------->
+    <footer class="footer">
+
+        <div class="footer_container">
+            <!-- Ícone da casa -->
+            <div class="footer_logo">
+                <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Ícone Casa">
+            </div>
+
+            <!-- Informações de contato -->
+            <div class="footer_info">
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_user.svg" alt="">
+                    <p>Otávio Bresolin</p>
+                </div>
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_phone.svg" alt="">
+                    <p>(51) 98170-2045</p>
+                </div>
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_instagram.svg" alt="">
+                    <p>@bresolin.imoveis</p>
+                </div>
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_mail.svg" alt="">
+                    <p>otavio.bresolin@creci.org.br</p>
+                </div>
+                <div class="info_item">
+                    <img src="/static/img/icons/icons8-casa-100.svg" alt="">
+                    <p>Creci nº 82905</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
+    </footer>
 
 
     <script src="/static/js/pesquisa.js"></script>
