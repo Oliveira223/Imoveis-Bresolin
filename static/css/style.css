@@ -165,10 +165,16 @@ a:hover {
   color: rgb(201, 201, 201);
 }
 
+.main{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .titulo {
   color: #111;
   margin-top: 10vw;
-  margin-left: 3rem;
   text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -395,7 +401,7 @@ a:hover {
 .footer {
   background-color: #1c1c1c;
   color: #fff;
-  padding: 2rem 10rem;
+  padding: 2rem 1rem;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   text-align: center;
 }
@@ -405,8 +411,7 @@ a:hover {
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  flex-wrap: nowrap;
-  max-width: 900px;
+  flex-wrap: wrap;
   margin: auto;
 }
 
