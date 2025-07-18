@@ -56,9 +56,7 @@
 
   display: flex;
   justify-content: space-between;
-  /* Deixa os itens em lados opostos */
   align-items: center;
-  /* Opcional: alinha no eixo vertical */
   padding-left: 1rem;
 
 }
@@ -81,6 +79,7 @@
 
 /* INFO ==================================== */
 .card-info_secundaria {
+  color: #333;
   flex: 0 0 20%; 
   width: 100%;
   overflow: hidden;
@@ -184,7 +183,7 @@
 
 /* DESKTOP ==================== */
 /* Usar VW em titulos para não mudar com zoom */
-@media (min-width: 768px) {
+@media (min-width: 769px) {
 .card-container {
   border: 0.1vw solid #ccc;
   border-radius: 0.6vw;
@@ -192,45 +191,9 @@
   width: 15vw;
   height: 21vw;
   box-shadow: 0 2px 8px #0001;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  /* Garante que nada passe da borda */
 }
 
 
-/* IMAGEM ==================================== */
-.card-imagem {
-  flex: 0 0 50%; 
-  width: 100%;
-  overflow: hidden;
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-imagem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* TIPO | ID ==================================== */
-.card-info_principal {
-  flex: 0 0 10%; 
-  width: 90%;
-  overflow: hidden;
-
-  display: flex;
-  justify-content: space-between;
-  /* Deixa os itens em lados opostos */
-  align-items: center;
-  /* Opcional: alinha no eixo vertical */
-  padding-left: 1rem;
-
-}
 
 .card-info_principal h1 {
   text-transform: uppercase;
@@ -250,6 +213,7 @@
 
 /* INFO ==================================== */
 .card-info_secundaria {
+  color: #333;
   flex: 0 0 20%; 
   width: 100%;
   overflow: hidden;

@@ -1,80 +1,118 @@
-//==================
-// Formata o texto automaticamente
-//==================
-const precoEditavel = document.getElementById('preco-editavel');
-const precoReal = document.getElementById('max_preco_real');
+document.addEventListener('DOMContentLoaded', () => {
+  // ================================
+  // Tela de carregamento
+  // ================================
+  const paths = [
+    document.getElementById("path-1"),
+    document.getElementById("path-2"),
+  ];
 
-// Formatação ao digitar
-precoEditavel.addEventListener('input', function () {
-  // Remove ,00 se já existir e todos os não dígitos
-  let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
+  const loader = document.querySelector(".loading-container");
+  const DURATION = 800;
 
-  if (texto) {
-    // Formata com separador de milhar + adiciona ,00 no final
-    let formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
+  paths.forEach((path, index) => {
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = length;
+    path.style.strokeDashoffset = length;
 
-    // Atualiza visualmente
-    this.innerText = formatado;
+    setTimeout(() => {
+      path.style.transition = `stroke-dashoffset ${DURATION}ms ease-out`;
+      path.style.strokeDashoffset = "0";
+    }, index * DURATION);
+  });
 
-    // Atualiza campo oculto sem formatação para o backend
-    precoReal.value = texto;
+  setTimeout(() => {
+    loader.style.opacity = "0";
+    setTimeout(() => loader.remove(), 600);
+  }, paths.length * DURATION + 200);
 
-    // Reposiciona o cursor antes da vírgula
-    placeCaretBeforeComma(this);
-  } else {
-    // Limpa campo se não houver nada
-    this.innerText = '';
-    precoReal.value = '';
+  // ================================
+  // Slot machine
+  // ================================
+  const palavras = [
+    "Casas", "Casas", "Casas", "Casas", "Casas",
+    "Apartamentos", "Apartamentos", "Apartamentos",
+    "Imóveis", "Imóveis", "Imóveis"
+  ];
+
+  const $container = $("#slot-container");
+  const repeticoes = 100;
+
+  for (let i = 0; i < repeticoes; i++) {
+    palavras.forEach(palavra => {
+      $container.append($('<div>').addClass("slottt-machine__item").text(palavra));
+    });
+  }
+
+  // ================================
+  // Preço editável formatado
+  // ================================
+  const precoEditavel = document.getElementById('preco-editavel');
+  const precoReal = document.getElementById('max_preco_real');
+
+  precoEditavel.addEventListener('input', function () {
+    let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
+
+    if (texto) {
+      let formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
+      this.innerText = formatado;
+      precoReal.value = texto;
+      placeCaretBeforeComma(this);
+    } else {
+      this.innerText = '';
+      precoReal.value = '';
+    }
+  });
+
+  precoEditavel.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.querySelector('form').requestSubmit();
+    }
+  });
+
+  function placeCaretBeforeComma(el) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    const node = el.firstChild;
+    if (!node) return;
+    const index = node.textContent.indexOf(',');
+    range.setStart(node, index);
+    range.setEnd(node, index);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  document.querySelector('form').addEventListener('submit', function () {
+    let texto = precoEditavel.innerText.replace(',00', '').replace(/\D/g, '');
+    precoReal.value = texto || '';
+  });
+
+  // ================================
+  // Habilitar/desabilitar campo entrega
+  // ================================
+  const estagioSelect = document.getElementById('estagio');
+  const entregaInput = document.getElementById('entrega');
+
+  function atualizarCampoEntrega() {
+    entregaInput.disabled = estagioSelect.value === 'PRONTA';
+  }
+
+  estagioSelect.addEventListener('change', atualizarCampoEntrega);
+  atualizarCampoEntrega(); // ao carregar a página
+
+  // ================================
+  // Botão "Filtrar Imóveis" no mobile
+  // ================================
+  const btnToggle = document.getElementById('btn-toggle-filtros');
+  const filtros = document.querySelector('.filtros');
+
+  if (btnToggle && filtros) {
+    btnToggle.addEventListener('click', () => {
+      filtros.classList.toggle('ativo');
+      btnToggle.textContent = filtros.classList.contains('ativo')
+        ? 'Fechar Filtros ▲'
+        : 'Filtrar Imóveis ▼';
+    });
   }
 });
-
-// Mantém o cursor antes da vírgula
-function placeCaretBeforeComma(el) {
-  const range = document.createRange();
-  const sel = window.getSelection();
-  const node = el.firstChild;
-
-  if (!node) return;
-
-  const index = node.textContent.indexOf(',');
-  range.setStart(node, index);
-  range.setEnd(node, index);
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
-
-// ===========================
-// Garante envio correto no formulário
-// ===========================
-document.querySelector('form').addEventListener('submit', function () {
-  let texto = precoEditavel.innerText.replace(',00', '').replace(/\D/g, '');
-  if (texto) {
-    precoReal.value = texto; // número puro (ex: "250000")
-  } else {
-    precoReal.value = '';
-  }
-});
-
-// Envia o formulário ao pressionar Enter dentro do campo editável
-precoEditavel.addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    e.preventDefault(); // impede quebra de linha
-    document.querySelector('form').requestSubmit(); // envia o formulário
-  }
-});
-
-
-// Ativa ou desativa o campo "Ano de entrega" com base no estágio da obra
-const estagioSelect = document.getElementById('estagio');
-const entregaInput = document.getElementById('entrega');
-
-// Função para atualizar o estado do campo de entrega
-function atualizarCampoEntrega() {
-  entregaInput.disabled = estagioSelect.value === 'PRONTA';
-}
-
-// Executa quando o usuário muda o valor
-estagioSelect.addEventListener('change', atualizarCampoEntrega);
-
-// Executa ao carregar a página (ex: quando filtro já vem preenchido)
-window.addEventListener('DOMContentLoaded', atualizarCampoEntrega);
