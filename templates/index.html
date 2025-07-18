@@ -7,7 +7,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1c1c1c" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="dark" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="/static/css/components/card_imovel.css">
   <link rel="stylesheet" href="/static/css/style.css" />
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
 <body>
@@ -23,26 +25,18 @@
   <!-- Tela de carregamento com animação traçada -->
   <!-- Loader com SVG dividido em duas partes -->
   <div class="loading-container">
-  <svg class="logo-animate" viewBox="-0.8 -10.8 21.6 21.6">
-    
-  <!-- Telhado -->
-  <path id="path-1" d="M 0 0 L 10 -10 L 20 0"
-          stroke="#FFFFFF"
-          stroke-width="0.8"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round" />
+    <svg class="logo-animate" viewBox="-0.8 -10.8 21.6 21.6">
 
-  <!-- Corpo da casa -->
-  <path id="path-2" d="M 2 0 V 10 H 18 V 0"
-          stroke="#FFFFFF"
-          stroke-width="0.8"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round" />
+      <!-- Telhado -->
+      <path id="path-1" d="M 0 0 L 10 -10 L 20 0" stroke="#FFFFFF" stroke-width="0.8" fill="none" stroke-linecap="round"
+        stroke-linejoin="round" />
 
-  </svg>
-</div>
+      <!-- Corpo da casa -->
+      <path id="path-2" d="M 2 0 V 10 H 18 V 0" stroke="#FFFFFF" stroke-width="0.8" fill="none" stroke-linecap="round"
+        stroke-linejoin="round" />
+
+    </svg>
+  </div>
 
   <!-- HERO SECTION -->
   <section class="hero">
@@ -97,7 +91,22 @@
   </section>
 
   <!-- Lista de imóveis recentes via cs -->
+
+
   <main>
+
+    <div class="titulo">
+      <h1>
+        <span class="underline-animated">Melhores</span>
+      </h1>
+
+      <div class="slottt-machine">
+        <div class="slottt-machine__mask">
+          <div class="slottt-machine__items_container" id="slot-container"></div>
+        </div>
+      </div>
+    </div>
+
     <section id="lista-imoveis">
     </section>
   </main>
