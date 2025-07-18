@@ -3,12 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Pesquisa | Bresolin Imóveis</title>
+    <title>Pesquisa | Imóveis Bresolin</title>
     <link rel="stylesheet" href="/static/css/components/card_imovel.css">
     <link rel="stylesheet" href="/static/css/pesquisa.css" />
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1c1c1c" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
+
+    <!-- Tela de carregamento com animação traçada -->
+    <!-- Loader com SVG dividido em duas partes -->
+    <div class="loading-container">
+        <svg class="logo-animate" viewBox="-0.8 -10.8 21.6 21.6">
+
+            <!-- Telhado -->
+            <path id="path-1" d="M 0 0 L 10 -10 L 20 0" stroke="#FFFFFF" stroke-width="0.8" fill="none"
+                stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Corpo da casa -->
+            <path id="path-2" d="M 2 0 V 10 H 18 V 0" stroke="#FFFFFF" stroke-width="0.8" fill="none"
+                stroke-linecap="round" stroke-linejoin="round" />
+
+        </svg>
+    </div>
 
     <!-- ===========================
        Cabeçalho com logo e voltar
@@ -33,116 +58,130 @@
 
         <!-- Painel lateral de filtros -->
         <aside class="filtros">
-            <h3>Filtrar Imóveis</h3>
-            <form action="/pesquisa" method="get">
-                <input type="hidden" name="termo" value="{{ termo }}">
 
-                <!-- TIPO -->
-                <div class="campo">
-                    <label for="tipo">Tipo de imóvel</label>
-                    <select name="tipo" id="tipo">
-                        <option value="">Todos</option>
-                        <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
-                        <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento</option>
-                        <option value="terreno" {% if tipo=='terreno' %}selected{% endif %}>Terreno</option>
-                    </select>
-                </div>
+            <!-- Botão para abrir/fechar os filtros no mobile -->
+            <button id="btn-toggle-filtros" class="btn-toggle-filtros">Filtrar Imóveis ▼</button>
 
-                <!-- CIDADE -->
-                <div class="campo">
-                    <label for="cidade">Cidade</label>
-                    <input type="text" name="cidade" id="cidade" value="{{ cidade }}" placeholder="Ex: Porto Alegre">
-                </div>
+            <!-- Conteúdo que será exibido ou escondido -->
+            <div class="filtros-conteudo">
+                <h3>Filtrar Imóveis</h3>
 
-                <!-- BAIRRO -->
-                <div class="campo">
-                    <label for="bairro">Bairro</label>
-                    <input type="text" name="bairro" id="bairro" value="{{ request.args.get('bairro', '') }}">
-                </div>
+                <form action="/pesquisa" method="get">
+                    <input type="hidden" name="termo" value="{{ termo }}">
 
-                <!-- UF -->
-                <div class="campo">
-                    <label for="uf">UF</label>
-                    <input type="text" name="uf" id="uf" value="{{ request.args.get('uf', '') }}" placeholder="Ex: RS"
-                        maxlength="2">
-                </div>
-
-                <!-- PREÇO MÁXIMO -->
-                <div class="campo">
-                    <label for="preco-editavel">Preço Máximo</label>
-                    <div class="campo-preco-dinamico">
-                        <div id="preco-editavel" contenteditable="true" class="preco-digitavel"
-                            data-placeholder="Ex: 120.000,00">
-                            {% if max_preco %}
-                            {{ "{:,}".format(max_preco|int).replace(",", ".") }},00
-                            {% endif %}
-                        </div>
+                    <!-- TIPO -->
+                    <div class="campo">
+                        <label for="tipo">Tipo de imóvel</label>
+                        <select name="tipo" id="tipo">
+                            <option value="">Todos</option>
+                            <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
+                            <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento
+                            </option>
+                            <option value="terreno" {% if tipo=='terreno' %}selected{% endif %}>Terreno</option>
+                        </select>
                     </div>
-                    <input type="hidden" name="max_preco" id="max_preco_real">
-                </div>
 
-                <!-- ÁREA MÍNIMA -->
-                <div class="campo">
-                    <label for="area_min">Área mínima (m²)</label>
-                    <input type="number" name="area_min" id="area_min" value="{{ request.args.get('area_min', '') }}">
-                </div>
+                    <!-- CIDADE -->
+                    <div class="campo">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" name="cidade" id="cidade" value="{{ cidade }}"
+                            placeholder="Ex: Porto Alegre">
+                    </div>
 
-                <!-- ÁREA MÁXIMA -->
-                <div class="campo">
-                    <label for="area_max">Área máxima (m²)</label>
-                    <input type="number" name="area_max" id="area_max" value="{{ request.args.get('area_max', '') }}">
-                </div>
+                    <!-- BAIRRO -->
+                    <div class="campo">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" name="bairro" id="bairro" value="{{ request.args.get('bairro', '') }}">
+                    </div>
 
-                <!-- QUARTOS -->
-                <div class="campo">
-                    <label for="quartos">Quartos</label>
-                    <input type="number" name="quartos" id="quartos" value="{{ request.args.get('quartos', '') }}"
-                        min="0">
-                </div>
+                    <!-- UF -->
+                    <div class="campo">
+                        <label for="uf">UF</label>
+                        <input type="text" name="uf" id="uf" value="{{ request.args.get('uf', '') }}"
+                            placeholder="Ex: RS" maxlength="2">
+                    </div>
 
-                <!-- BANHEIROS -->
-                <div class="campo">
-                    <label for="banheiros">Banheiros</label>
-                    <input type="number" name="banheiros" id="banheiros" value="{{ request.args.get('banheiros', '') }}"
-                        min="0">
-                </div>
+                    <!-- PREÇO MÁXIMO -->
+                    <div class="campo">
+                        <label for="preco-editavel">Preço Máximo</label>
+                        <div class="campo-preco-dinamico">
+                            <div id="preco-editavel" contenteditable="true" class="preco-digitavel"
+                                data-placeholder="Ex: 120.000,00">
+                                {% if max_preco %}{{ "{:,}".format(max_preco|int).replace(",", ".") }},00{% endif %}
+                            </div>
+                        </div>
+                        <input type="hidden" name="max_preco" id="max_preco_real">
+                    </div>
 
-                <!-- VAGAS -->
-                <div class="campo">
-                    <label for="vagas">Vagas de garagem</label>
-                    <input type="number" name="vagas" id="vagas" value="{{ request.args.get('vagas', '') }}" min="0">
-                </div>
+                    <!-- ÁREA MÍNIMA -->
+                    <div class="campo">
+                        <label for="area_min">Área mínima (m²)</label>
+                        <input type="number" name="area_min" id="area_min"
+                            value="{{ request.args.get('area_min', '') }}">
+                    </div>
 
-                <!-- ESTÁGIO -->
-                <div class="campo">
-                    <label for="estagio">Estágio da obra</label>
-                    <select name="estagio" id="estagio">
-                        <option value="">Todos</option>
-                        <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>Pronta
-                        </option>
-                        <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO' %}selected{%
-                            endif %}>Em construção</option>
-                    </select>
-                </div>
+                    <!-- ÁREA MÁXIMA -->
+                    <div class="campo">
+                        <label for="area_max">Área máxima (m²)</label>
+                        <input type="number" name="area_max" id="area_max"
+                            value="{{ request.args.get('area_max', '') }}">
+                    </div>
 
-                <!-- ENTREGA -->
-                <div class="campo">
-                    <label for="entrega">Ano de entrega</label>
-                    <input type="text" name="entrega" id="entrega" value="{{ request.args.get('entrega', '') }}"
-                        placeholder="Ex: 2026">
-                </div>
+                    <!-- QUARTOS -->
+                    <div class="campo">
+                        <label for="quartos">Quartos</label>
+                        <input type="number" name="quartos" id="quartos" value="{{ request.args.get('quartos', '') }}"
+                            min="0">
+                    </div>
 
-                <!-- ID -->
-                <div class="campo">
-                    <label for="id">ID do imóvel</label>
-                    <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}" placeholder="Ex: 123">
-                </div>
+                    <!-- BANHEIROS -->
+                    <div class="campo">
+                        <label for="banheiros">Banheiros</label>
+                        <input type="number" name="banheiros" id="banheiros"
+                            value="{{ request.args.get('banheiros', '') }}" min="0">
+                    </div>
 
-                <div class="grupo-botoes">
-                    <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
-                    <a href="/pesquisa" class="btn-limpar">Limpar</a>
-                </div>
-            </form>
+                    <!-- VAGAS -->
+                    <div class="campo">
+                        <label for="vagas">Vagas de garagem</label>
+                        <input type="number" name="vagas" id="vagas" value="{{ request.args.get('vagas', '') }}"
+                            min="0">
+                    </div>
+
+                    <!-- ESTÁGIO -->
+                    <div class="campo">
+                        <label for="estagio">Estágio da obra</label>
+                        <select name="estagio" id="estagio">
+                            <option value="">Todos</option>
+                            <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>
+                                Pronta</option>
+                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO'
+                                %}selected{% endif %}>Em construção</option>
+                        </select>
+                    </div>
+
+                    <!-- ENTREGA -->
+                    <div class="campo">
+                        <label for="entrega">Ano de entrega</label>
+                        <input type="text" name="entrega" id="entrega" value="{{ request.args.get('entrega', '') }}"
+                            placeholder="Ex: 2026">
+                    </div>
+
+                    <!-- ID -->
+                    <div class="campo">
+                        <label for="id">ID do imóvel</label>
+                        <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}"
+                            placeholder="Ex: 123">
+                    </div>
+
+                    <!-- BOTÕES -->
+                    <div class="grupo-botoes">
+                        <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
+                        <a href="/pesquisa" class="btn-limpar">Limpar</a>
+                    </div>
+
+                </form>
+            </div>
         </aside>
 
 

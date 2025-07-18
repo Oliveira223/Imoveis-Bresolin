@@ -37,7 +37,7 @@
 // ================================
 const palavras = [
   "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas",
-  "Preços", "Preços", "Preços", "Preços", "Preços", "Preços", "Preços", "Preços", "Preços",
+  "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos","Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos",
   "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis"
 ];
 

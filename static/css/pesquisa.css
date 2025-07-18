@@ -1,7 +1,6 @@
-/* ========================
-   Reset e Comportamentos
-=========================== */
-
+/* ================================
+   RESET E COMPORTAMENTO GLOBAL
+================================== */
 * {
   margin: 0;
   padding: 0;
@@ -25,31 +24,24 @@ body {
 }
 
 
-
-/* ========================
-   Links e Ancoras
-=========================== */
-
+/* ================================
+   LINKS E ÂNCORAS
+================================== */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-a:visited {
-  color: inherit;
-}
-
+a:visited,
 a:active,
 a:hover {
   color: inherit;
 }
 
 
-/* ========================
-   Fontes Customizadas
-=========================== */
-
-/* Extra Light */
+/* ================================
+   FONTES CUSTOMIZADAS
+================================== */
 @font-face {
   font-family: 'Spectral';
   src: url('/static/fonts/spectral/Spectral-ExtraLight.woff2') format('woff2'),
@@ -58,7 +50,6 @@ a:hover {
   font-style: normal;
 }
 
-/* Regular */
 @font-face {
   font-family: 'Spectral';
   src: url('/static/fonts/spectral/Spectral-Regular.woff2') format('woff2'),
@@ -67,7 +58,6 @@ a:hover {
   font-style: normal;
 }
 
-/* Bold */
 @font-face {
   font-family: 'Spectral';
   src: url('/static/fonts/spectral/Spectral-Bold.woff2') format('woff2'),
@@ -77,11 +67,37 @@ a:hover {
 }
 
 
+/* ================================
+   TELA DE CARREGAMENTO
+================================== */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #1d1d1d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease;
+}
 
-/* ========================
-   Header e Branding
-=========================== */
+.logo-animate {
+  width: 100px;
+  height: auto;
+}
 
+.logo-animate path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+
+/* ================================
+   CABEÇALHO
+================================== */
 header {
   background-color: #1d1d1d;
   display: flex;
@@ -137,84 +153,84 @@ header h2 {
 }
 
 
-/* ===========================
-   Filtros - layout e estilo
-=========================== */
+/* ================================
+   CONTAINER PRINCIPAL
+================================== */
+.conteudo-pesquisa {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
 
+
+/* ================================
+   FILTROS (mobile-first)
+================================== */
 .filtros {
-  flex: 1;
-  max-width: 300px;
   background: #f8f8f8;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+.btn-toggle-filtros {
+  display: block;
+  width: 100%;
+  background-color: #1d1d1d;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.filtros-conteudo {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filtros.ativo .filtros-conteudo {
+  display: flex;
+}
+
 .filtros h3 {
   font-size: 1.2rem;
-  margin-bottom: 1rem;
   font-weight: 700;
 }
 
-.filtros .campo {
+
+/* ================================
+   CAMPOS DE FILTRO
+================================== */
+.campo {
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
 }
 
-.filtros label {
+.campo label {
   font-size: 0.95rem;
   margin-bottom: 0.25rem;
   color: #333;
 }
 
-.filtros input,
-.filtros select {
+.campo input,
+.campo select {
   padding: 0.6rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 0.95rem;
 }
 
-.btn-filtrar {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #1d1d1d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
 
-.btn-filtrar:hover {
-  background-color: #333;
-}
-
-.campo-preco {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.campo-preco input {
-  width: 100%;
-  padding-right: 2.5rem; /* garante espaço interno pro sufixo */
-}
-
-.campo-preco .sufixo {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0.8rem; /* ajuste fino: menor = mais colado */
-  font-size: 0.95rem;
-  color: #666;
-  pointer-events: none;
-  user-select: none;
-}
-
+/* ================================
+   PREÇO DINÂMICO
+================================== */
 .campo-preco-dinamico {
   display: inline-block;
   border: 1px solid #ccc;
@@ -231,22 +247,36 @@ header h2 {
   white-space: nowrap;
 }
 
-.sufixo-fixo {
-  color: #666;
-  margin-left: 2px;
-  flex-shrink: 0;
-}
-
 .preco-digitavel:empty::before {
   content: attr(data-placeholder);
   color: #999;
   pointer-events: none;
 }
 
+
+/* ================================
+   BOTÕES DE FORMULÁRIO
+================================== */
 .grupo-botoes {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.btn-filtrar {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1d1d1d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-filtrar:hover {
+  background-color: #333;
 }
 
 .btn-limpar {
@@ -265,31 +295,20 @@ header h2 {
   background-color: #ddd;
 }
 
-/* ===========================
-   Layout principal da página de pesquisa
-=========================== */
 
-.conteudo-pesquisa {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
-  padding: 2rem;
-}
-
-/* Área dos resultados (cards) */
+/* ================================
+   RESULTADOS (IMÓVEIS)
+================================== */
 .resultados {
-  flex: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
-  justify-content: flex-start;
 }
 
 
-/* ===========================
-   Nenhum imóvel encontrado
-=========================== */
-
+/* ================================
+   MENSAGEM - NENHUM IMÓVEL
+================================== */
 .nenhum-encontrado {
   font-size: 1.2rem;
   color: #888;
@@ -300,25 +319,48 @@ header h2 {
 
 
 
-/* ========================
-   Responsividade
-=========================== */
+.card-container {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 
-@media (max-width: 768px) {
-  .titulo-imovel {
-    font-size: 2.2rem;
+  margin: 0.5rem;
+  width: 25rem;
+  height: 30rem;
+  box-shadow: 0 2px 8px #0001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ================================
+   RESPONSIVO - DESKTOP
+================================== */
+@media (min-width: 769px) {
+  .conteudo-pesquisa {
+    flex-direction: row;
+    align-items: flex-start;
   }
 
-  .preco {
-    font-size: 1.4rem;
+  .btn-toggle-filtros {
+    display: none;
   }
 
-  .campos-adicionais {
-    font-size: 1rem;
+  .filtros {
+    flex: 1;
+    max-width: 300px;
   }
 
-  .btn-voltar img {
-    width: 10vw;
-    height: 10vw;
+  .filtros-conteudo {
+    display: flex !important;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .resultados {
+    flex: 3;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
   }
 }
