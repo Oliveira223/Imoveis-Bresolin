@@ -165,6 +165,109 @@ a:hover {
   color: rgb(201, 201, 201);
 }
 
+.titulo {
+  color: #111;
+  margin-top: 10vw;
+  margin-left: 3rem;
+  text-align: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes underline-swap-cycle {
+  /* CRESCE da esquerda (devagar) */
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  30% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* SOME da direita (rápido) */
+  35% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  45% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+
+  /* CRESCE da direita (devagar) */
+  50% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  80% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+  /* SOME da esquerda (rápido) */
+  85% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  95% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  100% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+}
+
+
+.underline-animated {
+  position: relative;
+  display: inline-block;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #111;
+}
+
+.underline-animated::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: #007BFF;
+  border-radius: 2px;
+  animation: underline-swap-cycle 10s infinite normal;
+}
+
+
+.slottt-machine {
+  width: 100%;
+  max-width: 400px;
+}
+
+.slottt-machine__mask {
+  height: 3.5rem; /* maior pra evitar palavras "vazando" */
+  overflow: hidden;
+  position: relative;
+}
+
+.slottt-machine__items_container {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.slottt-machine__item {
+  height: 3.5rem;
+  line-height: 3.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+
+
 
 #form-busca {
   width: 18rem;
@@ -292,7 +395,7 @@ a:hover {
 .footer {
   background-color: #1c1c1c;
   color: #fff;
-  padding: 2rem 1rem;
+  padding: 2rem 10rem;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   text-align: center;
 }
