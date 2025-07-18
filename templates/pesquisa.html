@@ -38,18 +38,34 @@
     <!-- ===========================
        Cabeçalho com logo e voltar
   ============================ -->
-    <header>
-        <button class="btn-voltar" onclick="history.back()">
-            <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
-        </button>
+  <header>
+  <div class="header-content">
+    
+    <!-- Botão Voltar -->
+    <div class="header-left">
+      <button class="btn-voltar" onclick="history.back()">
+        <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+      </button>
+    </div>
 
-        <a href="/">
-            <div class="title_container">
-                <h1>BRESOLIN</h1>
-                <h2>IMÓVEIS</h2>
-            </div>
-        </a>
-    </header>
+    <!-- Título centralizado -->
+    <div class="header-center">
+      <a href="/">
+        <div class="title_container">
+          <h1>BRESOLIN</h1>
+          <h2>NEGÓCIOS IMOBILIÁRIOS</h2>
+        </div>
+      </a>
+    </div>
+
+    <!-- Menu direito futuramente -->
+    <div class="header-right">
+      <!-- vazio por enquanto -->
+    </div>
+
+  </div>
+</header>
+    
 
     <!-- ===========================
        Corpo principal
