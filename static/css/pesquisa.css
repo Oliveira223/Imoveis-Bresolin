@@ -100,57 +100,85 @@ a:hover {
 ================================== */
 header {
   background-color: #1d1d1d;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
   color: white;
+  width: 100vw;
   position: relative;
 }
 
-header h1 {
-  margin-top: 1rem;
-  font-family: 'Spectral';
-  font-weight: 100;
-  font-size: 4vw;
-  letter-spacing: 2.25vw;
-}
-
-header h2 {
-  margin-top: 0.25rem;
-  font-family: 'Spectral';
-  font-weight: 100;
-  font-size: 2vw;
-  letter-spacing: 1vw;
-  margin-bottom: 1rem;
-}
-
-.title_container {
+.header-content {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  padding: 3vw 5vw;  /* vertical | horizontal */
 }
 
+/* Esquerda */
+.header-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Centro */
+.header-center {
+  margin-top: 2vw;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Direita */
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+/* ======== BOtão Voltar ====== */
 .btn-voltar {
-  position: absolute;
-  top: 2vw;
-  left: 2vw;
   background: none;
   border: none;
-  padding: 0;
   cursor: pointer;
 }
 
 .btn-voltar img {
-  width: 8vw;
-  height: 8vw;
-  filter: invert(1);
+  width: 5vw;
+  height: auto;
   transition: transform 0.2s;
 }
 
 .btn-voltar:hover img {
   transform: scale(1.1);
 }
+
+
+/* ======== Titulo ======== */
+.title_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 2rem;
+  margin: 0; /* zera margens que podem empurrar */
+}
+
+.title_container h1 {
+  font-family: 'Spectral';
+  font-size: 6vw;
+  font-weight: 100;
+  letter-spacing: 2.25vw;
+  margin-left: 1vw;
+}
+
+.title_container h2 {
+  font-family: 'Spectral';
+  font-weight: 100;
+  font-size: 2vw;
+  letter-spacing: 1vw;
+}
+
+
 
 
 /* ================================
@@ -176,7 +204,7 @@ header h2 {
 
 .btn-toggle-filtros {
   display: block;
-  width: 100%;
+  width: 80vw;
   background-color: #1d1d1d;
   color: white;
   font-weight: bold;
@@ -302,7 +330,9 @@ header h2 {
 .resultados {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
+
 }
 
 
@@ -325,8 +355,8 @@ header h2 {
   border-radius: 8px;
 
   margin: 0.5rem;
-  width: 25rem;
-  height: 30rem;
+  width: 75vw;
+  height: 100vw;
   box-shadow: 0 2px 8px #0001;
   display: flex;
   flex-direction: column;
