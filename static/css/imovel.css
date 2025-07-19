@@ -270,7 +270,10 @@ a:hover {
   border: none;
   color: white;
   cursor: pointer;
-  padding: 2vw;
+  padding-top: 2vw;
+  padding-right: 2vw;
+  padding-left: 40vw;
+  padding-bottom: 40vw;
 }
 
 

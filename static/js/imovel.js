@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <button class="navegacao prev">
     <img src="/static/img/icons/arrow-left.svg" alt="Anterior">
   </button>
-  
+
   <div class="imagem-scroll-container"></div>
   <button class="navegacao next">
     <img src="/static/img/icons/arrow-right.svg" alt="Próxima">
@@ -122,3 +122,4 @@ document.addEventListener("DOMContentLoaded", () => {
     atual = maisProxima;
   });
 });
+
