@@ -46,6 +46,9 @@
 
   <main class="conteudo-imovel">
 
+    
+    <!-- Título -->
+    <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
 
     <!-- Imagem principal -->
     {% if imovel.imagem %}
@@ -69,8 +72,6 @@
     {% endif %}
 
 
-    <!-- Título -->
-    <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
 
     <!-- Preço -->
     {% if imovel.preco %}
