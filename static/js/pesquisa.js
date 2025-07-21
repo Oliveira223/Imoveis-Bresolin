@@ -27,24 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }, paths.length * DURATION + 200);
 
   // ================================
-  // Slot machine
-  // ================================
-  const palavras = [
-    "Casas", "Casas", "Casas", "Casas", "Casas",
-    "Apartamentos", "Apartamentos", "Apartamentos",
-    "Imóveis", "Imóveis", "Imóveis"
-  ];
-
-  const $container = $("#slot-container");
-  const repeticoes = 100;
-
-  for (let i = 0; i < repeticoes; i++) {
-    palavras.forEach(palavra => {
-      $container.append($('<div>').addClass("slottt-machine__item").text(palavra));
-    });
-  }
-
-  // ================================
   // Preço editável formatado
   // ================================
   const precoEditavel = document.getElementById('preco-editavel');
