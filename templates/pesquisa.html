@@ -3,8 +3,8 @@
 
 <head>
     <title>Pesquisa | Imóveis Bresolin</title>
-    <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">    
-    
+    <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/components/card_imovel.css">
     <link rel="stylesheet" href="/static/css/pesquisa.css" />
@@ -203,22 +203,26 @@
             </div>
         </aside>
 
-        <!-- Contador de imóveis encontrados -->
-        <p class="contador-imoveis">
-            {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }} {{ 'encontrados' if imoveis|length
-            > 1 else 'encontrado' }}
-        </p>
 
-        <!-- Área dos resultados -->
-        <section class="resultados">
-            {% if imoveis %}
-            {% for imovel in imoveis %}
-            {% include 'partials/card_imovel.html' %}
-            {% endfor %}
-            {% else %}
-            <p class="nenhum-encontrado">Nenhum imóvel encontrado.</p>
-            {% endif %}
-        </section>
+        <div class="area-resultados">
+            <!-- Contador de imóveis encontrados -->
+            <p class="contador-imoveis">
+                {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }} {{ 'encontrados' if
+                imoveis|length
+                > 1 else 'encontrado' }}
+            </p>
+
+            <!-- Área dos resultados -->
+            <section class="resultados">
+                {% if imoveis %}
+                {% for imovel in imoveis %}
+                {% include 'partials/card_imovel.html' %}
+                {% endfor %}
+                {% else %}
+                <p class="nenhum-encontrado">Nenhum imóvel encontrado.</p>
+                {% endif %}
+            </section>
+        </div>
 
     </main>
 
