@@ -115,10 +115,10 @@ a:hover {
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  text-align: center; 
+  text-align: center;
   margin-right: 4vw;
   margin-left: 4vw;
-  
+
 }
 
 .btn-toggle-filtros {
@@ -128,10 +128,10 @@ a:hover {
   padding: 3vw 17vw;
   font-size: 1rem;
   font-weight: bold;
-  
+
   border: none;
   border-radius: 6px;
-  
+
   cursor: pointer;
   margin: 0 auto;
 }
@@ -253,7 +253,7 @@ a:hover {
   color: #333;
   text-align: left;
   padding: 1vw 9vw;
-  margin-bottom: -6vw;
+  margin-bottom: 1vw
 }
 
 /* ================================
@@ -280,37 +280,35 @@ a:hover {
 }
 
 
-
-.card-container {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-
-  margin: 0.5rem;
-  width: 75vw;
-  height: 100vw;
-  box-shadow: 0 2px 8px #0001;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
 /* ================================
-   RESPONSIVO - DESKTOP
+   RESPONSIVO - DESKTOP 
 ================================== */
 @media (min-width: 769px) {
   .conteudo-pesquisa {
+    display: flex;
     flex-direction: row;
     align-items: flex-start;
-  }
-
-  .btn-toggle-filtros {
-    display: none;
+    gap: 2rem;
+    padding: 2vw 0 2vw 2vw;
+    /* top right bottom left */
+    max-width: 100vw;
+    margin: 0 auto;
   }
 
   .filtros {
-    flex: 1;
-    max-width: 300px;
+    position: sticky;
+    top: 2rem;
+    width: 270px;
+    flex-shrink: 0;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+    margin: 0;
+  }
+
+  .btn-toggle-filtros {
+    display: none !important;
   }
 
   .filtros-conteudo {
@@ -319,10 +317,56 @@ a:hover {
     gap: 1rem;
   }
 
-  .resultados {
-    flex: 3;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: flex-start;
+
+  /* ================================
+   CAMPOS DE FILTRO
+================================== */
+  .campo {
+    margin-bottom: 0.5vw;
   }
+
+  .campo label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .campo input,
+  .campo select {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+.contador-imoveis {
+  font-size: 1vw;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  padding: 0;
+  text-align: left;
+  line-height: 1;
+  padding-left: 1vw;
+}
+
+  .area-resultados {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resultados {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 2vw;
+    align-items: start;
+    flex-grow: 1;
+  }
+
+  .resultados>* {
+    width: auto !important;
+    margin: 0 !important;
+  }
+
 }
