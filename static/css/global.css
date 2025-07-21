@@ -29,37 +29,6 @@
   font-style: normal;
 }
 
-/* ==========================
-   Botão flutuante WhatsApp
-========================== */
-.whatsapp-flutuante {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 999;
-
-  width: 60px;
-  height: 60px;
-  background-color: #25d366;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease, background-color 0.3s ease;
-}
-
-.whatsapp-flutuante:hover {
-  background-color: #1ebe5d;
-  transform: scale(1.1);
-}
-
-.whatsapp-flutuante img {
-  width: 30px;
-  height: 30px;
-}
-
 
 /* ================================
    CABEÇALHO
@@ -206,29 +175,6 @@ header {
 /* ==================================== DESKTOP =================================== */
 
 @media (min-width: 768px) {
-
-  /* ==========================
-   Botão flutuante WhatsApp
-========================== */
-.whatsapp-flutuante {
-  bottom: 3vw;
-  right: 3vw;
-
-  width: 4vw;
-  height: 4vw;
-  border-radius: 50%;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-
-.whatsapp-flutuante img {
-  width: 2vw;
-  height: 2vw;
-}
-
-
-
 
   /* ================================
    CABEÇALHO
