@@ -186,8 +186,8 @@ body.no-scroll {
   text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-left: 30vw;
-
 }
+
 
 @keyframes underline-swap-cycle {
   /* CRESCE da esquerda (devagar) */
@@ -601,6 +601,53 @@ body.no-scroll {
 #form-busca button:hover {
   transform: scale(1.03);
 }
+
+
+/* ================================
+   ANIMAÇÃO
+   ================================ */
+
+.titulo {
+  margin-top: 6vw;
+  margin-left: 21vw;
+}
+
+.underline-animated {
+  font-size: 3rem;
+}
+
+.underline-animated::after {
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  border-radius: 2px;
+}
+
+
+.slottt-machine {
+  width: 100%;
+  max-width: 400px;
+}
+
+.slottt-machine__mask {
+  height: 3.3rem;
+  width: 100vw;
+}
+
+.slottt-machine__items_container {
+  top: 0;
+  width: 100%;
+}
+
+.slottt-machine__item {
+  height: 3.5rem;
+  line-height: 3.5rem;
+  font-size: 2.5rem;
+}
+
+
+
 
 /* ================================
    PRINCIPAIS IMÓVEIS 
