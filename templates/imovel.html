@@ -46,9 +46,14 @@
 
   <main class="conteudo-imovel">
 
-    
+
     <!-- Título -->
     <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
+
+    <!-- Descrição -->
+    {% if imovel.descricao %}
+    <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+    {% endif %}
 
     <!-- Imagem principal -->
     {% if imovel.imagem %}
@@ -78,10 +83,6 @@
     <p class="preco">R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
     {% endif %}
 
-    <!-- Descrição -->
-    {% if imovel.descricao %}
-    <p>{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
-    {% endif %}
 
     <!-- Campos adicionais -->
     <div class="campos-adicionais">
@@ -128,10 +129,6 @@
         </iframe>
       </div>
       {% endif %}
-
-
-
-
     </div>
 
     <!-- Plantas -->
@@ -145,6 +142,15 @@
       </div>
     </div>
     {% endif %}
+
+
+    <a class="btn-whatsapp"
+      href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+      target="_blank">
+      Tenho interesse
+      <img src="/static/img/icons/icon_whatsapp.svg" alt="">
+    </a>
+
   </main>
 
   <!----------------------  Rodapé  ----------------->
@@ -181,6 +187,7 @@
       </div>
 
     </div>
+
 
     <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
   </footer>
