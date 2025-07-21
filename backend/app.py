@@ -2,7 +2,7 @@
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 from sqlalchemy import create_engine, text
 from werkzeug.utils import secure_filename
 from uuid import uuid4
@@ -42,6 +42,58 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 print("[INFO] DATABASE_URL:", DATABASE_URL)
 
+
+# ================================
+# SEGURANÇA - Autenticação básica para rotas admin
+# ================================
+from flask import Response
+
+def check_auth(username, password):
+    return username == 'admin' and password == '0000'  # Altere aqui sua senha segura
+
+def authenticate():
+    return Response(
+        'Acesso restrito.\n', 401,
+        {'WWW-Authenticate': 'Basic realm="Painel Admin"'}
+    )
+
+def requires_auth(f):
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    decorated.__name__ = f.__name__
+    return decorated
+
+# ================================
+# ROTA PROTEGIDA: Painel Administrativo
+# ================================
+@app.route("/admin")
+@requires_auth
+def admin():
+    return render_template("admin.html")
+
+
+# ================================
+# ROTA PROTEGIDA: Página de Edição de Imóvel
+# ================================
+@app.route('/admin/imovel/<int:imovel_id>/editar')
+@requires_auth
+def editar_imovel(imovel_id):
+    with engine.connect() as con:
+        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id'), {'id': imovel_id})
+        imovel = imovel_result.mappings().first()
+
+        if not imovel:
+            return render_template('404.html', mensagem="Imóvel não encontrado"), 404
+
+        imagens_result = con.execute(text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
+        imagens = [dict(row._mapping) for row in imagens_result]
+
+    return render_template('editar_imovel.html', imovel=imovel, imagens=imagens)
+
+
 # ==============================
 # Rotas HTML (Frontend)
 # ==============================
@@ -50,11 +102,6 @@ print("[INFO] DATABASE_URL:", DATABASE_URL)
 @app.route('/')
 def index():
     return render_template('index.html')
-
-# Painel administrativo
-@app.route('/admin')
-def admin():
-    return render_template('admin.html')
 
 # Página de detalhes do imóvel
 @app.route('/imovel/<int:imovel_id>')
@@ -344,22 +391,6 @@ def api_condominios():
             '''), data)
             return '', 201
 
-# ==============================
-# Página de Edição de Imóvel
-# ==============================
-@app.route('/admin/imovel/<int:imovel_id>/editar')
-def editar_imovel(imovel_id):
-    with engine.connect() as con:
-        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id'), {'id': imovel_id})
-        imovel = imovel_result.mappings().first()
-
-        if not imovel:
-            return render_template('404.html', mensagem="Imóvel não encontrado"), 404
-
-        imagens_result = con.execute(text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
-        imagens = [dict(row._mapping) for row in imagens_result]
-
-    return render_template('editar_imovel.html', imovel=imovel, imagens=imagens)
 
 # ==============================
 # Inicialização do Servidor
