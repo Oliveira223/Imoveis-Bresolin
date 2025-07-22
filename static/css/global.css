@@ -169,6 +169,17 @@ header {
   color: #aaa;
 }
 
+.link-imagem{
+  display: flex;
+  align-items: self-end;
+  text-align: left;
+  margin-left: -1vw;
+}
+
+.link-imagem img{
+  width: 3vw;
+  height: auto;
+}
 
 
 

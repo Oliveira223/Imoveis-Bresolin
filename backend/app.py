@@ -9,6 +9,10 @@ from uuid import uuid4
 from dotenv import load_dotenv
 import os
 
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+
 # ==============================
 # Carrega variáveis de ambiente do .env
 # ==============================
@@ -93,31 +97,34 @@ def editar_imovel(imovel_id):
 
     return render_template('editar_imovel.html', imovel=imovel, imagens=imagens)
 
-
-# ==============================
-# Rotas HTML (Frontend)
-# ==============================
-
 # Página inicial
 @app.route('/')
 def index():
+    registrar_acesso()  # ← registra acesso geral à home
     return render_template('index.html')
 
 # Página de detalhes do imóvel
 @app.route('/imovel/<int:imovel_id>')
 def pagina_imovel(imovel_id):
+    registrar_acesso(imovel_id)  # ← registra acesso ao imóvel
+
     with engine.connect() as con:
-        imovel_result = con.execute(text('SELECT * FROM imoveis WHERE id = :id AND ativo = TRUE'), {'id': imovel_id})
+        imovel_result = con.execute(
+            text('SELECT * FROM imoveis WHERE id = :id AND ativo = TRUE'),
+            {'id': imovel_id}
+        )
         imovel = imovel_result.mappings().first()
 
         if not imovel:
             return render_template('404.html', mensagem="Imóvel não encontrado ou inativo"), 404
 
-        imagens_result = con.execute(text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
+        imagens_result = con.execute(
+            text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'),
+            {'id': imovel_id}
+        )
         imagens = [dict(row._mapping) for row in imagens_result]
 
     return render_template('imovel.html', imovel=imovel, imagens=imagens)
-
 # ==============================
 # API - Renderização do mini-card reutilizável
 # ==============================
@@ -392,6 +399,46 @@ def api_condominios():
             return '', 201
 
 
+
+
+# ==============================
+# CONEXÃO COM O POSTGRES (Render)
+# ==============================
+DATABASE_URL = os.getenv("DATABASE_URL")  # ou substitua pela string completa
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+
+# ==============================
+# CRIA TABELA DE ACESSOS (se não existir)
+# ==============================
+def criar_tabela_acessos():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS acessos (
+                    id SERIAL PRIMARY KEY,
+                    imovel_id INTEGER,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            conn.commit()
+
+# chama ao iniciar o app
+criar_tabela_acessos()
+
+
+def registrar_acesso(imovel_id=None):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO acessos (imovel_id) VALUES (%s)",
+                (imovel_id,)
+            )
+            conn.commit()
+
+
+            
 # ==============================
 # Inicialização do Servidor
 # ==============================
