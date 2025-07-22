@@ -576,23 +576,23 @@ body.no-scroll {
     margin-top: 6vw;
     margin-bottom: 1rem;
     margin-left: 0.8rem;
-    line-height: 3.5vw;
+    line-height: 2.7vw;
 
   }
 
   /* BRESOLIN */
   .hero h1 {
     margin-left: 0.1vw;
-    font-size: 4vw;
-    letter-spacing: 0.2vw;
+    font-size: 3.5vw;
+    letter-spacing: 0.6vw;
     font-weight: 100;
   }
 
   /* Negocios imobiliarios */
   .hero h2 {
     margin-left: -0.3rem;
-    font-size: 1.65vw;
-    letter-spacing: 0.2vw;
+    font-size: 1vw;
+    letter-spacing: 0.4vw;
     font-weight: 100;
   }
 
