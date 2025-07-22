@@ -57,3 +57,12 @@
     ativo ,
     link 
     FOREIGN KEY (condominio_id) REFERENCES condominios(id) ON DELETE SET NULL
+
+
+
+# Gmail da empresa
+> imoveisbresolinsite@gmail.com
+> 82114449g
+
+# Senha app Gmail
+> yaax cfbu qfml kutj
