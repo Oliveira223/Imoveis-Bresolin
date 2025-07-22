@@ -53,7 +53,7 @@ print("[INFO] DATABASE_URL:", DATABASE_URL)
 from flask import Response
 
 def check_auth(username, password):
-    return username == 'admin' and password == '0000'  # Altere aqui sua senha segura
+    return username == 'admin' and password == 'Bresolin2003'  # Senha do painel admin
 
 def authenticate():
     return Response(
