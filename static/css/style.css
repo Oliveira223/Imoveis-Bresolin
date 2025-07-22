@@ -636,7 +636,7 @@ body.no-scroll {
   .form-group select,
   .form-group input {
     font-weight: 500;
-    font-size: 1.2vw;
+    font-size: 1vw;
     padding: 0.2vw 0;
   }
 
