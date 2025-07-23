@@ -357,6 +357,88 @@ a:hover {
 }
 
 
+ /* ========================
+   Botão de Alternância de Tema
+=========================== */
+.btn-tema {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.btn-tema img {
+  width: 24px;
+  height: 24px;
+  filter: invert(0.8);
+  transition: transform 0.2s ease;
+}
+
+.btn-tema:hover img {
+  transform: scale(1.1);
+}
+
+
+/* ========================
+   Modo Escuro 
+=========================== */
+body.modo-escuro {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.modo-escuro .titulo-imovel,
+body.modo-escuro .descricao,
+body.modo-escuro .campos-adicionais,
+body.modo-escuro .galeria h3,
+body.modo-escuro .footer_info p {
+  color: #e0e0e0;
+}
+
+body.modo-escuro .preco {
+  color: #81c784;
+}
+
+body.modo-escuro .botao-maps {
+  background-color: #2196f3;
+}
+
+body.modo-escuro .botao-maps:hover {
+  background-color: #1976d2;
+}
+
+body.modo-escuro .btn-whatsapp {
+  background-color: #25d366;
+}
+
+body.modo-escuro .btn-whatsapp:hover {
+  background-color: #1ebe5d;
+}
+
+body.modo-escuro .footer {
+  background-color: #1c1c1c;
+  color: #e0e0e0;
+}
+
+body.modo-escuro .footer_logo img,
+body.modo-escuro .footer_info img {
+  filter: brightness(0.8);
+}
+
+body.modo-escuro .footer_copyright {
+  color: #aaaaaa;
+}
+
+body.modo-escuro #imagem-viewer {
+  background-color: rgba(0, 0, 0, 0.95);
+}
+
+
+
+
+
+
+
 
 /* ========================
    Responsividade para Desktop

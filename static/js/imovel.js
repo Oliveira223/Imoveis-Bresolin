@@ -123,3 +123,43 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// ================================
+// Modo Escuro
+// ================================
+function alternarTema() {
+  const body = document.body;
+  const icone = document.getElementById("icone-tema");
+
+  body.classList.toggle("modo-escuro");
+
+  if (body.classList.contains("modo-escuro")) {
+    icone.src = "/static/img/icons/icon_sun.svg";
+    icone.alt = "Modo Claro";
+    localStorage.setItem("tema", "escuro");
+  } else {
+    icone.src = "/static/img/icons/icon_moon.svg";
+    icone.alt = "Modo Escuro";
+    localStorage.setItem("tema", "claro");
+  }
+}
+
+// Aplica tema salvo anteriormente
+document.addEventListener("DOMContentLoaded", () => {
+  const temaSalvo = localStorage.getItem("tema");
+  const body = document.body;
+  const icone = document.getElementById("icone-tema");
+
+  if (temaSalvo === "claro") {
+    body.classList.remove("modo-escuro");
+    if (icone) {
+      icone.src = "/static/img/icons/icon_moon.svg";
+      icone.alt = "Modo Escuro";
+    }
+  } else {
+    body.classList.add("modo-escuro"); // Padrão: escuro
+    if (icone) {
+      icone.src = "/static/img/icons/icon_sun.svg";
+      icone.alt = "Modo Claro";
+    }
+  }
+});
