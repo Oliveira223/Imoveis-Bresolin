@@ -227,8 +227,19 @@ header {
 
   .title_container h2 {
     font-weight: 100;
-    font-size: 1vw;
+    font-size: 0.8vw;
     letter-spacing: 0.2vw;
   }
+
+  
+.link-imagem{
+  margin-left: -0.2vw;
+}
+
+.link-imagem img{
+  width: 0.8vw;
+  height: auto;
+}
+
 
 }
