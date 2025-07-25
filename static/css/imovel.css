@@ -80,7 +80,9 @@ a:hover {
 }
 
 .descricao {
-  white-space: pre-line;
+  text-align: justify;
+  word-break: normal;
+  hyphens: auto;
   padding: 4vw 0vw;
   font-size: 1.1rem;
   line-height: 1.6;
@@ -143,7 +145,7 @@ a:hover {
   margin-bottom: 2rem;
   width: 100%;
   max-width: 800px;
-  /* aspect-ratio: 4 / 3; Proporção padrão para mapas */
+   aspect-ratio: 4 / 3;
   /* aspect-ratio: 1 / 1; */
   border-radius: 12px;
   overflow: hidden;
