@@ -350,8 +350,8 @@ header {
    Botão do whatsapp
    ================================ */
 .whatsapp-float {
-  bottom: 90px;
-  right: 110px;
+  bottom: 3vw;
+  right: 3vw;
   width: 4vw;
   height: 4vw;
   border-radius: 50%;
