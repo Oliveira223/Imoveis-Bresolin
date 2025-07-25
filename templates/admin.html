@@ -3,7 +3,7 @@
 
 <head>
   <title>Bresolin Imóveis | Painel</title>
-   <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+  <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -136,18 +136,37 @@
       <input type="number" name="banheiros_com_chuveiro" placeholder="Banheiros C/ Chuveiro">
       <input type="number" name="vagas" placeholder="Vagas">
 
-
-
       <input type="number" name="andar" placeholder="Andar">
       <input type="text" name="endereco" placeholder="Endereço">
       <input type="text" name="bairro" placeholder="Bairro">
       <input type="text" name="cidade" placeholder="Cidade">
       <input type="text" name="uf" placeholder="UF">
 
+      <!-- IPTU formatado -->
+      <div class="campo-preco-admin input-metade">
+        <span id="iptu-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+          data-placeholder="IPTU"></span>
+        <span class="prefixo-rs">R$</span>
+        <input type="hidden" name="iptu" id="iptu-admin-real">
+      </div>
+
+      <!-- Condomínio formatado -->
+      <div class="campo-preco-admin input-metade">
+        <span id="condominio-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+          data-placeholder="Valor Condominio"></span>
+        <span class="prefixo-rs">R$</span>
+        <input type="hidden" name="valor_condominio" id="condominio-admin-real">
+      </div>
+
+
+
+
+
+
       <!-- Link externo -->
       <input type="text" name="link" placeholder="Link externo (ex: Google Maps)" class="input-metade">
       <input type="text" name="maps_iframe" placeholder="Iframe Google Maps">
-     
+
       <!-- Campos adicionais -->
       <input type="text" name="campo_extra2" placeholder="Campo Extra 1">
 
@@ -157,6 +176,18 @@
       <select name="condominio_id" id="condominio-select">
         <option value="">Sem condomínio</option>
       </select>
+
+      <label class="checkbox-custom">
+        <input type="checkbox" name="piscina" id="piscina">
+        <span class="checkmark"></span>
+        Piscina
+      </label>
+
+      <label class="checkbox-custom">
+        <input type="checkbox" name="churrasqueira" id="churrasqueira">
+        <span class="checkmark"></span>
+        Churrasqueira
+      </label>
 
       <label><input type="checkbox" name="ativo" checked> Ativo</label>
       <button type="submit">Cadastrar Imóvel</button>
