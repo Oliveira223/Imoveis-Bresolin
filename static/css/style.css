@@ -618,11 +618,21 @@ body.no-scroll {
   }
 
   .titulo {
-    margin-left: 25.5vw;
+    margin-left: 24vw;
   }
 
   .titulo h1 {
     font-size: 4vw;
+  }
+
+
+  /* ================================
+   PRINCIPAIS IMÓVEIS 
+   ================================ */
+
+  #lista-imoveis {
+    gap: 3vw;
+    margin: 0 20vw;
   }
 
   /* ============================

@@ -19,7 +19,6 @@
   border: 1px solid #ccc;
   border-radius: 8px;
 
-  margin: 0;
   width: 270px;
   height: 350px;
   box-shadow: 0 2px 8px #0001;
@@ -162,8 +161,8 @@
 .card-link {
   text-decoration: none;
   color: inherit;
-   width: 270px;
-   flex-shrink: 0;
+  width: 270px;
+  flex-shrink: 0;
 }
 
 .card-link:visited {
@@ -175,7 +174,7 @@
   color: inherit;
 }
 
-.card-link a{
+.card-link a {
   margin: 0;
 }
 
@@ -183,9 +182,12 @@
 
 /* TABLET ===================================== */
 @media (min-width: 768px) {
+  .card-link {
+    width: 15vw;
+  }
+
   .card-container {
     border-radius: 0.6vw;
-    margin: 0vw;
     width: 15vw;
     height: 21vw;
     box-shadow: 0 2px 8px #0001;
@@ -199,8 +201,6 @@
   .card-info_principal h2 {
     font-size: 0.8vw;
   }
-
-
 
   /* INFO ==================================== */
   .card-info_secundaria {
@@ -222,7 +222,6 @@
     font-weight: 400;
     letter-spacing: 0.05rem;
   }
-
 
   /* PREÇO ==================================== */
   .card-preco {
@@ -261,17 +260,20 @@
 }
 
 
-
 /* DESKTOP ==================== */
 /* Usar VW em titulos para não mudar com zoom */
 @media (min-width: 1024px) {
+  .card-link {
+    width: 15vw;
+  }
+
   .card-container {
     border: 0.1vw solid #ccc;
     border-radius: 0.6vw;
-    margin: 0;
     width: 15vw;
     height: 21vw;
     box-shadow: 0 2px 8px #0001;
+
   }
 
   .card-info_principal h1 {
