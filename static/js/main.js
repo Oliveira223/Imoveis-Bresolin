@@ -34,68 +34,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 600); // tempo do fade
   }, totalTime + 200);
 
-
-  // ================================
-  // slot-machine
-  // ================================
-  const palavras = [
-    "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas", "Casas",
-    "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos", "Apartamentos",
-    "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis", "Imóveis"
-  ];
-
-  const $container = $("#slot-container");
-  const repeticoes = 100;
-  let currentIndex = 0;
-
-  function buildSlot() {
-    for (let i = 0; i < repeticoes; i++) {
-      palavras.forEach(palavra => {
-        $container.append($('<div>').addClass("slottt-machine__item").text(palavra));
-      });
-    }
-  }
-
-  function animateSlot() {
-    currentIndex = (currentIndex + 10) % palavras.length;
-    const destino = (repeticoes * palavras.length / 2 + currentIndex);
-    const offset = -destino * 3.5; // altura da palavra em rem
-
-    $container.animate(
-      { top: `${offset}rem` },
-      2000,
-      "easeOutCubic"
-    );
-  }
-
-  // easing customizado
-  $.easing.easeOutCubic = function (x, t, b, c, d) {
-    return c * ((t = t / d - 1) * t * t + 1) + b;
-  };
-
-  // agenda as trocas sincronizadas com o underline
-  function agendarTrocasSincronizadas() {
-    setTimeout(() => {
-      animateSlot();
-    }, 3600);
-
-    setTimeout(() => {
-      animateSlot();
-    }, 8600);
-
-    setTimeout(agendarTrocasSincronizadas, 10000);
-  }
-
-  $(function () {
-    buildSlot();
-
-    const start = (repeticoes * palavras.length / 2);
-    $container.css("top", `-${start * 3.5}rem`);
-
-    agendarTrocasSincronizadas();
-  });
-
-
   // ================================
   // main.js - Carrega imóveis recentes na homepage
   // ================================

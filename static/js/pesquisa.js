@@ -76,12 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const estagioSelect = document.getElementById('estagio');
   const entregaInput = document.getElementById('entrega');
 
-  function atualizarCampoEntrega() {
-  entregaInput.disabled = estagioSelect.value !== 'EM CONSTRUÇÃO';
-}
+  if (entregaInput && estagioSelect) {
+    function atualizarCampoEntrega() {
+      entregaInput.disabled = estagioSelect.value !== 'EM CONSTRUÇÃO';
+    }
 
-  estagioSelect.addEventListener('change', atualizarCampoEntrega);
-  atualizarCampoEntrega(); // ao carregar a página
+    estagioSelect.addEventListener('change', atualizarCampoEntrega);
+    atualizarCampoEntrega(); // ao carregar a página
+  }
 
   // ================================
   // Botão "Filtrar Imóveis" no mobile
