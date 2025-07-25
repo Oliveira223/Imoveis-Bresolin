@@ -348,7 +348,7 @@ a:hover {
   padding: 0;
   text-align: left;
   line-height: 1;
-  padding-left: 1vw;
+  padding-left: 2vw;
 }
 
   .area-resultados {
@@ -362,7 +362,7 @@ a:hover {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   max-width: 80vw; /* trava o limite total de largura */
-  margin: 0 auto;
+  margin: 0 2vw; /* y, x */
   gap: 24px;
   align-items: start;
 }
