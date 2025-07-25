@@ -179,19 +179,17 @@
                         <label for="estagio">Estágio da obra</label>
                         <select name="estagio" id="estagio">
                             <option value="">Todos</option>
-                            <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>
-                                Pronta</option>
-                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO'
-                                %}selected{% endif %}>Em construção</option>
+                            <option value="PRONTA" {% if request.args.get('estagio') == 'PRONTA' %}selected{% endif %}>Pronta</option>
+                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio') == 'EM CONSTRUÇÃO' %}selected{% endif %}>Em construção</option>
                         </select>
                     </div>
 
-                    <!-- ENTREGA -->
+                    <!-- ENTREGA
                     <div class="campo">
                         <label for="entrega">Ano de entrega</label>
                         <input type="text" name="entrega" id="entrega" value="{{ request.args.get('entrega', '') }}"
                             placeholder="Ex: 2026">
-                    </div>
+                    </div> -->
 
 
                     <!-- PISCINA -->
