@@ -174,20 +174,13 @@
 
 
 
-
-
-
-
-
-
-
 /* DESKTOP ==================== */
 /* Usar VW em titulos para não mudar com zoom */
 @media (min-width: 769px) {
 .card-container {
   border: 0.1vw solid #ccc;
   border-radius: 0.6vw;
-  margin: 0.5vw;
+  margin: 0vw;
   width: 15vw;
   height: 21vw;
   box-shadow: 0 2px 8px #0001;

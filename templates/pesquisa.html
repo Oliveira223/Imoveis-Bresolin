@@ -100,6 +100,13 @@
                         </select>
                     </div>
 
+                     <!-- ID -->
+                    <div class="campo">
+                        <label for="id">ID do imóvel</label>
+                        <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}"
+                            placeholder="Ex: 123">
+                    </div>
+
                     <!-- CIDADE -->
                     <div class="campo">
                         <label for="cidade">Cidade</label>
@@ -186,11 +193,22 @@
                             placeholder="Ex: 2026">
                     </div>
 
-                    <!-- ID -->
+
+                    <!-- PISCINA -->
                     <div class="campo">
-                        <label for="id">ID do imóvel</label>
-                        <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}"
-                            placeholder="Ex: 123">
+                        <label>
+                            <input type="checkbox" name="piscina" value="1" {% if piscina=='1' %}checked{% endif %}>
+                            Possui Piscina
+                        </label>
+                    </div>
+
+                    <!-- CHURRASQUEIRA -->
+                    <div class="campo">
+                        <label>
+                            <input type="checkbox" name="churrasqueira" value="1" {% if churrasqueira=='1' %}checked{%
+                                endif %}>
+                            Possui Churrasqueira
+                        </label>
                     </div>
 
                     <!-- BOTÕES -->
