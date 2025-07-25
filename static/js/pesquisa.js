@@ -77,8 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const entregaInput = document.getElementById('entrega');
 
   function atualizarCampoEntrega() {
-    entregaInput.disabled = estagioSelect.value === 'PRONTA';
-  }
+  entregaInput.disabled = estagioSelect.value !== 'EM CONSTRUÇÃO';
+}
 
   estagioSelect.addEventListener('change', atualizarCampoEntrega);
   atualizarCampoEntrega(); // ao carregar a página
