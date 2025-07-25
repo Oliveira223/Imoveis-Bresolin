@@ -35,18 +35,17 @@
    ================================ */
 .whatsapp-float {
   position: fixed;
-  width: 60px;
-  height: 60px;
   bottom: 30px;
   right: 30px;
-  z-index: 100;
+  width: 60px;
+  height: 60px;
   background-color: #25D366;
   border-radius: 50%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s ease-in-out;
+  z-index: 100;
 }
 
 .whatsapp-float:hover {
@@ -198,23 +197,42 @@ header {
   color: #aaa;
 }
 
-.link-imagem{
+.link-imagem {
   display: flex;
   align-items: self-end;
   text-align: left;
   margin-left: -1vw;
 }
 
-.link-imagem img{
+.link-imagem img {
   width: 3vw;
   height: auto;
 }
 
 
-
 /* ==================================== DESKTOP =================================== */
 
 @media (min-width: 768px) {
+
+  /* ================================
+   Botão do whatsapp
+   ================================ */
+.whatsapp-float {
+  bottom: 70px;
+  right: 70px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.whatsapp-float img {
+  width: 30px;
+  height: 30px;
+}
+
+
+
 
   /* ================================
    CABEÇALHO
@@ -260,15 +278,182 @@ header {
     letter-spacing: 0.2vw;
   }
 
+
+  .link-imagem {
+    margin-left: -0.2vw;
+  }
+
+  .link-imagem img {
+    width: 0.8vw;
+    height: auto;
+  }
+
+
   
-.link-imagem{
-  margin-left: -0.2vw;
+  /* ================================
+   Rodapé estilo cartão de visita
+   ================================ */
+
+  .footer {
+    background-color: #1c1c1c;
+    color: #fff;
+    padding: 2rem 1rem;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    text-align: center;
+  }
+
+  .footer_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: nowrap;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .footer_logo img {
+    height: 120px;
+    width: auto;
+  }
+
+  .footer_info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .info_item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .info_item img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .footer_copyright {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+
+
 }
 
-.link-imagem img{
-  width: 0.8vw;
+@media (min-width: 1024px) {
+  /* ================================
+   Botão do whatsapp
+   ================================ */
+.whatsapp-float {
+  bottom: 90px;
+  right: 110px;
+  width: 4vw;
+  height: 4vw;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.whatsapp-float img {
+  width: 2vw;
   height: auto;
 }
+
+  /* ================================
+   CABEÇALHO
+  ================================== */
+  .header-content {
+    width: 100%;
+    padding: 0.5vw 3vw;
+    /* vertical | horizontal */
+  }
+
+  /* Centro */
+  .header-center {
+    margin-top: 0vw;
+  }
+
+  /* Direita */
+  .header-right {
+    flex: 1;
+  }
+
+  /* ======== Botão Voltar ====== */
+  .btn-voltar img {
+    width: 2vw;
+  }
+
+  /* ======== Titulo ======== */
+  .title_container {
+    line-height: 2vw;
+    margin: 0;
+  }
+
+  .title_container h1 {
+    font-size: 2vw;
+    font-weight: 100;
+    letter-spacing: 1vw;
+    margin-left: 1vw;
+  }
+
+  .title_container h2 {
+    font-weight: 100;
+    font-size: 0.8vw;
+    letter-spacing: 0.2vw;
+  }
+
+
+  .link-imagem {
+    margin-left: -0.2vw;
+  }
+
+  .link-imagem img {
+    width: 0.8vw;
+    height: auto;
+  }
+
+  /* ================================
+   Rodapé estilo cartão de visita
+   ================================ */
+
+  .footer {
+    padding: 2vw 0;
+  }
+
+  .footer_container {
+    gap: 2vw;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .footer_logo img {
+    width: 7vw;
+    height: auto;
+  }
+
+  .footer_info {
+    gap: 0.8rem;
+  }
+
+  .info_item {
+    gap: 0.6vw;
+    font-size: 0.90vw;
+  }
+
+  .info_item img {
+    width: 1vw;
+    height: auto;
+  }
+
+  .footer_copyright {
+    margin-top: 2vw;
+    font-size: 0.75vw;
+  }
+
 
 
 }

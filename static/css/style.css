@@ -29,7 +29,12 @@ body {
   overflow-x: hidden;
 }
 
-
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
 
 a {
   text-decoration: none;
@@ -48,7 +53,7 @@ a:hover {
 html.no-scroll,
 body.no-scroll {
   overflow: hidden;
-  max-width: 100%;
+  min-width: 100%;
 }
 
 /* ================================
@@ -174,127 +179,6 @@ body.no-scroll {
   color: rgb(201, 201, 201);
 }
 
-.main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.titulo {
-  color: #111;
-  margin-top: 6vw;
-  text-align: left;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin-left: 15vw;
-}
-
-
-@keyframes underline-swap-cycle {
-
-  /* CRESCE da esquerda (devagar) */
-  0% {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  30% {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-
-  /* SOME da direita (rápido) */
-  35% {
-    transform: scaleX(1);
-    transform-origin: right;
-  }
-
-  45% {
-    transform: scaleX(0);
-    transform-origin: right;
-  }
-
-  /* CRESCE da direita (devagar) */
-  50% {
-    transform: scaleX(0);
-    transform-origin: right;
-  }
-
-  80% {
-    transform: scaleX(1);
-    transform-origin: right;
-  }
-
-  /* SOME da esquerda (rápido) */
-  85% {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-
-  95% {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  100% {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-}
-
-
-.underline-animated {
-  position: relative;
-  display: inline-block;
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #111;
-}
-
-.underline-animated::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  width: 100%;
-  background: #007BFF;
-  border-radius: 2px;
-  animation: underline-swap-cycle 10s infinite normal;
-}
-
-
-.slottt-machine {
-  width: 100%;
-  max-width: 400px;
-}
-
-.slottt-machine__mask {
-  height: 3.3rem;
-  /* maior pra evitar palavras "vazando" */
-  width: 100vw;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-  overflow-x: hidden;
-}
-
-.slottt-machine__items_container {
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-.slottt-machine__item {
-  height: 3.5rem;
-  line-height: 3.5rem;
-  font-size: 2.5rem;
-  font-weight: bold;
-}
-
-
-
-
 #form-busca {
   width: 18rem;
   margin-top: 0.75rem;
@@ -381,12 +265,34 @@ body.no-scroll {
    PRINCIPAIS IMÓVEIS 
    ================================ */
 
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.titulo {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #111;
+  text-align: left;
+  margin-top: 2vw;
+  margin-left: 14.5vw;
+  margin-right: 10vw;
+}
+
+.titulo h1 {
+  font-size: 10vw;
+}
+
+
 #lista-imoveis {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  margin: 2rem;
+  margin: 0vw 5vw;
 }
 
 /* ============================
@@ -424,109 +330,12 @@ body.no-scroll {
 
 
 
-/* ================================
-   Rodapé estilo cartão de visita
-   ================================ */
-
-.footer {
-  background-color: #1c1c1c;
-  color: #fff;
-  padding: 2rem 1rem;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  text-align: center;
-}
-
-.footer_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin: auto;
-}
-
-.footer_logo img {
-  height: 120px;
-  width: auto;
-}
-
-.footer_info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.8rem;
-}
-
-.info_item {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.95rem;
-}
-
-.info_item img {
-  width: 20px;
-  height: 20px;
-}
-
-.footer_copyright {
-  margin-top: 2rem;
-  font-size: 0.75rem;
-  color: #aaa;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-/* DESKTOP ==================== */
-/* Usar VW em titulos para não mudar com zoom */
+/* TABLETS ======================*/
 @media (min-width: 768px) {
-
-
-  /* ================================
-   Botão do whatsapp
-   ================================ */
-  .whatsapp-float {
-  
-    width: 5vw;
-    height: 5vw;
-    bottom: 2vw;
-    right: 2vw;
-   
-    border-radius: 50%;
-    box-shadow: 0.5vw 0.5vw 1vw rgba(0, 0, 0, 0.178);
-  }
-
-  .whatsapp-float img {
-    width: 2.5vw;
-    height: 2.5vw;
-  }
 
   /* ================================
    Tela de carregamento
    ================================ */
-  .loading-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #1d1d1d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    transition: opacity 0.6s ease;
-  }
-
   .logo-animate {
     width: 100px;
     height: auto;
@@ -537,19 +346,14 @@ body.no-scroll {
     stroke-dashoffset: 300;
   }
 
-
   /* ================================
    HERO SECTION
    ================================ */
-
-
-  /* VERSION 2 ====================== */
   .hero-title {
     margin-top: 6vw;
     margin-bottom: 1rem;
     margin-left: 0.8rem;
     line-height: 2.7vw;
-
   }
 
   /* BRESOLIN */
@@ -567,8 +371,6 @@ body.no-scroll {
     letter-spacing: 0.4vw;
     font-weight: 100;
   }
-
-
 
   .hero p {
     margin-top: 2vw;
@@ -633,63 +435,17 @@ body.no-scroll {
   }
 
 
-  /* ================================
-   ANIMAÇÃO
-   ================================ */
-
   .titulo {
-    margin-top: 6vw;
-    margin-left: 21vw;
+    margin: 2vw 10vw;
   }
-
-  .underline-animated {
-    font-size: 3rem;
-  }
-
-  .underline-animated::after {
-    bottom: 0;
-    left: 0;
-    height: 4px;
-    width: 100%;
-    border-radius: 2px;
-  }
-
-
-  .slottt-machine {
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .slottt-machine__mask {
-    height: 3.3rem;
-    width: 100vw;
-  }
-
-  .slottt-machine__items_container {
-    top: 0;
-    width: 100%;
-  }
-
-  .slottt-machine__item {
-    height: 3.5rem;
-    line-height: 3.5rem;
-    font-size: 2.5rem;
-  }
-
-
-
 
   /* ================================
    PRINCIPAIS IMÓVEIS 
    ================================ */
 
   #lista-imoveis {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 1rem;
-    margin-left: 20vw;
-    margin-right: 20vw;
+    margin: 0 20vw;
   }
 
 
@@ -744,6 +500,149 @@ body.no-scroll {
     font-size: 0.75rem;
     color: #aaa;
   }
+
+
+  /* ============================
+   Botão "Ver mais imóveis"
+============================ */
+  .ver-mais-container {
+    margin-top: 1em;
+    margin-bottom: 3.5rem;
+  }
+
+  .btn-ver-mais,
+  .btn-ver-mais:visited {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+
+/* DESKTOP ==================== */
+/* Usar VW em titulos para não mudar com zoom */
+@media (min-width: 1024px) {
+
+  /* ================================
+   Tela de carregamento
+   ================================ */
+  .logo-animate {
+    width: 100px;
+    height: auto;
+  }
+
+  /* ================================
+   HERO SECTION
+   ================================ */
+
+  /* VERSION 2 ====================== */
+  .hero-title {
+    margin-top: 6vw;
+    margin-bottom: 1rem;
+    margin-left: 0.8rem;
+    line-height: 2.7vw;
+  }
+
+  /* BRESOLIN */
+  .hero h1 {
+    margin-left: 0.1vw;
+    font-size: 3.5vw;
+    letter-spacing: 0.6vw;
+    font-weight: 100;
+  }
+
+  /* Negocios imobiliarios */
+  .hero h2 {
+    margin-left: -0.3rem;
+    font-size: 1vw;
+    letter-spacing: 0.4vw;
+    font-weight: 100;
+  }
+
+  .hero p {
+    margin-top: 2vw;
+    font-size: 1vw;
+    font-weight: 400;
+  }
+
+  #form-busca {
+    width: 20vw;
+    margin-top: 1vw;
+    gap: 2.3vw;
+    padding: 2vw;
+    padding-left: 3vw;
+    padding-right: 3vw;
+    border-radius: 12px;
+    box-shadow: 0.25rem 0.25rem 2rem rgba(0, 0, 0, 0.719);
+  }
+
+  .form-group {
+    border-radius: 8px;
+    padding: 0.8vw 0.8vw 0.4vw;
+    box-shadow: 0 2px 6px #0002;
+    border: 0.1vw solid #ccc;
+    width: 100%;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    font-size: 0.8vw;
+    color: rgba(53, 52, 52, 0.719);
+    margin-bottom: 0.3rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .form-group select,
+  .form-group input {
+    font-weight: 500;
+    font-size: 1vw;
+    padding: 0.2vw 0;
+  }
+
+  .form-group select option {
+    font-size: 1vw;
+    padding: 0.5rem;
+  }
+
+  #form-busca button {
+    width: 100%;
+    margin-top: 1.2vw;
+    padding: 1vw;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2vw;
+    box-shadow: 0 0.2vw 0.2vw #0003;
+  }
+
+  .titulo {
+    margin-left: 25.5vw;
+  }
+
+  .titulo h1 {
+    font-size: 4vw;
+  }
+
+  /* ============================
+   Botão "Ver mais imóveis"
+============================ */
+  .ver-mais-container {
+    margin-top: 3vw;
+    margin-bottom: 3.5vw;
+  }
+
+  .btn-ver-mais,
+  .btn-ver-mais:visited {
+    font-size: 1.5vw;
+    font-weight: 500;
+    padding: 1vw 2vw;
+    border-radius: 4vw;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+
 
 
 }
