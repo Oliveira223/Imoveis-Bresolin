@@ -329,6 +329,67 @@ form textarea {
   font-weight: bold;
 }
 
+/* =========================
+   CHECKBOX PERSONALIZADO
+========================= */
+
+.checkbox-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  position: relative;
+  padding-left: 1.8rem;
+  cursor: pointer;
+  user-select: none;
+  flex: 1 1 48%;
+}
+
+.checkbox-custom input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-custom .checkmark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 18px;
+  width: 18px;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.checkbox-custom input:checked ~ .checkmark {
+  background-color: #0077cc;
+  border-color: #005fa3;
+}
+
+.checkbox-custom .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-custom input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-custom .checkmark:after {
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 
 /* =========================
    RESPONSIVIDADE

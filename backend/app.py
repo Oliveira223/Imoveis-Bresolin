@@ -100,13 +100,13 @@ def editar_imovel(imovel_id):
 # Página inicial
 @app.route('/')
 def index():
-    registrar_acesso()  # ← registra acesso geral à home
+    registrar_acesso()  # registra acesso geral à home
     return render_template('index.html')
 
 # Página de detalhes do imóvel
 @app.route('/imovel/<int:imovel_id>')
 def pagina_imovel(imovel_id):
-    registrar_acesso(imovel_id)  # ← registra acesso ao imóvel
+    registrar_acesso(imovel_id)  # registra acesso ao imóvel
 
     with engine.connect() as con:
         imovel_result = con.execute(
@@ -156,6 +156,9 @@ def pagina_pesquisa():
     area_max   = request.args.get('area_max', '')
     estagio    = request.args.get('estagio', '')
     entrega    = request.args.get('entrega', '')
+    piscina           = request.args.get('piscina', '')
+    churrasqueira     = request.args.get('churrasqueira', '')
+
     
     max_preco = request.args.get('max_preco', '').replace('.', '')
     if max_preco.isdigit():
@@ -233,6 +236,14 @@ def pagina_pesquisa():
         query += " AND entrega ILIKE :entrega"
         params['entrega'] = entrega
 
+    if piscina == '1':
+        query += " AND piscina = true"
+        params['piscina'] = piscina
+
+    if churrasqueira == '1':
+        query += " AND churrasqueira = true"
+        params['churrasqueira'] = churrasqueira
+
     # Execução da consulta
     with engine.connect() as conn:
         resultado = conn.execute(text(query), params).mappings()
@@ -244,7 +255,7 @@ def pagina_pesquisa():
                            max_preco=max_preco, id=id_, quartos=quartos,
                            banheiros=banheiros, vagas=vagas,
                            area_min=area_min, area_max=area_max,
-                           estagio=estagio, entrega=entrega)
+                           estagio=estagio, entrega=entrega, piscina=piscina, churrasqueira=churrasqueira)
 
 
 # ==============================
@@ -276,12 +287,12 @@ def api_imoveis():
                     condominio_id, titulo, descricao, preco, imagem,
                     tipo, pretensao, quartos, suites, banheiros, vagas,
                     area, endereco, bairro, cidade, uf, ativo, link, 
-                    estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro
+                    estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro, iptu, valor_condominio, piscina, churrasqueira
                 ) VALUES (
                     :condominio_id, :titulo, :descricao, :preco, :imagem,
                     :tipo, :pretensao, :quartos, :suites, :banheiros, :vagas,
                     :area, :endereco, :bairro, :cidade, :uf, :ativo, :link,
-                    :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro
+                    :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro, :iptu, :valor_condominio, :piscina, :churrasqueira
                 )
             '''), data)
             print("[DEBUG] Imóvel inserido com sucesso!")
@@ -324,7 +335,11 @@ def api_imovel_id(imovel_id):
                     estagio          = :estagio,
                     maps_iframe      = :maps_iframe,
                     campo_extra2     = :campo_extra2,
-                    entrega          = :entrega
+                    entrega          = :entrega,
+                    iptu             = :iptu,
+                    valor_condominio = :valor_condominio,
+                    piscina          = :piscina,
+                    churrasqueira    = :churrasqueira
                 WHERE id = :id
             '''), data)
             return '', 204

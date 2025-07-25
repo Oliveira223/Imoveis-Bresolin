@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Imóvel #{{ imovel.id }} | Bresolin</title>
-     <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+    <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+    
     <link rel="stylesheet" href="/static/css/editar_imovel.css">
 </head>
 
@@ -125,6 +126,15 @@
             <label for="andar">Andar:</label>
             <input type="number" id="andar" name="andar" value="{{ imovel.andar or '' }}">
 
+
+            <label for="valor_condominio">Condomínio:</label>
+            <input type="number" id="valor_condominio" name="valor_condominio" step="0.01"
+                value="{{ imovel.valor_condominio or '' }}">
+
+            <label for="iptu">IPTU:</label>
+            <input type="number" id="iptu" name="iptu" step="0.01" value="{{ imovel.iptu or '' }}">
+
+           
             <!-- =========================
             Endereço
             ========================== -->
@@ -141,12 +151,13 @@
             <input type="text" id="uf" name="uf" maxlength="2" value="{{ imovel.uf or '' }}">
 
 
-            
+
             <!-- =========================
             Extras e links
             ========================== -->
 
-            
+
+
             <label for="estagio">Estágio da obra:</label>
             <select id="estagio" name="estagio">
                 <option value="">Selecione</option>
@@ -168,6 +179,18 @@
             <label for="campo_extra2">Campo Extra 2:</label>
             <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
 
+             <label class="checkbox-custom">
+                <input type="checkbox" name="piscina" id="piscina" {% if imovel.piscina %}checked{% endif %}>
+                <span class="checkmark"></span>
+                Piscina
+            </label>
+
+            <label class="checkbox-custom">
+                <input type="checkbox" name="churrasqueira" id="churrasqueira" {% if imovel.churrasqueira %}checked{%
+                    endif %}>
+                <span class="checkmark"></span>
+                Churrasqueira
+            </label>
 
             <!-- =========================
             Ativo

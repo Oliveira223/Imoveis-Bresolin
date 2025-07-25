@@ -163,6 +163,11 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
   data.suites = parseInt(data.suites) || 0;
   data.banheiros = parseInt(data.banheiros) || 0;
   data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
+  data.iptu = parseFloat(data.iptu) || 0;
+  data.valor_condominio = parseFloat(data.valor_condominio) || 0;
+
+  data.piscina = this.piscina?.checked || false;
+  data.churrasqueira = this.churrasqueira?.checked || false;
 
   // Forçar campos que podem estar desabilitados ou ausentes
   data.entrega = document.getElementById('entrega-imovel-input').value || null;
@@ -301,39 +306,32 @@ function editarImovel(id) {
 // ===========================
 // Campo Preço com R$ e formatação
 // ===========================
+function configurarCampoMonetario(idEditavel, idReal) {
+  const editavel = document.getElementById(idEditavel);
+  const real = document.getElementById(idReal);
 
-const precoEditavel = document.getElementById('preco-editavel-admin');
-const precoReal = document.getElementById('preco-admin-real');
+  editavel.addEventListener('input', function () {
+    let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
+    if (texto) {
+      const formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
+      this.innerText = formatado;
+      real.value = texto;
+      reposicionarCursorAntesDaVirgula(this);
+    } else {
+      this.innerText = '';
+      real.value = '';
+    }
+  });
 
-precoEditavel.addEventListener('input', function () {
-  let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
-  if (texto) {
-    const formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
-    this.innerText = formatado;
-    precoReal.value = texto;
-    reposicionarCursorAntesDaVirgula(this);
-  } else {
-    this.innerText = '';
-    precoReal.value = '';
-  }
-});
-
-precoEditavel.addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') e.preventDefault();
-});
-
-function reposicionarCursorAntesDaVirgula(el) {
-  const range = document.createRange();
-  const sel = window.getSelection();
-  const node = el.firstChild;
-  if (!node) return;
-  const index = node.textContent.indexOf(',');
-  range.setStart(node, index);
-  range.setEnd(node, index);
-  sel.removeAllRanges();
-  sel.addRange(range);
+  editavel.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') e.preventDefault();
+  });
 }
 
+// Inicializa os campos com R$
+configurarCampoMonetario('preco-editavel-admin', 'preco-admin-real');
+configurarCampoMonetario('iptu-editavel-admin', 'iptu-admin-real');
+configurarCampoMonetario('condominio-editavel-admin', 'condominio-admin-real');
 
 // ===========================
 // Inicialização

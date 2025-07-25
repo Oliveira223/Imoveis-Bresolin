@@ -2,7 +2,7 @@
 <html lang="pt-br">
 
 <head>
-  <title>>{{ imovel.titulo }} | Imóveis Bresolin</title>
+  <title>{{ imovel.titulo }} | Imóveis Bresolin</title>
   <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
 
   <meta charset="UTF-8" />
@@ -49,7 +49,7 @@
     </div>
   </header>
 
-  <main class="conteudo-imovel">
+  <main class="conteudo-imovel mobile">
 
 
     <!-- Título -->
@@ -72,7 +72,7 @@
     <!-- Galeria de imagens secundárias -->
     {% if secundarias %}
     <div class="galeria">
-      <h3>Mais imagens</h3>
+      <!-- <h3>Mais imagens</h3> -->
       <div class="galeria-imagens-scroll">
         {% for img in secundarias %}
         <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
@@ -95,17 +95,23 @@
       {% if imovel.tipo %}<p> <strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</p>{% endif %}
       {% if imovel.area %}<p> <strong>Área:</strong> {{ imovel.area }} m²</p>{% endif %}
       {% if imovel.quartos %}<p> <strong>Quartos:</strong> {{ imovel.quartos }}</p>{% endif %}
-      <div class="banheiro_detalhes">
-        <img src="/static/img/icons/curved_arrow.svg" alt="">
-        {% if imovel.suites %}<p> <strong>Suítes:</strong> {{ imovel.suites }}</p>{% endif %}
-      </div>
-      {% if imovel.banheiros %}<p> <strong>Banheiros:</strong> {{ imovel.banheiros }}</p>{% endif %}
-      <div class="banheiro_detalhes">
-        <img src="/static/img/icons/curved_arrow.svg" alt="">
-        {% if imovel.banheiros %}<p> <strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }}</p>{%
-        endif %}
 
+      {% if imovel.suites %}
+      <div class="banheiro_detalhes">
+        <img src="/static/img/icons/curved_arrow.svg" alt="">
+        <p> <strong>Suítes:</strong> {{ imovel.suites }}</p>
       </div>
+      {% endif %}
+
+      {% if imovel.banheiros %}<p> <strong>Banheiros:</strong> {{ imovel.banheiros }}</p>{% endif %}
+
+      {% if imovel.banheiros_com_chuveiro %}
+      <div class="banheiro_detalhes">
+        <img src="/static/img/icons/curved_arrow.svg" alt="">
+        <p> <strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }}</p>
+      </div>
+      {% endif %}
+
       {% if imovel.vagas %}<p> <strong>Vagas:</strong> {{ imovel.vagas }}</p>{% endif %}
       {% if imovel.andar %}<p> <strong>Andar:</strong> {{ imovel.andar }}</p>{% endif %}
       {% if imovel.endereco %}<p> <strong>Endereço:</strong> {{ imovel.endereco }}</p>{% endif %}
@@ -158,7 +164,134 @@
 
   </main>
 
-   <!----------------------  Rodapé  ----------------->
+  <!-- ========================
+  Layout para desktop
+  ======================== -->
+  <main class="conteudo-imovel desktop">
+    <div class="layout-desktop">
+
+      {% if secundarias %}
+      <div class="coluna-esquerda">
+        {% for img in secundarias %}
+        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="coluna-central">
+        {% if imovel.imagem %}
+
+        <div class="imagem-principal-container">
+          <img class="imagem-principal" id="imagemPrincipal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
+
+          {% if imovel.maps_iframe %}
+          <div class="mapa-principal" id="mapaPrincipal">
+            <iframe src="{{ imovel.maps_iframe }}" allowfullscreen=""
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <button class="botao-mapa-toggle" onclick="alternarMapa()">Ver no mapa</button>
+          {% endif %}
+        </div>
+
+        {% endif %}
+      </div>
+
+      <div class="coluna-direita">
+
+        <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
+
+        {% if imovel.descricao %}
+        <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+        {% endif %}
+
+        {% if imovel.preco %}
+        <p class="preco">R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}
+        </p>
+        {% endif %}
+
+        <div class="campos-adicionais campos-grid">
+          {% if imovel.pretensao %}<div class="bloco-detalhe"><strong>Pretensão:</strong> {{ imovel.pretensao|capitalize
+            }}</div>{% endif %}
+          {% if imovel.tipo %}<div class="bloco-detalhe"><strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</div>{%
+          endif %}
+          {% if imovel.area %}<div class="bloco-detalhe"><strong>Área:</strong> {{ imovel.area }} m²</div>{% endif %}
+          {% if imovel.quartos %}
+          <div class="bloco-detalhe">
+            <div><strong>Quartos:</strong> {{ imovel.quartos }}</div>
+            {% if imovel.suites %}
+            <div class="linha-detalhe"><span>(<strong>Suítes:</strong> {{ imovel.suites }})</span></div>
+            {% endif %}
+          </div>{% endif %}
+
+          {% if imovel.banheiros %}
+          <div class="bloco-detalhe">
+            <div class="linha-principal"><strong>Banheiros:</strong> {{ imovel.banheiros }}</div>
+            {% if imovel.banheiros_com_chuveiro %}
+            <div class="linha-detalhe"><span>(<strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }})</span>
+            </div>
+            {% endif %}
+          </div>{% endif %}
+
+          {% if imovel.vagas %}<div class="bloco-detalhe"><strong>Vagas:</strong> {{ imovel.vagas }}</div>{% endif %}
+          {% if imovel.andar %}<div class="bloco-detalhe"><strong>Andar:</strong> {{ imovel.andar }}</div>{% endif %}
+          {% if imovel.bairro %}<div class="bloco-detalhe"><strong>Bairro:</strong> {{ imovel.bairro }}</div>{% endif %}
+          {% if imovel.cidade %}<div class="bloco-detalhe"><strong>Cidade:</strong> {{ imovel.cidade }}</div>{% endif %}
+          {% if imovel.uf %}<div class="bloco-detalhe"><strong>UF:</strong> {{ imovel.uf }}</div>{% endif %}
+          {% if imovel.entrega and imovel.estagio == 'EM CONSTRUÇÃO' %}
+          <div class="bloco-detalhe"><strong>Previsão de Entrega:</strong> {{ imovel.entrega }}</div>{% endif %}
+          {% if imovel.estagio %}<div class="bloco-detalhe"><strong>Estágio:</strong> {{ imovel.estagio }}</div>{% endif
+          %}
+          {% if imovel.campo_extra2 %}<div class="bloco-detalhe"><strong>Campo Extra 2:</strong> {{ imovel.campo_extra2
+            }}</div>{% endif %}
+
+          {% if imovel.iptu %}
+          <p><strong>IPTU:</strong> R$ {{ "{:,.2f}".format(imovel.iptu).replace(",", "X").replace(".", ",").replace("X",
+            ".") }}</p>
+          {% endif %}
+
+          {% if imovel.valor_condominio %}
+          <p><strong>Condomínio:</strong> R$ {{ "{:,.2f}".format(imovel.valor_condominio).replace(",", "X").replace(".",
+            ",").replace("X", ".") }}</p>
+          {% endif %}
+
+          {% if imovel.piscina %}
+          <p><strong>Piscina:</strong> Sim</p>
+          {% endif %}
+
+          {% if imovel.churrasqueira %}
+          <p><strong>Churrasqueira:</strong> Sim</p>
+          {% endif %}
+
+
+          {% if imovel.endereco %}
+          <div class="bloco-detalhe">
+            <strong>Endereço:</strong>
+            <a href="{{ imovel.link }}" target="_blank">
+              <span class="valor-multilinha" style="text-decoration: underline;">{{imovel.endereco}}</span>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <a class="btn-whatsapp"
+          href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+          target="_blank">
+          Tenho interesse
+          <img src="/static/img/icons/icon_whatsapp.svg" alt="">
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+
+
+
+
+
+
+
+  <!----------------------  Rodapé  ----------------->
   <footer class="footer">
 
     <div class="footer_container">
@@ -185,20 +318,20 @@
         </div>
 
         <a href="https://www.instagram.com/bresolin.imoveis" target="_blank">
-        <div class="info_item">
-          <img src="/static/img/icons/icon_instagram.svg" alt="">
-          <p>@bresolin.imoveis</p>
-          <div class="link-imagem">
-          <img src="/static/img/icons/icon_link.svg" alt="">
+          <div class="info_item">
+            <img src="/static/img/icons/icon_instagram.svg" alt="">
+            <p>@bresolin.imoveis</p>
+            <div class="link-imagem">
+              <img src="/static/img/icons/icon_link.svg" alt="">
+            </div>
           </div>
-        </div>
         </a>
 
         <div class="info_item">
           <img src="/static/img/icons/icon_mail.svg" alt="">
           <p>otavio.bresolin@creci.org.br</p>
         </div>
-        
+
       </div>
     </div>
 
@@ -206,6 +339,9 @@
   </footer>
 
   <script src="/static/js/imovel.js"></script>
+
+  <a href="https://wa.me/5551981702045" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
 </body>
 
 </html>

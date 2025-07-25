@@ -206,3 +206,5 @@ document.getElementById("btn-excluir-plantas").onclick = async () => {
     }
   }
 };
+
+
