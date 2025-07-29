@@ -329,6 +329,35 @@ body.no-scroll {
 
 
 
+/* ============================
+   BSugestões de pesquisa
+============================ */
+.sugestoes {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  color: black;
+  text-align: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sugestoes div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.sugestoes div:hover {
+  background: #f0f0f0;
+}
+
+
 
 /* TABLETS ======================*/
 @media (min-width: 768px) {

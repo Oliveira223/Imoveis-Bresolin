@@ -174,27 +174,27 @@ def pagina_pesquisa():
     if termo:
         query += """
         AND (
-            titulo ILIKE :termo OR
-            descricao ILIKE :termo OR
-            cidade ILIKE :termo OR
-            bairro ILIKE :termo OR
-            endereco ILIKE :termo OR
+            unaccent(titulo) ILIKE unaccent(:termo) OR
+            unaccent(descricao) ILIKE unaccent(:termo) OR
+            unaccent(cidade) ILIKE unaccent(:termo) OR
+            unaccent(bairro) ILIKE unaccent(:termo) OR
+            unaccent(endereco) ILIKE unaccent(:termo) OR
             CAST(id AS TEXT) ILIKE :termo
         )"""
         params['termo'] = f"%{termo}%"
 
     # Filtros específicos
+    if bairro:
+        query += " AND unaccent(bairro) ILIKE unaccent(:bairro)"
+        params['bairro'] = f"%{bairro}%"
+
     if cidade:
-        query += " AND cidade ILIKE :cidade"
+        query += " AND unaccent(cidade) ILIKE unaccent(:cidade)"
         params['cidade'] = f"%{cidade}%"
 
     if uf:
         query += " AND uf ILIKE :uf"
         params['uf'] = uf
-
-    if bairro:
-        query += " AND bairro ILIKE :bairro"
-        params['bairro'] = f"%{bairro}%"
 
     if tipo:
         query += " AND tipo ILIKE :tipo"
@@ -414,6 +414,31 @@ def api_condominios():
             return '', 201
 
 
+
+# ==============================
+# Sugestões de pesquisa
+# ==============================
+@app.route('/api/sugestoes')
+def api_sugestoes():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify([])
+
+    with engine.connect() as conn:
+        result = conn.execute(text("""
+            SELECT DISTINCT bairro FROM imoveis 
+            WHERE unaccent(bairro) ILIKE unaccent(:q)
+            UNION
+            SELECT DISTINCT cidade FROM imoveis 
+            WHERE unaccent(cidade) ILIKE unaccent(:q)
+            UNION
+            SELECT CAST(id AS TEXT) FROM imoveis 
+            WHERE CAST(id AS TEXT) ILIKE :q
+            LIMIT 10
+        """), {"q": f"%{query}%"})
+        sugestoes = [row[0] for row in result]
+
+    return jsonify(sugestoes)
 
 
 # ==============================
