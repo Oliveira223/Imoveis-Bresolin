@@ -45,68 +45,68 @@ document.addEventListener("DOMContentLoaded", () => {
     previewImagemPrincipal.style.display = 'block';
   };
 
-// ===========================
-// Upload de imagens secundárias (mantém previews existentes)
-// ===========================
+  // ===========================
+  // Upload de imagens secundárias (mantém previews existentes)
+  // ===========================
 
-inputSecundarias.onchange = async function () {
-  const files = Array.from(this.files);
+  inputSecundarias.onchange = async function () {
+    const files = Array.from(this.files);
 
-  if (!files.length) return;
+    if (!files.length) return;
 
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
 
-    const data = await res.json();
-    imagensSecundariasNovas.push(data.secure_url);
+      const data = await res.json();
+      imagensSecundariasNovas.push(data.secure_url);
 
-    const img = document.createElement('img');
-    img.src = data.secure_url;
-    img.className = 'thumb-secundaria';
-    galeriaSecundarias.appendChild(img);
-  }
+      const img = document.createElement('img');
+      img.src = data.secure_url;
+      img.className = 'thumb-secundaria';
+      galeriaSecundarias.appendChild(img);
+    }
 
-  // Limpa input para permitir reenvio dos mesmos arquivos se necessário
-  this.value = '';
-};
+    // Limpa input para permitir reenvio dos mesmos arquivos se necessário
+    this.value = '';
+  };
 
-// ===========================
-// Upload de plantas (mantém previews existentes)
-// ===========================
+  // ===========================
+  // Upload de plantas (mantém previews existentes)
+  // ===========================
 
-inputPlantas.onchange = async function () {
-  const files = Array.from(this.files);
+  inputPlantas.onchange = async function () {
+    const files = Array.from(this.files);
 
-  if (!files.length) return;
+    if (!files.length) return;
 
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
 
-    const data = await res.json();
-    plantasNovas.push(data.secure_url);
+      const data = await res.json();
+      plantasNovas.push(data.secure_url);
 
-    const img = document.createElement('img');
-    img.src = data.secure_url;
-    img.className = 'thumb-secundaria';
-    galeriaPlantas.appendChild(img);
-  }
+      const img = document.createElement('img');
+      img.src = data.secure_url;
+      img.className = 'thumb-secundaria';
+      galeriaPlantas.appendChild(img);
+    }
 
-  this.value = '';
-};
+    this.value = '';
+  };
 
   // ===========================
   // Envio dos dados do imóvel
@@ -119,6 +119,8 @@ inputPlantas.onchange = async function () {
 
     // Conversões numéricas e lógicas
     data.ativo = form.ativo.checked;
+    data.piscina = document.getElementById("piscina").checked;
+    data.churrasqueira = document.getElementById("churrasqueira").checked;
     data.preco = parseFloat(data.preco) || 0;
     data.area = parseFloat(data.area) || 0;
     data.quartos = parseInt(data.quartos) || 0;

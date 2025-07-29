@@ -281,6 +281,19 @@ def api_imoveis():
                 if campo not in data:
                     data[campo] = None
 
+
+            data = request.json
+
+            # Converte strings vazias para None nos campos opcionais
+            for campo in ['entrega', 'estagio', 'maps_iframe', 'campo_extra2']:
+                if data.get(campo) == '':
+                    data[campo] = None
+
+            # Converte campos numéricos vazios para None
+            for campo in ['iptu', 'valor_condominio']:
+                if data.get(campo) in ('', None):
+                    data[campo] = None
+
             print("[DEBUG] Dados recebidos para cadastro:", data)
 
             data['ativo'] = bool(int(data.get('ativo', 1)))
@@ -316,6 +329,21 @@ def api_imovel_id(imovel_id):
             data['id'] = imovel_id
             data['ativo'] = bool(int(data.get('ativo', 1)))
             data['condominio_id'] = data.get('condominio_id') or None 
+
+            # Tratamento para campos numéricos e opcionais vazios
+            for campo in ['iptu', 'valor_condominio']:
+                if data.get(campo) in ('', None):
+                    data[campo] = None
+
+            for campo in ['entrega', 'campo_extra2', 'maps_iframe', 'estagio']:
+                if data.get(campo) == '':
+                    data[campo] = None
+
+            # Garante valores padrão para checkboxes
+            for campo in ['piscina', 'churrasqueira']:
+                data[campo] = bool(data.get(campo, False))
+
+
             con.execute(text('''
                 UPDATE imoveis SET
                     condominio_id    = :condominio_id, 
