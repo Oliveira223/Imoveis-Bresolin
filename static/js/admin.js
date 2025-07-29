@@ -356,6 +356,7 @@ configurarCampoMonetario('preco-editavel-admin', 'preco-admin-real');
 configurarCampoMonetario('iptu-editavel-admin', 'iptu-admin-real');
 configurarCampoMonetario('condominio-editavel-admin', 'condominio-admin-real');
 
+
 // ===========================
 // Inicialização
 // ===========================
