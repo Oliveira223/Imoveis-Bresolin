@@ -170,6 +170,10 @@ def pagina_pesquisa():
     query = "SELECT * FROM imoveis WHERE ativo = true"
     params = {}
 
+    if termo.isdigit():
+        query += " AND id = :id"
+        params['id'] = termo
+
     # Filtro por termo genérico
     if termo:
         query += """
