@@ -57,3 +57,47 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
 });
+
+
+// ================================
+// Sugestões de pesquisa
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+  const termoInput = document.getElementById("termo");
+  const sugestoesBox = document.getElementById("sugestoes-termo");
+
+  termoInput.addEventListener("input", () => {
+    const query = termoInput.value.trim();
+
+    if (query.length < 2) {
+      sugestoesBox.style.display = "none";
+      return;
+    }
+
+    fetch(`/api/sugestoes?query=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        sugestoesBox.innerHTML = "";
+        if (data.length === 0) {
+          sugestoesBox.style.display = "none";
+          return;
+        }
+        data.forEach(item => {
+          const div = document.createElement("div");
+          div.textContent = item;
+          div.addEventListener("click", () => {
+            termoInput.value = item;
+            sugestoesBox.style.display = "none";
+          });
+          sugestoesBox.appendChild(div);
+        });
+        sugestoesBox.style.display = "block";
+      });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!sugestoesBox.contains(e.target) && e.target !== termoInput) {
+      sugestoesBox.style.display = "none";
+    }
+  });
+});

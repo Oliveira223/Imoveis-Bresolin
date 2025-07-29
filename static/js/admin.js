@@ -311,11 +311,15 @@ function configurarCampoMonetario(idEditavel, idReal) {
   const real = document.getElementById(idReal);
 
   editavel.addEventListener('input', function () {
+    // Remove caracteres não numéricos e ",00"
     let texto = this.innerText.replace(',00', '').replace(/\D/g, '');
+
     if (texto) {
       const formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
       this.innerText = formatado;
       real.value = texto;
+
+      // Reposiciona o cursor corretamente
       reposicionarCursorAntesDaVirgula(this);
     } else {
       this.innerText = '';
@@ -323,12 +327,31 @@ function configurarCampoMonetario(idEditavel, idReal) {
     }
   });
 
+  // Impede quebra de linha com Enter
   editavel.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') e.preventDefault();
   });
 }
 
-// Inicializa os campos com R$
+// ===========================
+// Reposicionar cursor antes da vírgula
+// ===========================
+function reposicionarCursorAntesDaVirgula(el) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  const node = el.firstChild;
+  if (!node) return;
+
+  // Localiza a vírgula ou, se não existir, vai para o final
+  const index = node.textContent.indexOf(',') > -1 ? node.textContent.indexOf(',') : node.textContent.length;
+
+  range.setStart(node, index);
+  range.setEnd(node, index);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// Inicializa os campos monetários
 configurarCampoMonetario('preco-editavel-admin', 'preco-admin-real');
 configurarCampoMonetario('iptu-editavel-admin', 'iptu-admin-real');
 configurarCampoMonetario('condominio-editavel-admin', 'condominio-admin-real');

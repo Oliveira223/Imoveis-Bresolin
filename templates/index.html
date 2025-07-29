@@ -76,9 +76,10 @@
           </div>
 
           <!-- Palavras chaves -->
-          <div class="form-group">
+          <div class="form-group" style="position: relative;">
             <label for="termo">Palavras-chave</label>
-            <input type="text" name="termo" id="termo" placeholder="Digite região, bairro ou ID" />
+            <input type="text" name="termo" id="termo" placeholder="Digite região, bairro ou ID" autocomplete="off" />
+            <div id="sugestoes-termo" class="sugestoes"></div>
           </div>
 
           <!-- Botão-->
@@ -91,17 +92,17 @@
 
   <!-- Lista de imóveis recentes via cs -->
 
-<div class="main">
-  <div>
+  <div class="main">
+    <div>
       <div class="titulo">
         <h1>Melhores Imóveis</h1>
       </div>
       <section id="lista-imoveis"></section>
+    </div>
   </div>
-</div>
 
   <div class="ver-mais-container">
-     <a href="/pesquisa" class="btn-ver-mais">Ver mais imóveis</a>
+    <a href="/pesquisa" class="btn-ver-mais">Ver mais imóveis</a>
   </div>
 
   <!----------------------  Rodapé  ----------------->
@@ -131,20 +132,20 @@
         </div>
 
         <a href="https://www.instagram.com/bresolin.imoveis" target="_blank">
-        <div class="info_item">
-          <img src="/static/img/icons/icon_instagram.svg" alt="">
-          <p>@bresolin.imoveis</p>
-          <div class="link-imagem">
-          <img src="/static/img/icons/icon_link.svg" alt="">
+          <div class="info_item">
+            <img src="/static/img/icons/icon_instagram.svg" alt="">
+            <p>@bresolin.imoveis</p>
+            <div class="link-imagem">
+              <img src="/static/img/icons/icon_link.svg" alt="">
+            </div>
           </div>
-        </div>
         </a>
 
         <div class="info_item">
           <img src="/static/img/icons/icon_mail.svg" alt="">
           <p>otavio.bresolin@creci.org.br</p>
         </div>
-        
+
       </div>
     </div>
 
@@ -154,7 +155,7 @@
   <script src="/static/js/main.js"></script>
 
   <a href="https://wa.me/5551981702045" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
-  <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
+    <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
   </a>
 </body>
 
