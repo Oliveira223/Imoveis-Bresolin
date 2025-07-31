@@ -92,7 +92,10 @@ def editar_imovel(imovel_id):
         if not imovel:
             return render_template('404.html', mensagem="Imóvel não encontrado"), 404
 
-        imagens_result = con.execute(text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
+        imagens_result = con.execute(
+        text('SELECT id, url, tipo FROM imagens_imovel WHERE imovel_id = :id'),
+        {'id': imovel_id}
+        )
         imagens = [dict(row._mapping) for row in imagens_result]
 
     return render_template('editar_imovel.html', imovel=imovel, imagens=imagens)
