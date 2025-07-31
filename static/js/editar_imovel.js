@@ -168,6 +168,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===========================
+// Seleção ao clicar na imagem + destaque visual
+// ===========================
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("thumb-secundaria")) {
+    const container = e.target.closest(".imagem-container");
+    const checkbox = container.querySelector(".imagem-checkbox");
+
+    // Alterna estado do checkbox
+    checkbox.checked = !checkbox.checked;
+
+    // Adiciona ou remove classe de destaque
+    container.classList.toggle("selecionada", checkbox.checked);
+  }
+});
+
+
+// ===========================
 // Excluir imagens secundárias selecionadas
 // ===========================
 
