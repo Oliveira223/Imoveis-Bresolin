@@ -1,0 +1,31 @@
+services:
+  bresolin_app:
+    build:
+      context: ./backend          # Aponta para a pasta backend
+      dockerfile: Dockerfile      # Usa o Dockerfile dentro de backend
+    container_name: bresolin_app
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env            # Pega o .env dentro de backend
+    depends_on:
+      - bresolin_db
+    volumes:
+      - ./backend:/app            # Monta apenas a pasta backend no container
+
+  bresolin_db:
+    image: postgres:16
+    container_name: bresolin_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 95443291!
+      POSTGRES_DB: bresolin_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
