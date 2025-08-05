@@ -1,21 +1,20 @@
+# Imagem base do Python
 FROM python:3.11-slim
 
-# Definir diretório de trabalho
+# Diretório de trabalho no container
 WORKDIR /app
 
-# Copiar dependências e instalar
-COPY backend/requirements.txt requirements.txt
+# Copiar arquivo de dependências
+COPY requirements.txt requirements.txt
+
+# Instalar dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código Python
-COPY backend/ .
+# Copiar o restante do código
+COPY . .
 
-# Copiar templates e arquivos estáticos
-COPY templates/ /app/templates/
-COPY static/ /app/static/
+# Expor a porta do Flask
+EXPOSE 5000
 
-# Instalar utilitário para esperar pelo PostgreSQL
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
-
-# Comando inicial: aguardar o Postgres e iniciar Flask (Gunicorn)
-CMD ["sh", "-c", "until pg_isready -h postgres -U admin; do sleep 2; done && gunicorn -b 0.0.0.0:5000 app:app"]
+# Comando padrão para rodar o app
+CMD ["python", "app.py"]
