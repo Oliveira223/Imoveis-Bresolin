@@ -1,34 +1,66 @@
-version: '3.8'
+# version: '3.8'
+
+# services:
+#   db:
+#     image: postgres:16
+#     container_name: bresolin_db
+#     environment:
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: "95443291!"
+#       POSTGRES_DB: bresolin_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#     restart: always
+
+#   web:
+#     build:
+#       context: ./backend
+#       dockerfile: Dockerfile
+#     container_name: bresolin_app
+#     depends_on:
+#       - db
+#     env_file:
+#       - ./backend/.env
+#     ports:
+#       - "5000:5000"
+#     volumes:
+#       - ./templates:/app/templates
+#       - ./static:/app/static
+#     restart: always
+
+# volumes:
+#   pgdata:
+
+version: '3.9'
 
 services:
-  db:
+  bresolin_app:
+    build: .
+    container_name: bresolin_app
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - bresolin_db
+    volumes:
+      - .:/app
+
+  bresolin_db:
     image: postgres:16
-    container_name: postgres_db
+    container_name: bresolin_db
+    restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: "95443291!"
+      POSTGRES_PASSWORD: 95443291!
       POSTGRES_DB: bresolin_db
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
-
-  web:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: flask_app
-    depends_on:
-      - db
-    env_file:
-      - ./backend/.env
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./templates:/app/templates
-      - ./static:/app/static
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  postgres_data:
