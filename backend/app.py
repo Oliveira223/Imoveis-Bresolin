@@ -1,7 +1,6 @@
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
-
 from flask import Flask, render_template, request, jsonify, Response
 from sqlalchemy import create_engine, text
 from werkzeug.utils import secure_filename
@@ -11,7 +10,6 @@ import os
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
-
 
 # ==============================
 # Carrega variáveis de ambiente do .env
@@ -31,7 +29,8 @@ engine = create_engine(DATABASE_URL)
 # Configurações de diretórios e uploads
 # ==============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, '..', 'static', 'img', 'uploads')
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==============================
@@ -39,9 +38,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ==============================
 app = Flask(
     __name__,
-    static_folder=os.path.join(BASE_DIR, '..', 'static'),
-    template_folder=os.path.join(BASE_DIR, '..', 'templates')
+    static_folder='static',
+    template_folder='templates'
 )
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 print("[INFO] DATABASE_URL:", DATABASE_URL)

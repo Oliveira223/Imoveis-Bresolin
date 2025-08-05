@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: bresolin
-    runtime: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: gunicorn backend.app:app
