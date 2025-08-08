@@ -15,7 +15,11 @@ from psycopg2.extras import RealDictCursor
 # Carrega variáveis de ambiente do .env
 # ==============================
 load_dotenv()
+
+# Para pc
 # DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+
+# Para github
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
