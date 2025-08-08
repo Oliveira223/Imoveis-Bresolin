@@ -15,7 +15,7 @@ from psycopg2.extras import RealDictCursor
 # Carrega variáveis de ambiente do .env
 # ==============================
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise Exception("A variável de ambiente DATABASE_URL não está definida.")
@@ -76,7 +76,7 @@ def requires_auth(f):
 @app.route("/admin")
 @requires_auth
 def admin():
-    return render_template("admin.html")
+    return render_template("dashboard.html")
 
 
 # ================================
@@ -161,6 +161,7 @@ def pagina_pesquisa():
     entrega    = request.args.get('entrega', '')
     piscina           = request.args.get('piscina', '')
     churrasqueira     = request.args.get('churrasqueira', '')
+    destaque    = request.args.get('destaque', '')
 
     
     max_preco = request.args.get('max_preco', '').replace('.', '')
@@ -390,6 +391,24 @@ def toggle_ativo(imovel_id):
         con.execute(text('UPDATE imoveis SET ativo = NOT ativo WHERE id = :id'), {'id': imovel_id})
         return '', 204
 
+# Rota paradestacar imoveis
+@app.route('/api/imoveis/destaque', methods=['POST'])
+@requires_auth
+def definir_destaques():
+    ids = request.json.get('ids', [])
+    if not isinstance(ids, list) or len(ids) > 6:
+        return jsonify({'erro': 'Selecione até 6 imóveis.'}), 400
+
+    with engine.begin() as con:
+        con.execute(text('UPDATE imoveis SET destaque = FALSE'))
+        if ids:
+            con.execute(
+                text('UPDATE imoveis SET destaque = TRUE WHERE id = ANY(:ids)'),
+                {'ids': ids}
+            )
+    return jsonify({'sucesso': True})
+
+
 # ==============================
 # API - Imagens do Imóvel
 # ==============================
@@ -479,8 +498,6 @@ def api_sugestoes():
 # ==============================
 # CONEXÃO COM O POSTGRES (Render)
 # ==============================
-DATABASE_URL = os.getenv("DATABASE_URL")  # ou substitua pela string completa
-
 def get_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 

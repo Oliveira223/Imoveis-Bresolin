@@ -1,7 +1,11 @@
 // ================================
-// tela de carregamento
+// main.js - Bresolin Imóveis
 // ================================
+
 window.addEventListener("DOMContentLoaded", () => {
+  // ================================
+  // Tela de carregamento animada
+  // ================================
   const paths = [
     document.getElementById("path-1"),
     document.getElementById("path-2"),
@@ -13,7 +17,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   paths.forEach((path, index) => {
     const length = path.getTotalLength();
-
     path.style.strokeDasharray = length;
     path.style.strokeDashoffset = length;
 
@@ -28,76 +31,76 @@ window.addEventListener("DOMContentLoaded", () => {
     loader.style.opacity = "0";
     setTimeout(() => {
       loader.remove();
-      //ativa o scroll
+      // Ativa o scroll
       document.body.classList.remove("no-scroll");
       document.documentElement.classList.remove("no-scroll");
     }, 600); // tempo do fade
   }, totalTime + 200);
 
   // ================================
-  // main.js - Carrega imóveis recentes na homepage
+  // Carrega imóveis em destaque na homepage
   // ================================
   fetch('/api/imoveis')
     .then(res => res.json())
     .then(imoveis => {
-      const lista = document.getElementById('lista-imoveis');
-      lista.innerHTML = '';
+      const listaDestaques = document.getElementById('lista-destaques');
+      listaDestaques.innerHTML = '';
 
-      const recentes = imoveis
-        .filter(imovel => !!imovel.ativo)
+      // Filtra e exibe até 6 imóveis marcados como destaque e ativos
+      const destaques = imoveis
+        .filter(imovel => !!imovel.ativo && !!imovel.destaque)
         .sort((a, b) => Number(b.id) - Number(a.id))
         .slice(0, 6);
 
-      recentes.forEach(imovel => {
+      destaques.forEach(imovel => {
         fetch(`/api/card/${imovel.id}`)
           .then(res => res.text())
           .then(html => {
-            lista.innerHTML += html;
+            listaDestaques.innerHTML += html;
           });
       });
     });
-});
 
-
-// ================================
-// Sugestões de pesquisa
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
+  // ================================
+  // Sugestões de pesquisa dinâmica
+  // ================================
   const termoInput = document.getElementById("termo");
   const sugestoesBox = document.getElementById("sugestoes-termo");
 
-  termoInput.addEventListener("input", () => {
-    const query = termoInput.value.trim();
+  if (termoInput && sugestoesBox) {
+    termoInput.addEventListener("input", () => {
+      const query = termoInput.value.trim();
 
-    if (query.length < 2) {
-      sugestoesBox.style.display = "none";
-      return;
-    }
+      if (query.length < 2) {
+        sugestoesBox.style.display = "none";
+        return;
+      }
 
-    fetch(`/api/sugestoes?query=${encodeURIComponent(query)}`)
-      .then(res => res.json())
-      .then(data => {
-        sugestoesBox.innerHTML = "";
-        if (data.length === 0) {
-          sugestoesBox.style.display = "none";
-          return;
-        }
-        data.forEach(item => {
-          const div = document.createElement("div");
-          div.textContent = item;
-          div.addEventListener("click", () => {
-            termoInput.value = item;
+      fetch(`/api/sugestoes?query=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          sugestoesBox.innerHTML = "";
+          if (data.length === 0) {
             sugestoesBox.style.display = "none";
+            return;
+          }
+          data.forEach(item => {
+            const div = document.createElement("div");
+            div.textContent = item;
+            div.addEventListener("click", () => {
+              termoInput.value = item;
+              sugestoesBox.style.display = "none";
+            });
+            sugestoesBox.appendChild(div);
           });
-          sugestoesBox.appendChild(div);
+          sugestoesBox.style.display = "block";
         });
-        sugestoesBox.style.display = "block";
-      });
-  });
+    });
 
-  document.addEventListener("click", (e) => {
-    if (!sugestoesBox.contains(e.target) && e.target !== termoInput) {
-      sugestoesBox.style.display = "none";
-    }
-  });
+    document.addEventListener("click", (e) => {
+      if (!sugestoesBox.contains(e.target) && e.target !== termoInput) {
+        sugestoesBox.style.display = "none";
+      }
+    });
+  }
 });

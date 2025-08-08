@@ -286,8 +286,8 @@ body.no-scroll {
   font-size: 10vw;
 }
 
-
-#lista-imoveis {
+/*#lista-imoveis { */
+#lista-destaques {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -472,7 +472,7 @@ body.no-scroll {
    PRINCIPAIS IMÓVEIS 
    ================================ */
 
-  #lista-imoveis {
+  #lista-destaques {
     gap: 1rem;
     margin: 0 20vw;
   }
@@ -659,7 +659,7 @@ body.no-scroll {
    PRINCIPAIS IMÓVEIS 
    ================================ */
 
-  #lista-imoveis {
+  #lista-destaques {
     gap: 3vw;
     margin: 0 20vw;
   }

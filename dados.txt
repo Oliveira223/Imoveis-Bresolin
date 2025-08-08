@@ -67,3 +67,8 @@
 
 # Senha app Gmail
 > yaax cfbu qfml kutj
+
+# Para acessar o banco de dados localmente deve-se usar o comando
+> ssh -L 5433:127.0.0.1:5432 deploy@161.97.77.203
+
+e deixar a janela aberta

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Bresolin Imóveis | Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/components/card_imovel.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">Dashboard</div>
+    <nav class="menu">
+      <button class="menu-item active" data-target="view-imoveis">Imóveis</button>
+      <button class="menu-item" data-target="view-cadastro">Cadastro</button>
+      <button class="menu-item" data-target="view-info">Info</button>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="content">
+
+    <!-- ====== VIEW: IMÓVEIS ====== -->
+    <section id="view-imoveis" class="view active">
+      <header class="view-header">
+        <h1>Imóveis</h1>
+        <div class="actions">
+          <input id="busca-imoveis" type="search" placeholder="Buscar por título ou ID…">
+          <button id="btn-atualizar">Atualizar</button>
+        </div>
+      </header>
+
+      <div class="grid-blocos">
+        <!-- Bloco: Destaques -->
+        <div class="bloco">
+          <div class="bloco-head">
+            <h2>Em destaque <small id="cont-destaques">0/6</small></h2>
+          </div>
+          <div id="destaques-grid" class="cards cards-destaque">
+            <!-- Cards de destaque (preenchidos via JS) -->
+            <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
+              <span>+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloco: Todos -->
+        <div class="bloco">
+          <div class="bloco-head">
+            <h2>Todos</h2>
+            <small style="color:var(--muted);font-size:0.98em;">Clique no card para editar</small>
+          </div>
+          <div id="lista-admin" class="cards">
+            <!-- Os cards são renderizados via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== VIEW: CADASTRO ====== -->
+    <section id="view-cadastro" class="view">
+      <header class="view-header">
+        <h1>Cadastro</h1>
+        <div class="actions">
+          <button type="button" id="btn-limpar-form">Limpar</button>
+        </div>
+      </header>
+
+      <!-- Formulário de cadastro/edição de imóvel -->
+      <form id="form-imovel" class="form-grid">
+        <input type="text" name="titulo" placeholder="Título do imóvel">
+        <textarea name="descricao" placeholder="Descrição"></textarea>
+
+        <!-- Imagem principal -->
+        <div class="grupo-imagem-principal">
+          <div class="coluna-imagem">
+            <label>Imagem principal:</label>
+            <input type="file" id="file-imagem" accept="image/*">
+            <input type="text" name="imagem" id="input-imagem" placeholder="Ou informe uma URL da imagem">
+          </div>
+          <div class="coluna-preview">
+            <img id="preview-imagem" class="img-preview" alt="">
+          </div>
+        </div>
+
+        <!-- Imagens secundárias e plantas -->
+        <div class="grupo-galeria">
+          <div class="coluna-galeria">
+            <label>Imagens secundárias:</label>
+            <input type="file" id="file-secundarias" multiple accept="image/*">
+            <div id="lista-secundarias" class="galeria-preview"></div>
+          </div>
+          <div class="coluna-galeria">
+            <label>Plantas do imóvel:</label>
+            <input type="file" id="file-plantas" multiple accept="image/*">
+            <div id="lista-plantas" class="galeria-preview"></div>
+          </div>
+        </div>
+
+        <!-- Preço (editável com R$) -->
+        <div class="campo-preco-admin input-metade">
+          <span id="preco-editavel-admin" contenteditable="true" class="preco-digitavel-admin" data-placeholder="Ex: 120.000,00"></span>
+          <span class="prefixo-rs">R$</span>
+          <input type="hidden" name="preco" id="preco-admin-real">
+        </div>
+
+        <div class="input-icon">
+          <input type="number" name="area" step="0.1" placeholder="Área">
+          <span class="suffix">m²</span>
+        </div>
+
+        <!-- Seletores -->
+        <select name="tipo" required>
+          <option value="">Tipo*</option>
+          <option value="casa">Casa</option>
+          <option value="apartamento">Apartamento</option>
+          <option value="loft">Loft</option>
+          <option value="terreno">Terreno</option>
+        </select>
+
+        <select name="pretensao">
+          <option value="">Finalidade</option>
+          <option value="Venda">Venda</option>
+          <option value="Aluguel">Aluguel</option>
+        </select>
+
+        <!-- Estágio e entrega -->
+        <select name="estagio" id="estagio-imovel-select">
+          <option value="">Estágio da obra</option>
+          <option value="PRONTA">PRONTA</option>
+          <option value="EM CONSTRUÇÃO">EM CONSTRUÇÃO</option>
+        </select>
+        <input type="text" name="entrega" id="entrega-imovel-input" placeholder="Previsão de entrega" disabled>
+
+        <!-- Dados -->
+        <input type="number" name="quartos" placeholder="Quartos">
+        <input type="number" name="suites" placeholder="Suítes">
+        <input type="number" name="banheiros" placeholder="Banheiros">
+        <input type="number" name="banheiros_com_chuveiro" placeholder="Banheiros C/ Chuveiro">
+        <input type="number" name="vagas" placeholder="Vagas">
+
+        <input type="number" name="andar" placeholder="Andar">
+        <input type="text" name="endereco" placeholder="Endereço">
+        <input type="text" name="bairro" placeholder="Bairro">
+        <input type="text" name="cidade" placeholder="Cidade">
+        <input type="text" name="uf" placeholder="UF">
+
+        <!-- IPTU -->
+        <div class="campo-preco-admin input-metade">
+          <span id="iptu-editavel-admin" contenteditable="true" class="preco-digitavel-admin" data-placeholder="IPTU"></span>
+          <span class="prefixo-rs">R$</span>
+          <input type="hidden" name="iptu" id="iptu-admin-real">
+        </div>
+
+        <!-- Condomínio -->
+        <div class="campo-preco-admin input-metade">
+          <span id="condominio-editavel-admin" contenteditable="true" class="preco-digitavel-admin" data-placeholder="Valor Condomínio"></span>
+          <span class="prefixo-rs">R$</span>
+          <input type="hidden" name="valor_condominio" id="condominio-admin-real">
+        </div>
+
+        <!-- Link externo / mapa -->
+        <input type="text" name="link" placeholder="Link externo (ex: Google Maps)" class="input-metade">
+        <input type="text" name="maps_iframe" placeholder="Iframe Google Maps">
+        <input type="text" name="campo_extra2" placeholder="Campo Extra 1">
+
+        <!-- Condo e status -->
+        <select name="condominio_id" id="condominio-select">
+          <option value="">Sem condomínio</option>
+        </select>
+
+        <label class="checkbox-custom">
+          <input type="checkbox" name="piscina" id="piscina">
+          <span class="checkmark"></span>
+          Piscina
+        </label>
+
+        <label class="checkbox-custom">
+          <input type="checkbox" name="churrasqueira" id="churrasqueira">
+          <span class="checkmark"></span>
+          Churrasqueira
+        </label>
+
+        <label class="switch">
+          <input type="checkbox" name="ativo" checked>
+          <span class="slider"></span>
+          <small>Ativo</small>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="primary">Cadastrar Imóvel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ====== VIEW: INFO ====== -->
+    <section id="view-info" class="view">
+      <header class="view-header">
+        <h1>Info</h1>
+      </header>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <h3>Total de imóveis</h3>
+          <div id="kpi-total">—</div>
+        </div>
+        <div class="info-card">
+          <h3>Imóveis ativos</h3>
+          <div id="kpi-ativos">—</div>
+        </div>
+        <div class="info-card">
+          <h3>Em destaque</h3>
+          <div id="kpi-destaques">—</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de seleção de destaques -->
+  <div id="modal-destaque" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Selecionar imóveis em destaque (máx. 6)</h2>
+      <div id="lista-destaque-modal"></div>
+      <button id="btn-salvar-destaques">Salvar Destaques</button>
+      <button type="button" onclick="document.getElementById('modal-destaque').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/admin.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
