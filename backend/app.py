@@ -16,10 +16,10 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Para pc (não esquecer de abrir ssh)
-DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+#DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 # Para gthub
-#DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 if not DATABASE_URL:
