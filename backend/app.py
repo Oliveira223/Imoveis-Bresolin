@@ -15,12 +15,12 @@ from psycopg2.extras import RealDictCursor
 # Carrega variáveis de ambiente do .env
 # ==============================
 load_dotenv()
+# Para pc (não esquecer de abrir ssh)
+DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
-# Para pc
-# DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+# Para gthub
+#DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Para github
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise Exception("A variável de ambiente DATABASE_URL não está definida.")
@@ -111,6 +111,7 @@ def index():
     registrar_acesso()  # registra acesso geral à home
     return render_template('index.html')
 
+
 # Página de detalhes do imóvel
 @app.route('/imovel/<int:imovel_id>')
 def pagina_imovel(imovel_id):
@@ -131,8 +132,34 @@ def pagina_imovel(imovel_id):
             {'id': imovel_id}
         )
         imagens = [dict(row._mapping) for row in imagens_result]
+        
+        # Busca imóveis similares (mesmo tipo e bairro, excluindo o imóvel atual)
+        similares_result = con.execute(
+            text('''
+                SELECT * FROM imoveis 
+                WHERE ativo = TRUE 
+                AND id != :id 
+                AND (tipo = :tipo OR bairro = :bairro) 
+                ORDER BY 
+                    CASE 
+                        WHEN tipo = :tipo AND bairro = :bairro THEN 1
+                        WHEN tipo = :tipo THEN 2
+                        WHEN bairro = :bairro THEN 3
+                        ELSE 4
+                    END,
+                    id DESC
+                LIMIT 6
+            '''),
+            {
+                'id': imovel_id,
+                'tipo': imovel['tipo'],
+                'bairro': imovel['bairro']
+            }
+        )
+        imoveis_similares = [dict(row._mapping) for row in similares_result]
 
-    return render_template('imovel.html', imovel=imovel, imagens=imagens)
+    return render_template('imovel.html', imovel=imovel, imagens=imagens, imoveis_similares=imoveis_similares)
+    
 # ==============================
 # API - Renderização do mini-card reutilizável
 # ==============================
@@ -396,7 +423,7 @@ def toggle_ativo(imovel_id):
         con.execute(text('UPDATE imoveis SET ativo = NOT ativo WHERE id = :id'), {'id': imovel_id})
         return '', 204
 
-# Rota paradestacar imoveis
+# Rota para destacar imoveis
 @app.route('/api/imoveis/destaque', methods=['POST'])
 @requires_auth
 def definir_destaques():
@@ -414,10 +441,10 @@ def definir_destaques():
     return jsonify({'sucesso': True})
 
 
+
 # ==============================
 # API - Imagens do Imóvel
 # ==============================
-
 # Lista ou adiciona imagens ao imóvel
 @app.route('/api/imoveis/<int:imovel_id>/imagens', methods=['GET', 'POST'])
 def imagens_do_imovel(imovel_id):
