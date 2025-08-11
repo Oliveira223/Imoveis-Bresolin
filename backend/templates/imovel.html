@@ -14,6 +14,7 @@
 
   <link rel="stylesheet" href="/static/css/imovel.css">
   <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/components/card_imovel.css">
 
 
 </head>
@@ -162,6 +163,20 @@
       <img src="/static/img/icons/icon_whatsapp.svg" alt="">
     </a>
 
+    <!-- Imóveis Similares -->
+    {% if imoveis_similares %}
+    <div class="imoveis-similares">
+      <h3 class="titulo-similares">Imóveis Similares</h3>
+      <div class="lista-similares">
+        {% for similar in imoveis_similares %}
+          {% with imovel=similar %}
+            {% include 'partials/card_imovel.html' %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
   </main>
 
   <!-- ========================
@@ -197,7 +212,6 @@
       </div>
 
       <div class="coluna-direita">
-
         <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
 
         {% if imovel.descricao %}
@@ -282,6 +296,20 @@
 
       </div>
     </div>
+
+    <!-- Imóveis Similares (Desktop) -->
+    {% if imoveis_similares %}
+    <div class="imoveis-similares-desktop">
+      <h3 class="titulo-similares">Imóveis Similares</h3>
+      <div class="lista-similares-desktop">
+        {% for similar in imoveis_similares %}
+          {% with imovel=similar %}
+            {% include 'partials/card_imovel.html' %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </main>
 
 

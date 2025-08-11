@@ -439,16 +439,56 @@ body.modo-escuro .bloco-detalhe a{
   color: white;
 }
 
+body.modo-escuro .titulo-similares{
+  color: rgba(255, 255, 255, 0.808);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.808);
+}
+
+
 /* Esconde layout-desktop no mobile */
 main.desktop {
   display: none;
 }
 
 
-
 /* ========================
-   Responsividade para Desktop
+   Imóveis Similares (Mobile-First)
 =========================== */
+
+.imoveis-similares,
+.imoveis-similares-desktop {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 1.5rem 0.5rem;
+  border-radius: 8px;
+}
+
+.titulo-similares {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  color: #333;
+}
+
+.lista-similares {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+
+/* Versão Desktop (adaptação via media query) */
+.imoveis-similares-desktop {
+  display: none; /* Escondido por padrão em mobile */
+}
+
+
 /* ========================
    Responsividade para Desktop
 =========================== */
@@ -517,14 +557,16 @@ main.desktop {
   }
 
   .coluna-direita {
-    flex: 1;
-    padding-right: 1vw;
-    display: flex;
-    text-align: left;
-    flex-direction: column;
-    height: 100%;
-    gap: 1vw;
-  }
+  width: 80vw;
+  max-width: 80vw;
+  height: 80vh;
+  overflow-y: auto;
+  padding-right: 1vw;
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  gap: 1vw;
+}
 
 
   /* ==========================
@@ -780,4 +822,21 @@ main.desktop {
     cursor: pointer;
   }
 
+  .imoveis-similares {
+    display: none; /* Esconde versão mobile em telas maiores */
+  }
+  
+  .imoveis-similares-desktop {
+    display: block; /* Mostra versão desktop em telas maiores */
+    margin: 2rem auto;
+    max-width: 1200px;
+    padding: 1.5rem;
+  }
+  
+  .lista-similares-desktop {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 0.5rem;
+    }
 }

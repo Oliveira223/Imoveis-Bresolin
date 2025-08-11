@@ -149,17 +149,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const icone = document.getElementById("icone-tema");
 
-  if (temaSalvo === "claro") {
-    body.classList.remove("modo-escuro");
-    if (icone) {
-      icone.src = "/static/img/icons/icon_moon.svg";
-      icone.alt = "Modo Escuro";
-    }
-  } else {
-    body.classList.add("modo-escuro"); // Padrão: escuro
+  // if (temaSalvo === "claro") {
+  //   body.classList.remove("modo-escuro");
+  //   if (icone) {
+  //     icone.src = "/static/img/icons/icon_moon.svg";
+  //     icone.alt = "Modo Escuro";
+  //   }
+  // } else {
+  //   body.classList.add("modo-escuro"); // Padrão: escuro
+  //   if (icone) {
+  //     icone.src = "/static/img/icons/icon_sun.svg";
+  //     icone.alt = "Modo Claro";
+  //   }
+  // }
+
+
+  // PADRÃO CLARO
+    if (temaSalvo === "escuro") {
+    body.classList.add("modo-escuro");
     if (icone) {
       icone.src = "/static/img/icons/icon_sun.svg";
       icone.alt = "Modo Claro";
+    }
+  } else {
+    body.classList.remove("modo-escuro"); 
+    if (icone) {
+      icone.src = "/static/img/icons/icon_moon.svg";
+      icone.alt = "Modo Escuro";
     }
   }
 });
