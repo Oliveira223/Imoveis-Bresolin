@@ -43,47 +43,27 @@ The system uses four main tables:
 ### 2.2.1 File Organization
 ```
 backend/
-├── app.py                    # 
-Main Flask application
-├── criar_banco.py           # 
-Database schema creation script
-├── relatorio_semanal.py     # 
-Weekly reporting system
-├── requirements.txt         # 
-Python dependencies
-├── Dockerfile              # 
-Container configuration
-├── .env                    # 
-Environment variables (not tracked)
-├── .env.example           # 
-Configuration example
-├── static/                # Static 
-files
-│   ├── css/              # 
-Stylesheets
-│   ├── js/               # 
-JavaScript files
-│   ├── img/              # Images 
-and icons
-│   │   └── uploads/      # 
-Property image uploads
-│   └── fonts/            # Custom 
-fonts
-└── templates/            # HTML 
-templates
-    ├── index.html        # Homepage
-    ├── pesquisa.html     # Search 
-    page
-    ├── imovel.html       # 
-    Property details
-    ├── dashboard.html    # 
-    Administrative panel
-    ├── editar_imovel.html # 
-    Property editor
-    ├── admin.html        # Admin 
-    interface
-    └── partials/         # 
-    Reusable components
+├── app.py                   # Main Flask application
+├── criar_banco.py           # Database schema creation script
+├── relatorio_semanal.py     # Weekly reporting system
+├── requirements.txt         # Python dependencies
+├── Dockerfile               # Container configuration
+├── .env                     # Environment variables (not tracked)
+├── .env.example             # Configuration example
+├── static/                  # Static files
+│   ├── css/                 # Stylesheets
+│   ├── js/                  # JavaScript files
+│   ├── img/                 # Images and icons
+│   │   └── uploads/         # Property image uploads
+│   └── fonts/               # Custom fonts
+└── templates/               # HTML templates
+    ├── index.html           # Homepage
+    ├── pesquisa.html        # Search page
+    ├── imovel.html          # Property details
+    ├── dashboard.html       # Administrative panel
+    ├── editar_imovel.html   # Property editor
+    ├── admin.html           # Admin interface
+    └── partials/            # Reusable components
         └── card_imovel.html
 ```
 ### 2.2.2 Core Components Main Application ( app.py )
@@ -281,4 +261,5 @@ services:
 ### 9.3 Updates and Maintenance
 - Dependency Updates : Regular security updates
 - Database Maintenance : Performance optimization
+
 - Content Management : Property data updates
