@@ -39,24 +39,79 @@ The system uses four main tables:
 - Authentication : Basic HTTP authentication for admin routes
 - File Handling : Werkzeug for secure file uploads
 - Environment Management : python-dotenv for configuration
-### 2.2 Application Structure
+## 2.2 Application Structure
+### 2.2.1 File Organization
 ```
 backend/
-├── app.py                 # Main 
-Flask application
-├── criar_banco.py         # 
-Database schema creation
-├── relatorio_semanal.py   # Weekly 
-reporting system
-├── requirements.txt       # Python 
-dependencies
-├── static/               # CSS, 
-JS, images, uploads
-├── templates/            # HTML 
-templates
-└── .env                  # 
+├── app.py                    # 
+Main Flask application
+├── criar_banco.py           # 
+Database schema creation script
+├── relatorio_semanal.py     # 
+Weekly reporting system
+├── requirements.txt         # 
+Python dependencies
+├── Dockerfile              # 
+Container configuration
+├── .env                    # 
 Environment variables (not tracked)
+├── .env.example           # 
+Configuration example
+├── static/                # Static 
+files
+│   ├── css/              # 
+Stylesheets
+│   ├── js/               # 
+JavaScript files
+│   ├── img/              # Images 
+and icons
+│   │   └── uploads/      # 
+Property image uploads
+│   └── fonts/            # Custom 
+fonts
+└── templates/            # HTML 
+templates
+    ├── index.html        # Homepage
+    ├── pesquisa.html     # Search 
+    page
+    ├── imovel.html       # 
+    Property details
+    ├── dashboard.html    # 
+    Administrative panel
+    ├── editar_imovel.html # 
+    Property editor
+    ├── admin.html        # Admin 
+    interface
+    └── partials/         # 
+    Reusable components
+        └── card_imovel.html
 ```
+### 2.2.2 Core Components Main Application ( app.py )
+- Configuration : Flask initialization and PostgreSQL connection
+- Routing : Definition of all public and administrative routes
+- Authentication : Protection system for administrative routes
+- APIs : RESTful endpoints for property and image CRUD operations
+- Middleware : Upload handling and validations Auxiliary Scripts
+- criar_banco.py : Initial database table creation
+- relatorio_semanal.py : Access and performance report generation Static Files
+- CSS : Responsive styles and visual components
+- JavaScript : Dynamic interactions and frontend validations
+- Images : Icons, logos, and property uploads
+- Fonts : Custom brand typography HTML Templates
+- Public Pages : Homepage, search, and property details
+- Administrative Area : Dashboard and property editor
+- Components : Reusable cards and partials
+### 2.2.3 Data Flow
+1. 1.
+   Request : Client accesses route via browser
+2. 2.
+   Authentication : Credential verification (if protected route)
+3. 3.
+   Processing : Business logic and database queries
+4. 4.
+   Rendering : Template engine processes HTML with data
+5. 5.
+   Response : Complete page or JSON data returned
 ### 2.3 Core Features 2.3.1 Property Management
 - CRUD Operations : Create, read, update, delete properties
 - Image Management : Multiple images per property with type classification
@@ -158,15 +213,15 @@ services:
 - SSH Keys : Secure deployment authentication
 ## 6. DEVELOPMENT WORKFLOW
 ### 6.1 Local Development Setup
-1. 1.
+ 1.
    Clone Repository : git clone <repository-url>
-2. 2.
+2.
    Environment Setup : Copy .env.example to .env
-3. 3.
+3.
    Database : Configure PostgreSQL connection
-4. 4.
+4.
    Dependencies : pip install -r requirements.txt
-5. 5.
+5.
    Run Application : python app.py
 ### 6.2 Database Management
 - Schema Creation : Run criar_banco.py for initial setup
