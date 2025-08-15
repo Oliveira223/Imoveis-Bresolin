@@ -1,0 +1,79 @@
+# Arquivos de ambiente
+.env
+.env.local
+.env.production
+.env.development
+
+# Arquivos com informações sensíveis
+dados.txt
+notas.txt
+config.txt
+
+# Logs
+*.log
+logs/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Uploads de usuários (manter estrutura mas ignorar conteúdo)
+backend/static/img/uploads/*
+!backend/static/img/uploads/.gitkeep
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Configurações locais
+config.local.py
+settings.local.py
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificados e chaves
+*.pem
+*.key
+*.crt
+*.p12
+
+# Backup files
+*.bak
+*.backup

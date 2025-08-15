@@ -1,0 +1,44 @@
+# Páginas Locais
+    > Página inicial: http://localhost:5000/
+    > Painel do admin: http://localhost:5000/admin
+
+# Rodar programa
+    > gunicorn backend.app:app
+
+# Configuração do PostgreSQL
+    > Configure as variáveis no arquivo .env
+    > Use o comando SSH para conectar ao servidor de produção
+
+# Cloudinary.com
+    > Configure as credenciais no arquivo .env
+    > Variáveis: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+
+# Informações do banco de dados
+ [Estrutura da tabela imoveis]
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+    condominio_id
+    titulo 
+    descricao
+    preco              
+    imagem,
+    tipo
+    pretensao
+    quartos
+    suites
+    banheiros 
+    vagas 
+    area                
+    andar  
+    endereco 
+    bairro 
+    cidade
+    uf 
+    ativo
+    link 
+    FOREIGN KEY (condominio_id) REFERENCES condominios(id) ON DELETE SET NULL
+
+# Gmail da empresa
+    > Configure no arquivo .env: GMAIL_EMAIL, GMAIL_PASSWORD, GMAIL_APP_PASSWORD
+
+# Para acessar o banco de dados localmente
+    > Use o comando SSH configurado nas variáveis de ambiente
