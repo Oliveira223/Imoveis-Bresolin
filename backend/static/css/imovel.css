@@ -444,12 +444,10 @@ body.modo-escuro .titulo-similares{
   border-bottom: 1px solid rgba(255, 255, 255, 0.808);
 }
 
-
 /* Esconde layout-desktop no mobile */
 main.desktop {
   display: none;
 }
-
 
 /* ========================
    Imóveis Similares (Mobile-First)
