@@ -7,6 +7,7 @@
 
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/components/card_imovel.css">
+    <link rel="stylesheet" href="/static/css/components/card_empreendimento.css">
     <link rel="stylesheet" href="/static/css/pesquisa.css" />
     <link rel="stylesheet" href="/static/css/global.css" />
 
@@ -93,6 +94,8 @@
                         <label for="tipo">Tipo de imóvel</label>
                         <select name="tipo" id="tipo">
                             <option value="">Todos</option>
+                            <option value="empreendimento" {% if tipo=='empreendimento' %}selected{% endif %}>
+                                Empreendimentos</option>
                             <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
                             <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento
                             </option>
@@ -101,31 +104,19 @@
                         </select>
                     </div>
 
-                     <!-- ID -->
+                    <!-- ID
                     <div class="campo">
                         <label for="id">ID do imóvel</label>
                         <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}"
                             placeholder="Ex: 123">
-                    </div>
+                    </div> -->
 
-                    <!-- CIDADE -->
+                    <!-- LOCALIZAÇÃO (CIDADE, BAIRRO, UF UNIFICADOS) -->
                     <div class="campo">
-                        <label for="cidade">Cidade</label>
-                        <input type="text" name="cidade" id="cidade" value="{{ cidade }}"
-                            placeholder="Ex: Porto Alegre">
-                    </div>
-
-                    <!-- BAIRRO -->
-                    <div class="campo">
-                        <label for="bairro">Bairro</label>
-                        <input type="text" name="bairro" id="bairro" value="{{ request.args.get('bairro', '') }}">
-                    </div>
-
-                    <!-- UF -->
-                    <div class="campo">
-                        <label for="uf">UF</label>
-                        <input type="text" name="uf" id="uf" value="{{ request.args.get('uf', '') }}"
-                            placeholder="Ex: RS" maxlength="2">
+                        <label for="localizacao">Localização</label>
+                        <input type="text" name="localizacao" id="localizacao" 
+                               value="{{ request.args.get('localizacao', '') }}"
+                               placeholder="Cidade, Bairro, UF">
                     </div>
 
                     <!-- PREÇO MÁXIMO -->
@@ -175,15 +166,17 @@
                             min="0">
                     </div>
 
-                    <!-- ESTÁGIO -->
+                    <!-- ESTÁGIO
                     <div class="campo">
                         <label for="estagio">Estágio da obra</label>
                         <select name="estagio" id="estagio">
                             <option value="">Todos</option>
-                            <option value="PRONTA" {% if request.args.get('estagio') == 'PRONTA' %}selected{% endif %}>Pronta</option>
-                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio') == 'EM CONSTRUÇÃO' %}selected{% endif %}>Em construção</option>
+                            <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>
+                                Pronta</option>
+                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO'
+                                %}selected{% endif %}>Em construção</option>
                         </select>
-                    </div>
+                    </div> -->
 
                     <!-- ENTREGA
                     <div class="campo">
@@ -221,73 +214,135 @@
 
 
         <div class="area-resultados">
-            <!-- Contador de imóveis encontrados -->
-            <p class="contador-imoveis">
-                {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }} {{ 'encontrados' if
-                imoveis|length
-                > 1 else 'encontrado' }}
-            </p>
+            <!-- Barra superior com contador e pesquisa -->
+            <div class="barra-superior-mobile">
+
+                 <!-- Pesquisa rápida minimalista -->
+                <div class="pesquisa-minimalista">
+                    <div class="campo-pesquisa-container">
+                        <input type="text" id="termo-pesquisa" placeholder="Digite região, bairro, nome ou ID" autocomplete="off" class="campo-pesquisa-simples" />
+                        <div id="sugestoes-pesquisa" class="sugestoes"></div>
+                    </div>
+                    <button id="limpar-pesquisa" class="btn-limpar-simples">✕</button>
+                </div>
+
+                <!-- Contador de resultados -->
+                <p class="contador-imoveis">
+                    {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
+                    {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if
+                    total_resultados > 1 else 'encontrado' }}
+                    {% if empreendimentos|length > 0 and imoveis|length > 0 %}
+                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
+                    }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
+                    {% elif empreendimentos|length > 0 %}
+                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
+                    }})
+                    {% elif imoveis|length > 0 %}
+                    ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
+                    {% endif %}
+                </p>
+
+               
+            </div>
+
+             <!-- Barra superior com contador e pesquisa -->
+            <div class="barra-superior-desktop">
+                <!-- Contador de resultados -->
+                <p class="contador-imoveis">
+                    {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
+                    {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if
+                    total_resultados > 1 else 'encontrado' }}
+                    {% if empreendimentos|length > 0 and imoveis|length > 0 %}
+                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
+                    }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
+                    {% elif empreendimentos|length > 0 %}
+                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
+                    }})
+                    {% elif imoveis|length > 0 %}
+                    ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
+                    {% endif %}
+                </p>
+
+                <!-- Pesquisa rápida minimalista -->
+                <div class="pesquisa-minimalista">
+                    <div class="campo-pesquisa-container">
+                        <input type="text" id="termo-pesquisa" placeholder="Digite região, bairro, nome ou ID" autocomplete="off" class="campo-pesquisa-simples" />
+                        <div id="sugestoes-pesquisa" class="sugestoes"></div>
+                    </div>
+                    <button id="limpar-pesquisa" class="btn-limpar-simples">✕</button>
+                </div>
+            </div>
 
             <!-- Área dos resultados -->
             <section class="resultados">
+                <!-- Empreendimentos primeiro -->
+                {% if empreendimentos %}
+                {% for empreendimento in empreendimentos %}
+                {% include 'partials/card_empreendimento.html' %}
+                {% endfor %}
+                {% endif %}
+
+                <!-- Imóveis depois -->
                 {% if imoveis %}
                 {% for imovel in imoveis %}
                 {% include 'partials/card_imovel.html' %}
                 {% endfor %}
-                {% else %}
-                <p class="nenhum-encontrado">Nenhum imóvel encontrado.</p>
+                {% endif %}
+
+                <!-- Mensagem quando não há resultados -->
+                {% if not empreendimentos and not imoveis %}
+                <p class="nenhum-encontrado">Nenhum resultado encontrado.</p>
                 {% endif %}
             </section>
         </div>
-
     </main>
 
-     <!----------------------  Rodapé  ----------------->
-  <footer class="footer">
+    <!----------------------  Rodapé  ----------------->
+    <footer class="footer">
 
-    <div class="footer_container">
-      <!-- Ícone da casa -->
-      <div class="footer_logo">
-        <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Ícone Casa">
-      </div>
-
-      <!-- Informações de contato -->
-      <div class="footer_info">
-        <div class="info_item">
-          <img src="/static/img/icons/icon_user.svg" alt="">
-          <p>Otávio Bresolin</p>
-        </div>
-
-        <div class="info_item">
-          <img src="/static/img/icons/icons8-casa-100.svg" alt="">
-          <p>Creci nº 82905</p>
-        </div>
-
-        <div class="info_item">
-          <img src="/static/img/icons/icon_phone.svg" alt="">
-          <p>(51) 98170-2045</p>
-        </div>
-
-        <a href="https://www.instagram.com/bresolin.imoveis" target="_blank">
-          <div class="info_item">
-            <img src="/static/img/icons/icon_instagram.svg" alt="">
-            <p>@bresolin.imoveis</p>
-            <div class="link-imagem">
-              <img src="/static/img/icons/icon_link.svg" alt="">
+        <div class="footer_container">
+            <!-- Ícone da casa -->
+            <div class="footer_logo">
+                <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Ícone Casa">
             </div>
-          </div>
-        </a>
 
-        <div class="info_item">
-          <img src="/static/img/icons/icon_mail.svg" alt="">
-          <p>negocios@imoveisbresolin.com.br</p>
+            <!-- Informações de contato -->
+            <div class="footer_info">
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_user.svg" alt="">
+                    <p>Otávio Bresolin</p>
+                </div>
+
+                <div class="info_item">
+                    <img src="/static/img/icons/icons8-casa-100.svg" alt="">
+                    <p>Creci nº 82905</p>
+                </div>
+
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_phone.svg" alt="">
+                    <p>(51) 98170-2045</p>
+                </div>
+
+                <a href="https://www.instagram.com/bresolin.imoveis" target="_blank">
+                    <div class="info_item">
+                        <img src="/static/img/icons/icon_instagram.svg" alt="">
+                        <p>@bresolin.imoveis</p>
+                        <div class="link-imagem">
+                            <img src="/static/img/icons/icon_link.svg" alt="">
+                        </div>
+                    </div>
+                </a>
+
+                <div class="info_item">
+                    <img src="/static/img/icons/icon_mail.svg" alt="">
+                    <p>negocios@imoveisbresolin.com.br</p>
+                </div>
+
+            </div>
         </div>
 
-      </div>
-    </div>
-
-    <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
-  </footer>
+        <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
+    </footer>
 
 
     <script src="/static/js/pesquisa.js"></script>

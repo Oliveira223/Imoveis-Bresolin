@@ -574,7 +574,7 @@ main.desktop {
   display: flex;
   text-align: left;
   flex-direction: column;
-  gap: 1vw;
+  gap: 0vw;
 }
 
 
@@ -644,6 +644,19 @@ main.desktop {
 
   .titulo-imovel {
     font-size: 2.5vw;
+    margin-top: -0.6vw;
+  }
+  
+  .endereco-completo{
+    font-size: 1.8vw;
+    font-weight: 400;
+    margin-bottom: 2vw;
+    color: #686868;
+  }
+
+  .sobre-empreendimento{
+    font-size: 1.25vw;
+    color: #151515;
   }
 
   .preco {

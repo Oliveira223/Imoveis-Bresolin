@@ -278,7 +278,137 @@ a:hover {
 }
 
 
+/* ================================
+   Pesquisa rápida
+================================== */
+/* Mobile: Layout em coluna - pesquisa primeiro, contador depois */
+.barra-superior-mobile {
+  display: flex;
+  flex-direction: column; /* Empilha em coluna */
+  gap: 12px;
+  margin-bottom: 1vw;
+  margin-right: 1.2vw;
+}
 
+.barra-superior-desktop {
+  display: none;
+}
+
+/* Estilos para mobile */
+.barra-superior-mobile .pesquisa-minimalista {
+  order: 1; /* Pesquisa aparece primeiro */
+  max-width: 100%;
+  margin: 0 40px;
+  
+}
+
+.barra-superior-mobile .contador-imoveis {
+  order: 2; /* Contador aparece depois */
+  font-size: 0.9rem;
+  text-align: center;
+  word-break: break-word; /* Quebra palavras se necessário */
+  hyphens: auto; /* Adiciona hífens automáticos */
+}
+
+.pesquisa-minimalista {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+.campo-pesquisa-container {
+  position: relative;
+  flex: 1;
+}
+
+.campo-pesquisa-simples {
+  width: 100%;
+  padding: 12px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  background: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.campo-pesquisa-simples:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.campo-pesquisa-simples::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+.btn-limpar-simples {
+  width: 36px;
+  height: 36px;
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-limpar-simples:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Sugestões - Design claro */
+.sugestoes {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 15px 15px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sugestoes div {
+  padding: 12px 18px;
+  color: #333333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.sugestoes div:hover {
+  background: #f8f9fa;
+  color: #007bff;
+}
+
+.sugestoes div:last-child {
+  border-bottom: none;
+}
 /* ================================
    TABLET
 ================================== */
@@ -367,10 +497,17 @@ a:hover {
     width: auto !important;
     margin: 0 !important;
   }
+
+   .campos-pesquisa-rapida {
+    grid-template-columns: 1fr;
+  }
+
+  .pesquisa-minimalista {
+  margin-right: 0; 
+  }
+
+
 }
-
-
-
 
 /* ================================
    DESKTOP
@@ -451,5 +588,20 @@ a:hover {
     width: auto !important;
     margin: 0 !important;
   }
+
+/* Barra superior com contador e pesquisa */
+.barra-superior-mobile {
+ display: none;
+}
+
+.barra-superior-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1vw;
+  margin-right: 1.2vw;
+  gap: 1vw;
+}
+
 
 }

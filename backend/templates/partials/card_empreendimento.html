@@ -1,0 +1,132 @@
+<!-- ===========================
+     Componente de Card de Empreendimento
+=========================== -->
+
+<a href="/empreendimento/{{ empreendimento.id }}" class="card-link card-empreendimento-link">
+
+    <div class="card-container card-empreendimento-container">
+
+        <!-- 50% | Imagem -->
+        <div class="card-imagem">
+            <img src="{{ empreendimento.imagem or '/static/img/no-photo.jpg' }}" alt="{{ empreendimento.nome }}">
+        </div>
+
+        <!-- 10% | Nome & ID-->
+        <div class="card-info_principal">
+            {% if empreendimento.nome %}
+            <h1>{{ empreendimento.nome }}</h1>
+            {% endif %}
+
+            {% if empreendimento.id %}
+            <h2>ID: {{ empreendimento.id }}</h2>
+            {% endif %}
+        </div>
+
+        <!-- 20% | Estágio | Bairro | Cidade -->
+        <div class="card-info_secundaria">
+
+            <!-- Estágio -->
+            {% if empreendimento.estagio %}
+            <p class="estagio">{{ empreendimento.estagio }}</p>
+            {% endif %}
+
+            <!-- Bairro -->
+            {% if empreendimento.bairro %}
+            <p class="bairro">Bairro {{ empreendimento.bairro }}</p>
+            {% endif %}
+
+            <!-- Cidade -->
+            {% if empreendimento.cidade %}
+            <p class="cidade">Em {{ empreendimento.cidade }}</p>
+            {% endif %}
+        </div>
+
+        <!-- 5% | Faixa de Preço -->
+        <div class="card-preco">
+            {% if empreendimento.preco_minimo and empreendimento.preco_maximo %}
+            {% if empreendimento.preco_minimo == empreendimento.preco_maximo %}
+            <p>R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".")
+                }}
+            </p>
+            {% else %}
+            <p>R$ {{ "{:,.0f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".")
+                }}
+                - {{ "{:,.0f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".")
+                }}
+            </p>
+            {% endif %}
+            {% elif empreendimento.preco_minimo %}
+            <!-- <p>A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".",
+                ",").replace("X", ".") }}</p> -->
+            <p>R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".",
+                ",").replace("X", ".") }}</p>
+
+            {% elif empreendimento.preco_min and empreendimento.preco_max %}
+            {% if empreendimento.preco_min == empreendimento.preco_max %}
+            <p>R$ {{ "{:,.2f}".format(empreendimento.preco_min).replace(",", "X").replace(".", ",").replace("X", ".") }}
+            </p>
+            {% else %}
+            <p>R$ {{ "{:,.0f}".format(empreendimento.preco_min).replace(",", "X").replace(".", ",").replace("X", ".") }}
+                - {{ "{:,.0f}".format(empreendimento.preco_max).replace(",", "X").replace(".", ",").replace("X", ".") }}
+            </p>
+            {% endif %}
+            {% elif empreendimento.preco_min %}
+            <p>R$ {{ "{:,.2f}".format(empreendimento.preco_min).replace(",", "X").replace(".",
+                ",").replace("X", ".") }}</p>
+            {% endif %}
+        </div>
+
+        <!-- 15% | Informações do Empreendimento -->
+        <div class="card-icones">
+            {% if empreendimento.total_unidades or empreendimento.imoveis_disponiveis %}
+            <div class="info-item">
+                <img src="/static/img/icons/home.svg" alt="Unidades" class="info-icon">
+                <span>
+                    {% if empreendimento.total_unidades %}
+                    {{ empreendimento.total_unidades }} un.
+                    {% else %}
+                    {{ empreendimento.imoveis_disponiveis }} un.
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+
+
+            <!-- Priorizar area_minima/area_maxima do admin sobre area_min/area_max calculados -->
+            {% if empreendimento.area_minima and empreendimento.area_maxima %}
+            <div class="info-item">
+                <img src="/static/img/icons/icons8-ruler-96.svg" alt="Área" class="info-icon">
+                {% if empreendimento.area_minima == empreendimento.area_maxima %}
+                <span>{{ "{:.0f}".format(empreendimento.area_minima) }} m²</span>
+                {% else %}
+                <span>{{ "{:.0f}".format(empreendimento.area_minima) }}-{{ "{:.0f}".format(empreendimento.area_maxima)
+                    }} m²</span>
+                {% endif %}
+            </div>
+            {% elif empreendimento.area_minima %}
+            <div class="info-item">
+                <img src="/static/img/icons/icons8-ruler-96.svg" alt="Área" class="info-icon">
+                <span>{{ "{:.0f}".format(empreendimento.area_minima) }}+ m²</span>
+            </div>
+            {% elif empreendimento.area_min and empreendimento.area_max %}
+            <div class="info-item">
+                <img src="/static/img/icons/icons8-ruler-96.svg" alt="Área" class="info-icon">
+                {% if empreendimento.area_min == empreendimento.area_max %}
+                <span>{{ "{:.0f}".format(empreendimento.area_min) }} m²</span>
+                {% else %}
+                <span>{{ "{:.0f}".format(empreendimento.area_min) }}-{{ "{:.0f}".format(empreendimento.area_max) }}
+                    m²</span>
+                {% endif %}
+            </div>
+            {% elif empreendimento.area_min %}
+            <div class="info-item">
+                <img src="/static/img/icons/icons8-ruler-96.svg" alt="Área" class="info-icon">
+                <span>{{ "{:.0f}".format(empreendimento.area_min) }}+ m²</span>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</a>

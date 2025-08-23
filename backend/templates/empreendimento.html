@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <title>{{ empreendimento.nome }} | Imóveis Bresolin</title>
+  <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1c1c1c" />
+  <meta name="color-scheme" content="light" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="/static/css/empreendimento.css">
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/components/card_imovel.css">
+
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+
+      <!-- Botão Voltar -->
+      <div class="header-left">
+        <button class="btn-voltar" onclick="history.back()">
+          <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+        </button>
+      </div>
+
+      <!-- Título centralizado -->
+      <div class="header-center">
+        <a href="/">
+          <div class="title_container">
+            <h1>BRESOLIN</h1>
+            <h2>NEGÓCIOS IMOBILIÁRIOS</h2>
+          </div>
+        </a>
+      </div>
+
+      <!-- Botão de alternância de tema -->
+      <div class="header-right">
+        <button id="toggle-tema" class="btn-tema" onclick="alternarTema()">
+          <img id="icone-tema" src="/static/img/icons/icon_moon.svg" alt="Modo Escuro">
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="conteudo-imovel mobile">
+
+    <!-- Título -->
+    <h1 class="titulo-imovel">{{ empreendimento.nome }}</h1>
+
+    <!-- Descrição -->
+    {% if empreendimento.descricao %}
+    <p class="descricao">{{ empreendimento.descricao | replace('\n', '<br>') | safe }}</p>
+    {% endif %}
+
+    <!-- Imagem principal -->
+    {% if empreendimento.imagem %}
+    {% if imagens %}
+    {% set secundarias = imagens | selectattr("tipo", "equalto", "secundaria") | list %}
+    {% set plantas = imagens | selectattr("tipo", "equalto", "planta") | list %}
+    {% endif %}
+    <img class="imagem-principal" src="{{ empreendimento.imagem }}" alt="{{ empreendimento.nome }}">
+    {% endif %}
+
+    <!-- Galeria de imagens secundárias -->
+    {% if secundarias %}
+    <div class="galeria">
+      <div class="galeria-imagens-scroll">
+        {% for img in secundarias %}
+        <img src="{{ img.url }}" alt="Imagem do empreendimento" class="thumb-secundaria">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Faixa de Preços - Versão Mobile (linha 79-89) -->
+    <!-- Faixa de Preços -->
+    {% if empreendimento.preco_minimo and empreendimento.preco_maximo %}
+    <p class="preco">R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }} - R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+    {% elif empreendimento.preco_minimo %}
+    <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+    {% elif empreendimento.preco_maximo %}
+    <p class="preco">Até R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+    {% elif empreendimento.preco_min_imoveis and empreendimento.preco_max_imoveis %}
+    <p class="preco">R$ {{ "{:,.0f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }} - {{ "{:,.0f}".format(empreendimento.preco_max_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+    {% elif empreendimento.preco_min_imoveis %}
+    <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+    {% endif %}
+
+    <!-- Campos adicionais -->
+    <div class="campos-adicionais">
+      {% if empreendimento.estagio %}<p> <strong>Estágio:</strong> {{ empreendimento.estagio }}</p>{% endif %}
+      {% if empreendimento.total_unidades %}<p> <strong>Total de Unidades:</strong> {{ empreendimento.total_unidades }}
+      </p>{% endif %}
+      {% if empreendimento.n_andares %}<p> <strong>Número de Andares:</strong> {{ empreendimento.n_andares }}</p>{%
+      endif %}
+      {% if empreendimento.area_laje %}<p> <strong>Área da Laje:</strong> {{ empreendimento.area_laje }} m²</p>{% endif
+      %}
+
+      <!-- Faixa de Áreas -->
+      {% if empreendimento.area_minima and empreendimento.area_maxima %}
+      <p> <strong>Área:</strong> {{ empreendimento.area_minima }} - {{ empreendimento.area_maxima }} m²</p>
+      {% elif empreendimento.area_minima %}
+      <p> <strong>Área mínima:</strong> {{ empreendimento.area_minima }} m²</p>
+      {% elif empreendimento.area_maxima %}
+      <p> <strong>Área máxima:</strong> {{ empreendimento.area_maxima }} m²</p>
+      {% elif empreendimento.area_min_imoveis and empreendimento.area_max_imoveis %}
+      <p> <strong>Área:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} - {{ "{:.0f}".format(empreendimento.area_max_imoveis) }} m²</p>
+      {% elif empreendimento.area_min_imoveis %}
+      <p> <strong>Área mínima:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} m²</p>
+      {% endif %}
+
+      <!-- Faixa de Quartos -->
+      {% if empreendimento.quartos_minimo and empreendimento.quartos_maximo %}
+      <p> <strong>Quartos:</strong> {{ empreendimento.quartos_minimo }} - {{ empreendimento.quartos_maximo }}</p>
+      {% elif empreendimento.quartos_minimo %}
+      <p> <strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_minimo }}</p>
+      {% elif empreendimento.quartos_maximo %}
+      <p> <strong>Quartos (máximo):</strong> {{ empreendimento.quartos_maximo }}</p>
+      {% elif empreendimento.quartos_min_imoveis and empreendimento.quartos_max_imoveis %}
+      <p> <strong>Quartos:</strong> {{ empreendimento.quartos_min_imoveis }} - {{ empreendimento.quartos_max_imoveis }}</p>
+      {% elif empreendimento.quartos_min_imoveis %}
+      <p> <strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_min_imoveis }}</p>
+      {% endif %}
+
+      <!-- Faixa de Vagas -->
+      {% if empreendimento.vagas_minimo and empreendimento.vagas_maximo %}
+      <p> <strong>Vagas:</strong> {{ empreendimento.vagas_minimo }} - {{ empreendimento.vagas_maximo }}</p>
+      {% elif empreendimento.vagas_minimo %}
+      <p> <strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_minimo }}</p>
+      {% elif empreendimento.vagas_maximo %}
+      <p> <strong>Vagas (máximo):</strong> {{ empreendimento.vagas_maximo }}</p>
+      {% elif empreendimento.vagas_min_imoveis and empreendimento.vagas_max_imoveis %}
+      <p> <strong>Vagas:</strong> {{ empreendimento.vagas_min_imoveis }} - {{ empreendimento.vagas_max_imoveis }}</p>
+      {% elif empreendimento.vagas_min_imoveis %}
+      <p> <strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_min_imoveis }}</p>
+      {% endif %}
+
+      {% if empreendimento.bairro %}<p> <strong>Bairro:</strong> {{ empreendimento.bairro }}</p>{% endif %}
+      {% if empreendimento.cidade %}<p> <strong>Cidade:</strong> {{ empreendimento.cidade }}</p>{% endif %}
+      {% if empreendimento.uf %}<p> <strong>UF:</strong> {{ empreendimento.uf }}</p>{% endif %}
+      {% if empreendimento.lancamento %}<p> <strong>Data de Lançamento:</strong> {{ empreendimento.lancamento }}</p>{%
+      endif %}
+      {% if empreendimento.entrega and empreendimento.estagio == 'EM CONSTRUÇÃO' %}
+      <p><strong>Previsão de Entrega:</strong> {{ empreendimento.entrega }}</p>
+      {% endif %}
+      {% if empreendimento.ri %}<p> <strong>RI:</strong> {{ empreendimento.ri }}</p>{% endif %}
+      {% if empreendimento.iptu %}<p> <strong>IPTU:</strong> {{ empreendimento.iptu }}</p>{% endif %}
+
+      <!-- Endereço completo -->
+      {% if empreendimento.endereco_completo %}
+      <p> <strong>Endereço:</strong> {{ empreendimento.endereco_completo }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Plantas -->
+    {% if plantas %}
+    <div class="galeria">
+      <h3>Plantas</h3>
+      <div class="galeria-imagens-scroll">
+        {% for img in plantas %}
+        <img src="{{ img.url }}" alt="Planta do empreendimento">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <a class="btn-whatsapp"
+      href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no empreendimento \'' ~ empreendimento.nome ~ '\' (ID: ' ~ empreendimento.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+      target="_blank">
+      Tenho interesse
+      <img src="/static/img/icons/icon_whatsapp.svg" alt="">
+    </a>
+
+    <!-- Imóveis Relacionados -->
+    {% if imoveis_relacionados %}
+    <div class="imoveis-similares">
+      <h3 class="titulo-similares">Imóveis Disponíveis neste Empreendimento</h3>
+      <div class="lista-similares">
+        {% for imovel in imoveis_relacionados %}
+        {% include 'partials/card_imovel.html' %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </main>
+
+  <!-- =============================
+      Layout para desktop 
+  ===============================-->
+  <main class="conteudo-imovel desktop">
+    <div class="layout-desktop">
+
+      {% if secundarias %}
+      <div class="coluna-esquerda">
+        {% for img in secundarias %}
+        <img src="{{ img.url }}" alt="Imagem do empreendimento" class="thumb-secundaria">
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="coluna-central">
+        {% if empreendimento.imagem %}
+        <div class="imagem-principal-container">
+          <img class="imagem-principal" id="imagemPrincipal" src="{{ empreendimento.imagem }}"
+            alt="{{ empreendimento.nome }}">
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="coluna-direita">
+        <h1 class="titulo-imovel">{{ empreendimento.nome }}</h1>
+
+          {% if empreendimento.endereco_completo %}
+            <h1 class="endereco-completo">{{ empreendimento.endereco_completo }}</h1>
+          {% endif %}
+
+        <h1 class="sobre-empreendimento">Sobre o Empreendimento</h1>
+        {% if empreendimento.descricao %}
+        <p class="descricao">{{ empreendimento.descricao | replace('\n', '<br>') | safe }}</p>
+        {% endif %}
+
+        <!-- Faixa de Preços -->
+        {% if empreendimento.preco_minimo and empreendimento.preco_maximo %}
+        <p class="preco">R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }} - R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        {% elif empreendimento.preco_minimo %}
+        <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        {% elif empreendimento.preco_maximo %}
+        <p class="preco">Até R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        {% elif empreendimento.preco_min_imoveis and empreendimento.preco_max_imoveis %}
+        <p class="preco">R$ {{ "{:,.0f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }} - {{ "{:,.0f}".format(empreendimento.preco_max_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        {% elif empreendimento.preco_min_imoveis %}
+        <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        {% endif %}
+
+        <div class="campos-adicionais campos-grid">
+          {% if empreendimento.estagio %}<div class="bloco-detalhe"><strong>Estágio:</strong> {{ empreendimento.estagio
+            }}</div>{% endif %}
+          {% if empreendimento.total_unidades %}<div class="bloco-detalhe"><strong>Total de Unidades:</strong> {{
+            empreendimento.total_unidades }}</div>{% endif %}
+          {% if empreendimento.n_andares %}<div class="bloco-detalhe"><strong>Número de Andares:</strong> {{
+            empreendimento.n_andares }}</div>{% endif %}
+          {% if empreendimento.area_laje %}<div class="bloco-detalhe"><strong>Área da Laje:</strong> {{
+            empreendimento.area_laje }} m²</div>{% endif %}
+
+          <!-- Faixa de Áreas -->
+          {% if empreendimento.area_minima and empreendimento.area_maxima %}
+          <div class="bloco-detalhe"><strong>Área:</strong> {{ empreendimento.area_minima }} - {{ empreendimento.area_maxima }} m²</div>
+          {% elif empreendimento.area_minima %}
+          <div class="bloco-detalhe"><strong>Área mínima:</strong> {{ empreendimento.area_minima }} m²</div>
+          {% elif empreendimento.area_maxima %}
+          <div class="bloco-detalhe"><strong>Área máxima:</strong> {{ empreendimento.area_maxima }} m²</div>
+          {% elif empreendimento.area_min_imoveis and empreendimento.area_max_imoveis %}
+          <div class="bloco-detalhe"><strong>Área:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} - {{ "{:.0f}".format(empreendimento.area_max_imoveis) }} m²</div>
+          {% elif empreendimento.area_min_imoveis %}
+          <div class="bloco-detalhe"><strong>Área mínima:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} m²</div>
+          {% endif %}
+
+          <!-- Faixa de Quartos -->
+          {% if empreendimento.quartos_minimo and empreendimento.quartos_maximo %}
+          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_minimo }} - {{ empreendimento.quartos_maximo }}</div>
+          {% elif empreendimento.quartos_minimo %}
+          <div class="bloco-detalhe"><strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_minimo }}</div>
+          {% elif empreendimento.quartos_maximo %}
+          <div class="bloco-detalhe"><strong>Quartos (máximo):</strong> {{ empreendimento.quartos_maximo }}</div>
+          {% elif empreendimento.quartos_min_imoveis and empreendimento.quartos_max_imoveis %}
+          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_min_imoveis }} - {{ empreendimento.quartos_max_imoveis }}</div>
+          {% elif empreendimento.quartos_min_imoveis %}
+          <div class="bloco-detalhe"><strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_min_imoveis }}</div>
+          {% endif %}
+
+          <!-- Faixa de Vagas -->
+          {% if empreendimento.vagas_minimo and empreendimento.vagas_maximo %}
+          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_minimo }} - {{ empreendimento.vagas_maximo }}</div>
+          {% elif empreendimento.vagas_minimo %}
+          <div class="bloco-detalhe"><strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_minimo }}</div>
+          {% elif empreendimento.vagas_maximo %}
+          <div class="bloco-detalhe"><strong>Vagas (máximo):</strong> {{ empreendimento.vagas_maximo }}</div>
+          {% elif empreendimento.vagas_min_imoveis and empreendimento.vagas_max_imoveis %}
+          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_min_imoveis }} - {{ empreendimento.vagas_max_imoveis }}</div>
+          {% elif empreendimento.vagas_min_imoveis %}
+          <div class="bloco-detalhe"><strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_min_imoveis }}</div>
+          {% endif %}
+
+          {% if empreendimento.bairro %}<div class="bloco-detalhe"><strong>Bairro:</strong> {{ empreendimento.bairro }}
+          </div>{% endif %}
+          {% if empreendimento.cidade %}<div class="bloco-detalhe"><strong>Cidade:</strong> {{ empreendimento.cidade }}
+          </div>{% endif %}
+          {% if empreendimento.uf %}<div class="bloco-detalhe"><strong>UF:</strong> {{ empreendimento.uf }}</div>{%
+          endif %}
+          {% if empreendimento.lancamento %}<div class="bloco-detalhe"><strong>Data de Lançamento:</strong> {{
+            empreendimento.lancamento }}</div>{% endif %}
+          {% if empreendimento.entrega and empreendimento.estagio == 'EM CONSTRUÇÃO' %}
+          <div class="bloco-detalhe"><strong>Previsão de Entrega:</strong> {{ empreendimento.entrega }}</div>{% endif %}
+          {% if empreendimento.ri %}<div class="bloco-detalhe"><strong>RI:</strong> {{ empreendimento.ri }}</div>{%
+          endif %}
+          {% if empreendimento.iptu %}<div class="bloco-detalhe"><strong>IPTU:</strong> {{ empreendimento.iptu }}</div>
+          {% endif %}
+
+          {% if empreendimento.endereco_completo %}
+          <div class="bloco-detalhe">
+            <strong>Endereço:</strong>
+            <span class="valor-multilinha">{{ empreendimento.endereco_completo }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <a class="btn-whatsapp"
+          href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no empreendimento \'' ~ empreendimento.nome ~ '\' (ID: ' ~ empreendimento.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+          target="_blank">
+          Tenho interesse
+          <img src="/static/img/icons/icon_whatsapp.svg" alt="">
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Imóveis Relacionados (Desktop) -->
+    {% if imoveis_relacionados %}
+    <div class="imoveis-similares-desktop">
+      <h3 class="titulo-similares">Imóveis Disponíveis neste Empreendimento</h3>
+      <div class="lista-similares-desktop">
+        {% for imovel in imoveis_relacionados %}
+        {% include 'partials/card_imovel.html' %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </main>
+
+  <!----------------------  Rodapé  ---------------->
+  <footer class="footer">
+    <div class="footer_container">
+      <!-- Ícone da casa -->
+      <div class="footer_logo">
+        <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Ícone Casa">
+      </div>
+
+      <!-- Informações de contato -->
+      <div class="footer_info">
+        <div class="info_item">
+          <img src="/static/img/icons/icon_user.svg" alt="">
+          <p>Otávio Bresolin</p>
+        </div>
+
+        <div class="info_item">
+          <img src="/static/img/icons/icons8-casa-100.svg" alt="">
+          <p>Creci nº 82905</p>
+        </div>
+
+        <div class="info_item">
+          <img src="/static/img/icons/icon_phone.svg" alt="">
+          <p>(51) 98170-2045</p>
+        </div>
+
+        <a href="https://www.instagram.com/bresolin.imoveis" target="_blank">
+          <div class="info_item">
+            <img src="/static/img/icons/icon_instagram.svg" alt="">
+            <p>@bresolin.imoveis</p>
+            <div class="link-imagem">
+              <img src="/static/img/icons/icon_link.svg" alt="">
+            </div>
+          </div>
+        </a>
+
+        <div class="info_item">
+          <img src="/static/img/icons/icon_mail.svg" alt="">
+          <p>negocios@imoveisbresolin.com.br</p>
+        </div>
+
+      </div>
+    </div>
+
+    <p class="footer_copyright">© 2025 Imóveis Bresolin. Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="/static/js/imovel.js"></script>
+
+  <a href="https://wa.me/5551981702045" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
+</body>
+
+</html>
