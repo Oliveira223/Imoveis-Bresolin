@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Empreendimento #{{ empreendimento.id }} | Bresolin</title>
+    <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
+    
+    <link rel="stylesheet" href="/static/css/editar_empreendimento.css">
+</head>
+
+<body>
+
+    <header>
+        <button class="btn-voltar" onclick="history.back()">
+            <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+        </button>
+        <h1>Editar Empreendimento</h1>
+    </header>
+
+    <main class="conteudo-empreendimento">
+        <form id="form-editar-empreendimento">
+            <input type="hidden" name="id" value="{{ empreendimento.id }}">
+
+            <!-- =========================
+            Dados básicos
+            ========================== -->
+            <label for="nome">Nome do Empreendimento:</label>
+            <input type="text" id="nome" name="nome" value="{{ empreendimento.nome }}" required>
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao">{{ empreendimento.descricao }}</textarea>
+
+            <!-- =========================
+            Imagem principal
+            ========================== -->
+            <label for="file-imagem-principal">Imagem principal (upload):</label>
+            <input type="file" id="file-imagem-principal" accept="image/*">
+            <input type="hidden" name="imagem" id="input-imagem-principal" value="{{ empreendimento.imagem or '' }}">
+
+            {% if empreendimento.imagem %}
+            <label>Prévia da imagem principal:</label>
+            <img id="preview-imagem-principal" src="{{ empreendimento.imagem }}"
+                style="max-height: 200px; margin:1rem 0; display: block;">
+            {% else %}
+            <label>Prévia da imagem principal:</label>
+            <img id="preview-imagem-principal" style="max-height: 200px; margin:1rem 0; display: none;">
+            {% endif %}
+
+            <!-- =========================
+            Imagens Secundárias
+            ========================== -->
+            <label>Imagens secundárias:</label>
+            <input type="file" id="file-secundarias-emp-edit" multiple accept="image/*">
+            <div id="lista-secundarias-emp-edit" class="galeria-preview">
+                <!-- Imagens existentes serão carregadas via JavaScript -->
+            </div>
+            <button type="button" id="btn-excluir-secundarias-emp">Excluir imagens selecionadas</button>
+            <small>Selecione múltiplas imagens para adicionar à galeria do empreendimento</small>
+
+            <!-- =========================
+            Localização
+            ========================== -->
+            <label for="bairro">Bairro:</label>
+            <input type="text" id="bairro" name="bairro" value="{{ empreendimento.bairro or '' }}">
+
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" name="cidade" value="{{ empreendimento.cidade or '' }}">
+
+            <label for="uf">UF:</label>
+            <input type="text" id="uf" name="uf" maxlength="2" value="{{ empreendimento.uf or '' }}">
+
+            <label for="endereco_completo">Endereço Completo:</label>
+            <input type="text" id="endereco_completo" name="endereco_completo" value="{{ empreendimento.endereco_completo or '' }}">
+
+            <!-- =========================
+            Estágio e Datas
+            ========================== -->
+            <label for="estagio">Estágio da obra:</label>
+            <select id="estagio" name="estagio">
+                <option value="">Selecione</option>
+                <option value="LANÇAMENTO" {% if empreendimento.estagio=='LANÇAMENTO' %}selected{% endif %}>LANÇAMENTO</option>
+                <option value="EM CONSTRUÇÃO" {% if empreendimento.estagio=='EM CONSTRUÇÃO' %}selected{% endif %}>EM CONSTRUÇÃO</option>
+                <option value="PRONTO" {% if empreendimento.estagio=='PRONTO' %}selected{% endif %}>PRONTO</option>
+                <option value="ENTREGUE" {% if empreendimento.estagio=='ENTREGUE' %}selected{% endif %}>ENTREGUE</option>
+            </select>
+
+            <label for="lancamento">Data de Lançamento:</label>
+            <input type="text" id="lancamento" name="lancamento" value="{{ empreendimento.lancamento or '' }}">
+
+            <label for="entrega">Previsão de Entrega:</label>
+            <input type="text" id="entrega" name="entrega" value="{{ empreendimento.entrega or '' }}">
+
+            <!-- =========================
+            Características do Empreendimento
+            ========================== -->
+            <label for="total_unidades">Total de Unidades:</label>
+            <input type="number" id="total_unidades" name="total_unidades" value="{{ empreendimento.total_unidades or '' }}">
+
+            <label for="n_andares">Número de Andares:</label>
+            <input type="number" id="n_andares" name="n_andares" value="{{ empreendimento.n_andares or '' }}">
+
+            <label for="area_laje">Área da Laje (m²):</label>
+            <input type="number" id="area_laje" name="area_laje" step="0.01" value="{{ empreendimento.area_laje or '' }}">
+
+            <!-- =========================
+            Preços e Áreas
+            ========================== -->
+            <label for="preco_minimo">Preço Mínimo:</label>
+            <input type="number" id="preco_minimo" name="preco_minimo" step="0.01" value="{{ empreendimento.preco_minimo or '' }}">
+
+            <label for="preco_maximo">Preço Máximo:</label>
+            <input type="number" id="preco_maximo" name="preco_maximo" step="0.01" value="{{ empreendimento.preco_maximo or '' }}">
+
+            <label for="area_minima">Área Mínima (m²):</label>
+            <input type="number" id="area_minima" name="area_minima" step="0.01" value="{{ empreendimento.area_minima or '' }}">
+
+            <label for="area_maxima">Área Máxima (m²):</label>
+            <input type="number" id="area_maxima" name="area_maxima" step="0.01" value="{{ empreendimento.area_maxima or '' }}">
+
+            <!-- =========================
+            Quartos e Vagas
+            ========================== -->
+            <label for="quartos_minimo">Quartos Mínimo:</label>
+            <input type="number" id="quartos_minimo" name="quartos_minimo" value="{{ empreendimento.quartos_minimo or '' }}">
+
+            <label for="quartos_maximo">Quartos Máximo:</label>
+            <input type="number" id="quartos_maximo" name="quartos_maximo" value="{{ empreendimento.quartos_maximo or '' }}">
+
+            <label for="vagas_minimo">Vagas Mínimo:</label>
+            <input type="number" id="vagas_minimo" name="vagas_minimo" value="{{ empreendimento.vagas_minimo or '' }}">
+
+            <label for="vagas_maximo">Vagas Máximo:</label>
+            <input type="number" id="vagas_maximo" name="vagas_maximo" value="{{ empreendimento.vagas_maximo or '' }}">
+
+            <!-- =========================
+            Custos
+            ========================== -->
+            <label for="ri">RI (Registro de Incorporação):</label>
+            <input type="text" id="ri" name="ri" value="{{ empreendimento.ri or '' }}">
+
+            <label for="iptu">IPTU:</label>
+            <input type="number" id="iptu" name="iptu" step="0.01" value="{{ empreendimento.iptu or '' }}">
+
+            <!-- =========================
+            Seleção de Imóveis
+            ========================== -->
+            <div class="grupo-imoveis-empreendimento">
+                <label>Imóveis do empreendimento:</label>
+                <div class="imoveis-selection-container">
+                    <div class="imoveis-list">
+                        <h4>Disponíveis</h4>
+                        <select id="imoveis-disponiveis" multiple size="8">
+                            <!-- Preenchido via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="imoveis-controls">
+                        <button type="button" id="btn-adicionar-imovel">→</button>
+                        <button type="button" id="btn-remover-imovel">←</button>
+                    </div>
+                    <div class="imoveis-list">
+                        <h4>Selecionados</h4>
+                        <select id="imoveis-selecionados" name="imoveis_ids[]" multiple size="8">
+                            <!-- Imóveis selecionados -->
+                        </select>
+                    </div>
+                </div>
+                <small>Selecione os imóveis que fazem parte deste empreendimento</small>
+            </div>
+
+            <br><br>
+            <button type="submit">Salvar alterações</button>
+        </form>
+    </main>
+
+    <script src="/static/js/editar_empreendimento.js"></script>
+</body>
+
+</html>
