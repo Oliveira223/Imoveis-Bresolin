@@ -154,7 +154,7 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
 
   // Conversões e tratamentos
   data.ativo = this.ativo.checked;
-  data.condominio_id = data.condominio_id || null;
+  data.empreendimento_id = data.empreendimento_id || null;
   data.preco = parseFloat(data.preco) || 0;
   data.area = parseFloat(data.area) || 0;
   data.quartos = parseInt(data.quartos) || 0;
@@ -164,7 +164,6 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
   data.banheiros = parseInt(data.banheiros) || 0;
   data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
   data.iptu = parseFloat(data.iptu) || 0;
-  data.valor_condominio = parseFloat(data.valor_condominio) || 0;
 
   data.piscina = this.piscina?.checked || false;
   data.churrasqueira = this.churrasqueira?.checked || false;
@@ -362,4 +361,173 @@ configurarCampoMonetario('condominio-editavel-admin', 'condominio-admin-real');
 // ===========================
 
 listarImoveis();
-listarCondominios();
+listarEmpreendimentos(); // Substituir listarCondominios() por esta linha
+
+
+// Atualizar a função de inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    // Carregar imóveis disponíveis
+    listarImoveisDisponiveis();
+    
+    // Adicionar event listeners para os botões de imóveis
+    const btnAdicionar = document.getElementById('btn-adicionar-imovel');
+    const btnRemover = document.getElementById('btn-remover-imovel');
+    const disponiveis = document.getElementById('imoveis-disponiveis');
+    const selecionados = document.getElementById('imoveis-selecionados');
+    
+    if (btnAdicionar) {
+        btnAdicionar.addEventListener('click', adicionarImovel);
+    }
+    
+    if (btnRemover) {
+        btnRemover.addEventListener('click', removerImovel);
+    }
+    
+    // Event listeners para atualizar botões quando seleção muda
+    if (disponiveis) {
+        disponiveis.addEventListener('change', atualizarBotoesImoveis);
+    }
+    
+    if (selecionados) {
+        selecionados.addEventListener('change', atualizarBotoesImoveis);
+    }
+    
+    // Inicializar estado dos botões
+    atualizarBotoesImoveis();
+});
+
+// Função para listar imóveis disponíveis
+function listarImoveisDisponiveis() {
+    fetch('/api/imoveis')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Total de imóveis encontrados:', data.length);
+            console.log('Dados dos imóveis:', data);
+            
+            const select = document.getElementById('imoveis-disponiveis');
+            if (select) {
+                select.innerHTML = '';
+                
+                let imoveisDisponiveis = 0;
+                data.forEach(imovel => {
+                    console.log(`Imóvel ${imovel.id}: empreendimento_id = ${imovel.empreendimento_id}`);
+                    
+                    // Só adiciona imóveis que não têm empreendimento vinculado
+                    if (!imovel.empreendimento_id) {
+                        const option = document.createElement('option');
+                        option.value = imovel.id;
+                        option.textContent = `${imovel.titulo} - ${imovel.tipo} - R$ ${imovel.preco ? parseFloat(imovel.preco).toLocaleString('pt-BR') : 'N/A'}`;
+                        select.appendChild(option);
+                        imoveisDisponiveis++;
+                    }
+                });
+                
+                console.log('Imóveis disponíveis (sem empreendimento):', imoveisDisponiveis);
+                
+                if (imoveisDisponiveis === 0) {
+                    const option = document.createElement('option');
+                    option.textContent = 'Nenhum imóvel disponível';
+                    option.disabled = true;
+                    select.appendChild(option);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar imóveis:', error);
+        });
+}
+
+// Função para mover imóveis da lista disponível para selecionados
+function adicionarImovel() {
+    const disponiveis = document.getElementById('imoveis-disponiveis');
+    const selecionados = document.getElementById('imoveis-selecionados');
+    
+    if (disponiveis && selecionados && disponiveis.selectedIndex >= 0) {
+        const selectedOption = disponiveis.options[disponiveis.selectedIndex];
+        selecionados.appendChild(selectedOption);
+        
+        // Atualizar estado dos botões
+        atualizarBotoesImoveis();
+    }
+}
+
+// Função para mover imóveis da lista selecionados para disponível
+function removerImovel() {
+    const disponiveis = document.getElementById('imoveis-disponiveis');
+    const selecionados = document.getElementById('imoveis-selecionados');
+    
+    if (disponiveis && selecionados && selecionados.selectedIndex >= 0) {
+        const selectedOption = selecionados.options[selecionados.selectedIndex];
+        disponiveis.appendChild(selectedOption);
+        
+        // Atualizar estado dos botões
+        atualizarBotoesImoveis();
+    }
+}
+
+// Função para atualizar estado dos botões
+function atualizarBotoesImoveis() {
+    const disponiveis = document.getElementById('imoveis-disponiveis');
+    const selecionados = document.getElementById('imoveis-selecionados');
+    const btnAdicionar = document.getElementById('btn-adicionar-imovel');
+    const btnRemover = document.getElementById('btn-remover-imovel');
+    
+    if (btnAdicionar) {
+        btnAdicionar.disabled = !disponiveis || disponiveis.selectedIndex < 0;
+    }
+    
+    if (btnRemover) {
+        btnRemover.disabled = !selecionados || selecionados.selectedIndex < 0;
+    }
+}
+
+// Função para obter IDs dos imóveis selecionados
+function getImoveisSelecionados() {
+    const selecionados = document.getElementById('imoveis-selecionados');
+    const ids = [];
+    
+    if (selecionados) {
+        for (let i = 0; i < selecionados.options.length; i++) {
+            ids.push(parseInt(selecionados.options[i].value));
+        }
+    }
+    
+    return ids;
+}
+
+// Atualizar a função cadastrarEmpreendimento
+function cadastrarEmpreendimento(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Adicionar imóveis selecionados
+    data.imoveis_selecionados = getImoveisSelecionados();
+    
+    fetch('/api/empreendimentos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Empreendimento cadastrado com sucesso!');
+            event.target.reset();
+            // Limpar listas de imóveis
+            document.getElementById('imoveis-selecionados').innerHTML = '';
+            // Recarregar lista de imóveis disponíveis
+            listarImoveisDisponiveis();
+            listarEmpreendimentos();
+        } else {
+            alert('Erro ao cadastrar empreendimento: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao cadastrar empreendimento');
+    });
+}

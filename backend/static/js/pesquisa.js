@@ -99,4 +99,140 @@ document.addEventListener('DOMContentLoaded', () => {
         : 'Filtrar Imóveis ▼';
     });
   }
+
+  // ================================
+  // Pesquisa rápida em tempo real
+  // ================================
+  const termoInput = document.getElementById('termo-pesquisa');
+  const sugestoesBox = document.getElementById('sugestoes-pesquisa');
+  const btnLimpar = document.getElementById('limpar-pesquisa');
+  const contadorImoveis = document.querySelector('.contador-imoveis');
+
+  // Sugestões dinâmicas (igual ao index)
+  if (termoInput && sugestoesBox) {
+    termoInput.addEventListener("input", () => {
+      const query = termoInput.value.trim();
+
+      // Filtrar imóveis em tempo real
+      filtrarImoveis();
+
+      // Mostrar sugestões se tiver mais de 2 caracteres
+      if (query.length < 2) {
+        sugestoesBox.style.display = "none";
+        return;
+      }
+
+      fetch(`/api/sugestoes?query=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          sugestoesBox.innerHTML = "";
+          if (data.length === 0) {
+            sugestoesBox.style.display = "none";
+            return;
+          }
+          data.forEach(item => {
+            const div = document.createElement("div");
+            div.textContent = item;
+            div.addEventListener("click", () => {
+              termoInput.value = item;
+              sugestoesBox.style.display = "none";
+              filtrarImoveis(); // Filtrar após selecionar sugestão
+            });
+            sugestoesBox.appendChild(div);
+          });
+          sugestoesBox.style.display = "block";
+        });
+    });
+
+    // Fechar sugestões ao clicar fora
+    document.addEventListener("click", (e) => {
+      if (!sugestoesBox.contains(e.target) && e.target !== termoInput) {
+        sugestoesBox.style.display = "none";
+      }
+    });
+  }
+
+  function filtrarImoveis() {
+    const termo = termoInput.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.card-link');
+    let visiveisCount = 0;
+    let empreendimentosVisiveis = 0;
+    let imoveisVisiveis = 0;
+
+    cards.forEach(card => {
+      let textoCard = '';
+      
+      // Para imóveis, incluir dados específicos incluindo o título
+      if (!card.classList.contains('card-empreendimento-link')) {
+        // Pegar o título do imóvel do atributo alt da imagem
+        const imagem = card.querySelector('.card-imagem img');
+        const titulo = imagem ? imagem.getAttribute('alt') || '' : '';
+        
+        // Pegar outros dados específicos dos imóveis
+        const tipo = card.querySelector('.card-info_principal h1')?.textContent || '';
+        const id = card.querySelector('.card-info_principal h2')?.textContent || '';
+        const pretensao = card.querySelector('.pretensao')?.textContent || '';
+        const bairro = card.querySelector('.bairro')?.textContent || '';
+        const cidade = card.querySelector('.cidade')?.textContent || '';
+        const preco = card.querySelector('.card-preco p')?.textContent || '';
+        
+        // Combinar todos os dados para busca, incluindo o título
+        textoCard = `${titulo} ${tipo} ${id} ${pretensao} ${bairro} ${cidade} ${preco}`.toLowerCase();
+      } else {
+        // Para empreendimentos, usar todo o texto visível
+        textoCard = card.textContent.toLowerCase();
+      }
+      
+      const isVisible = !termo || textoCard.includes(termo);
+
+      if (isVisible) {
+        card.style.display = 'block';
+        visiveisCount++;
+        
+        // Contar por tipo
+        if (card.classList.contains('card-empreendimento-link')) {
+          empreendimentosVisiveis++;
+        } else {
+          imoveisVisiveis++;
+        }
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Atualizar contador
+    atualizarContador(visiveisCount, empreendimentosVisiveis, imoveisVisiveis);
+
+    // Mostrar/esconder mensagem de "nenhum resultado"
+    const nenhumEncontrado = document.querySelector('.nenhum-encontrado');
+    if (nenhumEncontrado) {
+      nenhumEncontrado.style.display = visiveisCount === 0 ? 'block' : 'none';
+    }
+  }
+
+  function atualizarContador(total, empreendimentos, imoveis) {
+    let texto = `${total} ${total > 1 ? 'resultados' : 'resultado'} ${total > 1 ? 'encontrados' : 'encontrado'}`;
+    
+    if (empreendimentos > 0 && imoveis > 0) {
+      texto += ` (${empreendimentos} ${empreendimentos > 1 ? 'empreendimentos' : 'empreendimento'} e ${imoveis} ${imoveis > 1 ? 'imóveis' : 'imóvel'})`;
+    } else if (empreendimentos > 0) {
+      texto += ` (${empreendimentos} ${empreendimentos > 1 ? 'empreendimentos' : 'empreendimento'})`;
+    } else if (imoveis > 0) {
+      texto += ` (${imoveis} ${imoveis > 1 ? 'imóveis' : 'imóvel'})`;
+    }
+    
+    contadorImoveis.textContent = texto;
+  }
+
+  function limparPesquisa() {
+    termoInput.value = '';
+    sugestoesBox.style.display = 'none';
+    filtrarImoveis();
+  }
+
+  // Event listener para botão limpar
+  if (btnLimpar) {
+    btnLimpar.addEventListener('click', limparPesquisa);
+  }
 });
+
