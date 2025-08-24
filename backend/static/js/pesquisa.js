@@ -103,15 +103,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // ================================
   // Pesquisa rápida em tempo real
   // ================================
-  const termoInput = document.getElementById('termo-pesquisa');
-  const sugestoesBox = document.getElementById('sugestoes-pesquisa');
-  const btnLimpar = document.getElementById('limpar-pesquisa');
+  
+  // Elementos mobile
+  const termoInputMobile = document.getElementById('termo-pesquisa');
+  const sugestoesBoxMobile = document.getElementById('sugestoes-pesquisa');
+  const btnLimparMobile = document.getElementById('limpar-pesquisa');
+  
+  // Elementos desktop
+  const termoInputDesktop = document.getElementById('termo-pesquisa-desktop');
+  const sugestoesBoxDesktop = document.getElementById('sugestoes-pesquisa-desktop');
+  const btnLimparDesktop = document.getElementById('limpar-pesquisa-desktop');
+  
   const contadorImoveis = document.querySelector('.contador-imoveis');
 
-  // Sugestões dinâmicas (igual ao index)
-  if (termoInput && sugestoesBox) {
+  // Função para configurar eventos de pesquisa
+  function configurarPesquisa(termoInput, sugestoesBox, btnLimpar) {
+    if (!termoInput || !sugestoesBox) return;
+    
     termoInput.addEventListener("input", () => {
       const query = termoInput.value.trim();
+
+      // Sincronizar com o outro input
+      const outroInput = termoInput === termoInputMobile ? termoInputDesktop : termoInputMobile;
+      if (outroInput) outroInput.value = query;
 
       // Filtrar imóveis em tempo real
       filtrarImoveis();
@@ -135,8 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
             div.textContent = item;
             div.addEventListener("click", () => {
               termoInput.value = item;
+              // Sincronizar com o outro input
+              if (outroInput) outroInput.value = item;
               sugestoesBox.style.display = "none";
-              filtrarImoveis(); // Filtrar após selecionar sugestão
+              filtrarImoveis();
             });
             sugestoesBox.appendChild(div);
           });
@@ -144,16 +160,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Fechar sugestões ao clicar fora
-    document.addEventListener("click", (e) => {
-      if (!sugestoesBox.contains(e.target) && e.target !== termoInput) {
-        sugestoesBox.style.display = "none";
-      }
-    });
+    // Event listener para botão limpar
+    if (btnLimpar) {
+      btnLimpar.addEventListener('click', () => {
+        termoInput.value = '';
+        // Sincronizar com o outro input
+        const outroInput = termoInput === termoInputMobile ? termoInputDesktop : termoInputMobile;
+        if (outroInput) outroInput.value = '';
+        sugestoesBox.style.display = 'none';
+        filtrarImoveis();
+      });
+    }
   }
 
+  // Configurar pesquisa para mobile e desktop
+  configurarPesquisa(termoInputMobile, sugestoesBoxMobile, btnLimparMobile);
+  configurarPesquisa(termoInputDesktop, sugestoesBoxDesktop, btnLimparDesktop);
+
+  // Fechar sugestões ao clicar fora
+  document.addEventListener("click", (e) => {
+    if (sugestoesBoxMobile && !sugestoesBoxMobile.contains(e.target) && e.target !== termoInputMobile) {
+      sugestoesBoxMobile.style.display = "none";
+    }
+    if (sugestoesBoxDesktop && !sugestoesBoxDesktop.contains(e.target) && e.target !== termoInputDesktop) {
+      sugestoesBoxDesktop.style.display = "none";
+    }
+  });
+
   function filtrarImoveis() {
-    const termo = termoInput.value.toLowerCase().trim();
+    // Pegar o valor de qualquer um dos inputs (eles devem estar sincronizados)
+    const termo = (termoInputMobile?.value || termoInputDesktop?.value || '').toLowerCase().trim();
     const cards = document.querySelectorAll('.card-link');
     let visiveisCount = 0;
     let empreendimentosVisiveis = 0;
@@ -221,18 +257,11 @@ document.addEventListener('DOMContentLoaded', () => {
       texto += ` (${imoveis} ${imoveis > 1 ? 'imóveis' : 'imóvel'})`;
     }
     
-    contadorImoveis.textContent = texto;
-  }
-
-  function limparPesquisa() {
-    termoInput.value = '';
-    sugestoesBox.style.display = 'none';
-    filtrarImoveis();
-  }
-
-  // Event listener para botão limpar
-  if (btnLimpar) {
-    btnLimpar.addEventListener('click', limparPesquisa);
+    // Atualizar TODOS os contadores (mobile e desktop)
+    const contadores = document.querySelectorAll('.contador-imoveis');
+    contadores.forEach(contador => {
+      contador.textContent = texto;
+    });
   }
 });
 
