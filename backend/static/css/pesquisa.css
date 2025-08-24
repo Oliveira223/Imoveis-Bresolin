@@ -21,6 +21,11 @@ body {
   background-color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
+}
+
+main {
+  min-height: 50vh;
 }
 
 
@@ -38,6 +43,9 @@ a:hover {
   color: inherit;
 }
 
+.footer {
+  margin-top: auto; 
+}
 
 /* ================================
    FONTES CUSTOMIZADAS
