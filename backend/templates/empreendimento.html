@@ -229,13 +229,17 @@
 
         <!-- Faixa de Preços -->
         {% if empreendimento.preco_minimo and empreendimento.preco_maximo %}
-        <p class="preco">R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }} - R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        <p class="preco">R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }} à R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+
         {% elif empreendimento.preco_minimo %}
         <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_minimo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+
         {% elif empreendimento.preco_maximo %}
         <p class="preco">Até R$ {{ "{:,.2f}".format(empreendimento.preco_maximo).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        
         {% elif empreendimento.preco_min_imoveis and empreendimento.preco_max_imoveis %}
-        <p class="preco">R$ {{ "{:,.0f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }} - {{ "{:,.0f}".format(empreendimento.preco_max_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+        <p class="preco">R$ {{ "{:,.0f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }} à R$ {{ "{:,.0f}".format(empreendimento.preco_max_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
+
         {% elif empreendimento.preco_min_imoveis %}
         <p class="preco">A partir de R$ {{ "{:,.2f}".format(empreendimento.preco_min_imoveis).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
         {% endif %}
@@ -252,39 +256,39 @@
 
           <!-- Faixa de Áreas -->
           {% if empreendimento.area_minima and empreendimento.area_maxima %}
-          <div class="bloco-detalhe"><strong>Área:</strong> {{ empreendimento.area_minima }} - {{ empreendimento.area_maxima }} m²</div>
+          <div class="bloco-detalhe"><strong>Área:</strong> {{ empreendimento.area_minima }} à {{ empreendimento.area_maxima }} m²</div>
           {% elif empreendimento.area_minima %}
           <div class="bloco-detalhe"><strong>Área mínima:</strong> {{ empreendimento.area_minima }} m²</div>
           {% elif empreendimento.area_maxima %}
           <div class="bloco-detalhe"><strong>Área máxima:</strong> {{ empreendimento.area_maxima }} m²</div>
           {% elif empreendimento.area_min_imoveis and empreendimento.area_max_imoveis %}
-          <div class="bloco-detalhe"><strong>Área:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} - {{ "{:.0f}".format(empreendimento.area_max_imoveis) }} m²</div>
+          <div class="bloco-detalhe"><strong>Área:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} à {{ "{:.0f}".format(empreendimento.area_max_imoveis) }} m²</div>
           {% elif empreendimento.area_min_imoveis %}
           <div class="bloco-detalhe"><strong>Área mínima:</strong> {{ "{:.0f}".format(empreendimento.area_min_imoveis) }} m²</div>
           {% endif %}
 
           <!-- Faixa de Quartos -->
           {% if empreendimento.quartos_minimo and empreendimento.quartos_maximo %}
-          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_minimo }} - {{ empreendimento.quartos_maximo }}</div>
+          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_minimo }} à {{ empreendimento.quartos_maximo }}</div>
           {% elif empreendimento.quartos_minimo %}
           <div class="bloco-detalhe"><strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_minimo }}</div>
           {% elif empreendimento.quartos_maximo %}
           <div class="bloco-detalhe"><strong>Quartos (máximo):</strong> {{ empreendimento.quartos_maximo }}</div>
           {% elif empreendimento.quartos_min_imoveis and empreendimento.quartos_max_imoveis %}
-          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_min_imoveis }} - {{ empreendimento.quartos_max_imoveis }}</div>
+          <div class="bloco-detalhe"><strong>Quartos:</strong> {{ empreendimento.quartos_min_imoveis }} à {{ empreendimento.quartos_max_imoveis }}</div>
           {% elif empreendimento.quartos_min_imoveis %}
           <div class="bloco-detalhe"><strong>Quartos (mínimo):</strong> {{ empreendimento.quartos_min_imoveis }}</div>
           {% endif %}
 
           <!-- Faixa de Vagas -->
           {% if empreendimento.vagas_minimo and empreendimento.vagas_maximo %}
-          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_minimo }} - {{ empreendimento.vagas_maximo }}</div>
+          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_minimo }} à {{ empreendimento.vagas_maximo }}</div>
           {% elif empreendimento.vagas_minimo %}
           <div class="bloco-detalhe"><strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_minimo }}</div>
           {% elif empreendimento.vagas_maximo %}
           <div class="bloco-detalhe"><strong>Vagas (máximo):</strong> {{ empreendimento.vagas_maximo }}</div>
           {% elif empreendimento.vagas_min_imoveis and empreendimento.vagas_max_imoveis %}
-          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_min_imoveis }} - {{ empreendimento.vagas_max_imoveis }}</div>
+          <div class="bloco-detalhe"><strong>Vagas:</strong> {{ empreendimento.vagas_min_imoveis }} à {{ empreendimento.vagas_max_imoveis }}</div>
           {% elif empreendimento.vagas_min_imoveis %}
           <div class="bloco-detalhe"><strong>Vagas (mínimo):</strong> {{ empreendimento.vagas_min_imoveis }}</div>
           {% endif %}
