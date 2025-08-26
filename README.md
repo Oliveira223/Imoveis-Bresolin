@@ -1,5 +1,3 @@
-# Sistema de Gestão Imobiliária - Documentação Técnica
-
 ## 📋 Índice
 
 1. [Visão Geral da Arquitetura](#1-visão-geral-da-arquitetura)
