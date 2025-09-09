@@ -50,15 +50,28 @@
     </div>
   </header>
 
+
+
+  <!-- 
+      ==============================
+       VERSÃO MOBILE 
+       ==============================
+  -->
   <main class="conteudo-imovel mobile">
-
-
     <!-- Título -->
     <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
-
-    <!-- Descrição -->
+    
+    <!-- Bairro -->
+    {% if imovel.bairro %}
+    <p class="bairro-imovel">{{ imovel.bairro }}</p>
+    {% endif %}
+    
+    <!-- Seção Sobre o Imóvel -->
     {% if imovel.descricao %}
-    <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+    <div class="sobre-imovel">
+      <h3>Sobre o Imóvel</h3>
+      <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+    </div>
     {% endif %}
 
     <!-- Imagem principal -->
@@ -213,9 +226,18 @@
 
       <div class="coluna-direita">
         <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
-
+        
+        <!-- Bairro -->
+        {% if imovel.bairro %}
+        <p class="bairro-imovel">{{ imovel.bairro }}</p>
+        {% endif %}
+        
+        <!-- Seção Sobre o Imóvel -->
         {% if imovel.descricao %}
-        <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+        <div class="sobre-imovel">
+          <h3>Sobre o Imóvel</h3>
+          <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+        </div>
         {% endif %}
 
         {% if imovel.preco %}
