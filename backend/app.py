@@ -18,7 +18,7 @@ load_dotenv()
 # Para pc (não esquecer de abrir ssh)
 #DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
-# Para gthub
+# Para github
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
@@ -655,7 +655,7 @@ def api_imovel_id(imovel_id):
                     data[campo] = None
 
             # Tratamento para campos numéricos
-            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas', 'valor_condominio']:
+            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas', 'valor_condominio', 'andar', 'suites', 'banheiros_com_chuveiro']:
                 if data.get(campo) in ('', None):
                     data[campo] = None
                 elif data.get(campo) is not None:
@@ -675,6 +675,9 @@ def api_imovel_id(imovel_id):
                     quartos = :quartos,
                     banheiros = :banheiros,
                     vagas = :vagas,
+                    andar = :andar,
+                    suites = :suites,
+                    banheiros_com_chuveiro = :banheiros_com_chuveiro,
                     bairro = :bairro,
                     cidade = :cidade,
                     uf = :uf,

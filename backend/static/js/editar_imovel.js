@@ -121,14 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
     data.ativo = form.ativo.checked;
     data.piscina = document.getElementById("piscina").checked;
     data.churrasqueira = document.getElementById("churrasqueira").checked;
-    data.preco = parseFloat(data.preco) || 0;
-    data.area = parseFloat(data.area) || 0;
-    data.quartos = parseInt(data.quartos) || 0;
-    data.vagas = parseInt(data.vagas) || 0;
-    data.andar = parseInt(data.andar) || 0;
-    data.suites = parseInt(data.suites) || 0;
-    data.banheiros = parseInt(data.banheiros) || 0;
-    data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
+    data.preco = parseFloat(data.preco) || null;
+    data.area = parseFloat(data.area) || null;
+    data.quartos = parseInt(data.quartos) || null;
+    data.vagas = parseInt(data.vagas) || null;
+    data.andar = parseInt(data.andar) || null;
+    data.suites = parseInt(data.suites) || null;
+    data.banheiros = parseInt(data.banheiros) || null;
+    data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || null;
   
     // Garantir que todos os campos obrigatórios estejam presentes
     data.tipo = data.tipo || '';
