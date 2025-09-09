@@ -183,12 +183,20 @@ button.fab {
   box-shadow: 0 8px 24px rgba(42, 94, 154, 0.18);
 }
 
+/* Conteúdo principal do card */
+.card .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Botões específicos dos cards */
 .card .card-actions {
   display: flex;
   gap: 0.4em;
-  margin-top: 0.7em;
+  margin-top: auto;
   flex-wrap: wrap;
+  padding-top: 0.7em;
 }
 
 .card .card-actions button,
@@ -239,6 +247,7 @@ button.fab {
 #btn-atualizar { 
   color: #222 !important; 
 }
+
 
 /* ===========================
    MÓDULO: LAYOUT PRINCIPAL
@@ -437,6 +446,8 @@ button.fab {
   min-width: 220px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
 }
 
 /* Thumbnail do card */
@@ -938,6 +949,29 @@ textarea {
 
 .info-divider ~ .campo-preco-admin.input-metade:first-of-type {
   margin-top: 1rem;
+}
+
+
+/* Botão ativo/inativo do empreendimento*/
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+.status.ativo {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status.inativo {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 
 /* ===========================

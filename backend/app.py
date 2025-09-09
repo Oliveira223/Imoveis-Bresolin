@@ -389,7 +389,7 @@ def pagina_pesquisa():
     mostrar_empreendimentos = (tipo == '' or tipo == 'empreendimento')
     
     if mostrar_empreendimentos:
-        emp_query = "SELECT * FROM empreendimentos WHERE 1=1"
+        emp_query = "SELECT * FROM empreendimentos WHERE ativo = TRUE"
         emp_params = {}
 
         # Filtro por termo genérico nos empreendimentos
@@ -625,12 +625,12 @@ def api_imoveis():
                     empreendimento_id, titulo, descricao, preco, imagem,
                     tipo, pretensao, quartos, suites, banheiros, vagas,
                     area, endereco, bairro, cidade, uf, ativo, link, 
-                    estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro, iptu, piscina, churrasqueira
+                    estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro, iptu, valor_condominio, piscina, churrasqueira
                 ) VALUES (
                     :empreendimento_id, :titulo, :descricao, :preco, :imagem,
                     :tipo, :pretensao, :quartos, :suites, :banheiros, :vagas,
                     :area, :endereco, :bairro, :cidade, :uf, :ativo, :link,
-                    :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro, :iptu, :piscina, :churrasqueira
+                    :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro, :iptu, :valor_condominio, :piscina, :churrasqueira
                 )
             '''), data)
             print("[DEBUG] Imóvel inserido com sucesso!")
@@ -650,17 +650,17 @@ def api_imovel_id(imovel_id):
             data['id'] = imovel_id 
             
             # Tratamento para campos opcionais vazios
-            for campo in ['descricao', 'imagem', 'endereco_completo', 'empreendimento_id']:
+            for campo in ['descricao', 'imagem', 'endereco', 'empreendimento_id']:
                 if data.get(campo) == '':
                     data[campo] = None
 
             # Tratamento para campos numéricos
-            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas']:
+            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas', 'valor_condominio']:
                 if data.get(campo) in ('', None):
                     data[campo] = None
                 elif data.get(campo) is not None:
                     try:
-                        if campo == 'preco' or campo == 'area':
+                        if campo == 'preco' or campo == 'area' or campo == 'valor_condominio':
                             data[campo] = float(data[campo])
                         else:
                             data[campo] = int(data[campo])
@@ -680,9 +680,9 @@ def api_imovel_id(imovel_id):
                     uf = :uf,
                     descricao = :descricao,
                     imagem = :imagem,
-                    endereco_completo = :endereco_completo,
+                    endereco = :endereco,
                     empreendimento_id = :empreendimento_id,
-                    atualizado_em = NOW()
+                    valor_condominio = :valor_condominio
                 WHERE id = :id
             '''), data)
             
@@ -827,7 +827,8 @@ def api_empreendimentos():
                 'quartos_maximo': None,
                 'vagas_minimo': None,
                 'vagas_maximo': None,
-                'endereco_completo': None
+                'endereco_completo': None,
+                'ativo': True
             }
             
             # Mescla os dados recebidos com os valores padrão
@@ -859,12 +860,12 @@ def api_empreendimentos():
                     id, codigo, nome, descricao, imagem, bairro, cidade, uf, estagio,
                     lancamento, entrega, total_unidades, n_andares, area_laje, ri, iptu,
                     preco_minimo, preco_maximo, area_minima, area_maxima,
-                    quartos_minimo, quartos_maximo, vagas_minimo, vagas_maximo, endereco_completo
+                    quartos_minimo, quartos_maximo, vagas_minimo, vagas_maximo, endereco_completo, ativo
                 ) VALUES (
                     :codigo, :codigo, :nome, :descricao, :imagem, :bairro, :cidade, :uf, :estagio,
                     :lancamento, :entrega, :total_unidades, :n_andares, :area_laje, :ri, :iptu,
                     :preco_minimo, :preco_maximo, :area_minima, :area_maxima,
-                    :quartos_minimo, :quartos_maximo, :vagas_minimo, :vagas_maximo, :endereco_completo
+                    :quartos_minimo, :quartos_maximo, :vagas_minimo, :vagas_maximo, :endereco_completo, :ativo
                 )
             '''), data_completa)
             
@@ -891,6 +892,16 @@ def api_empreendimento_id(empreendimento_id):
         elif request.method == 'PUT':
             data = request.json
             data['id'] = empreendimento_id
+            
+            # Se apenas o campo 'ativo' foi enviado (toggle), faz update simples
+            if len(data) == 2 and 'ativo' in data:  # data contém apenas 'id' e 'ativo'
+                con.execute(text('''
+                    UPDATE empreendimentos SET
+                        ativo = :ativo,
+                        atualizado_em = NOW()
+                    WHERE id = :id
+                '''), data)
+                return '', 200
             
             # Extrai lista de imóveis selecionados
             imoveis_selecionados = data.pop('imoveis_selecionados', [])
@@ -937,6 +948,7 @@ def api_empreendimento_id(empreendimento_id):
                     vagas_minimo = :vagas_minimo,
                     vagas_maximo = :vagas_maximo,
                     endereco_completo = :endereco_completo,
+                    ativo = :ativo,
                     atualizado_em = NOW()
                 WHERE id = :id
             '''), data)
