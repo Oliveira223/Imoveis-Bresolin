@@ -134,23 +134,25 @@ const ListingModule = {
    * Cria card visual para empreendimento
    */
   criarCardEmpreendimento(empreendimento) {
+    const ativo = !!empreendimento.ativo;
     const card = document.createElement('div');
     card.className = 'card empreendimento-admin';
+    
     card.innerHTML = `
       <div class="thumb">
         <img src="${empreendimento.imagem && empreendimento.imagem.trim() !== "" ? empreendimento.imagem : '/static/img/casa.png'}" 
              alt="${empreendimento.nome || 'Sem nome'}">
       </div>
       <div class="title">${empreendimento.nome || 'Sem nome'} <small>(EMP ${empreendimento.id})</small></div>
-      <div class="meta">Empreendimento - ${empreendimento.estagio || 'N/A'}</div>
+      <div class="meta">${ativo ? 'Ativo' : 'Inativo'}</div>
       <div class="card-actions">
-        <button class="editar">Editar</button>
+        <button class="${ativo ? 'desativar' : 'ativar'}">${ativo ? 'Desativar' : 'Ativar'}</button>
         <button class="excluir">Excluir</button>
       </div>
     `;
     
     // Event listeners
-    this.setupEmpreendimentoCardEvents(card, empreendimento);
+    this.setupEmpreendimentoCardEvents(card, empreendimento, ativo);
     return card;
   },
 
@@ -212,27 +214,75 @@ const ListingModule = {
   /**
    * Configura eventos do card de empreendimento
    */
-  setupEmpreendimentoCardEvents(card, empreendimento) {
+   setupEmpreendimentoCardEvents(card, empreendimento, ativo) {
     // Click no card para edição
     card.onclick = (e) => {
       if (e.target.closest('.card-actions')) return;
-      window.location.href = `/admin/empreendimento/${empreendimento.id}/editar`;
+      window.location.href = `/admin/empreendimento/${empreendimento.codigo}/editar`;
     };
     
-    // Editar empreendimento
-    card.querySelector('.editar').onclick = (e) => {
+    // Ativar/Desativar
+    card.querySelector('.ativar, .desativar').onclick = async (e) => {
       e.stopPropagation();
-      window.location.href = `/admin/empreendimento/${empreendimento.id}/editar`;
+      
+      try {
+        const response = await fetch(`/api/empreendimentos/${empreendimento.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...empreendimento,
+            ativo: !ativo
+          })
+        });
+        
+        if (response.ok) {
+          // Atualiza apenas este card sem recarregar toda a lista
+          const novoStatus = !ativo;
+          const botao = e.target;
+          const metaDiv = card.querySelector('.meta');
+          
+          // Atualiza o texto do botão
+          botao.textContent = novoStatus ? 'Desativar' : 'Ativar';
+          botao.className = novoStatus ? 'desativar' : 'ativar';
+          
+          // Atualiza o status na meta
+          if (metaDiv) {
+            metaDiv.textContent = novoStatus ? 'Ativo' : 'Inativo';
+          }
+          
+          // Atualiza a variável local para próximos cliques
+          ativo = novoStatus;
+          
+          // Atualiza apenas os destaques e KPIs (sem recarregar lista)
+          HighlightsModule.montarDestaques();
+          KPIModule.preencherKpis();
+        } else {
+          alert('Erro ao alterar status do empreendimento');
+        }
+      } catch (error) {
+        console.error('Erro ao alterar status:', error);
+        alert('Erro ao alterar status do empreendimento');
+      }
     };
     
-    // Excluir empreendimento
+    // Excluir
     card.querySelector('.excluir').onclick = async (e) => {
       e.stopPropagation();
-      if (!confirm('Tem certeza que deseja excluir este empreendimento?')) return;
-      await fetch(`/api/empreendimentos/${empreendimento.id}`, {method: 'DELETE'});
-      this.listarTodos();
+      if (confirm('Tem certeza que deseja excluir este empreendimento?')) {
+        try {
+          const response = await fetch(`/api/empreendimentos/${empreendimento.id}`, {method: 'DELETE'});
+          if (response.ok) {
+            this.listarTodos();
+          }
+        } catch (error) {
+          console.error('Erro ao excluir:', error);
+          alert('Erro ao excluir empreendimento');
+        }
+      }
     };
-  }
+  },
 };
 
 // ========================================
@@ -696,6 +746,7 @@ const FormModule = {
       data.banheiros = parseInt(data.banheiros) || 0;
       data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
       data.iptu = parseFloat(data.iptu) || 0;
+      data.valor_condominio = parseFloat(data.valor_condominio) || 0;
 
       data.piscina = formImovel.piscina?.checked || false;
       data.churrasqueira = formImovel.churrasqueira?.checked || false;

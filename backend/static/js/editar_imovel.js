@@ -114,9 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.onsubmit = async function (e) {
     e.preventDefault();
-
+  
     const data = Object.fromEntries(new FormData(form));
-
+  
     // Conversões numéricas e lógicas
     data.ativo = form.ativo.checked;
     data.piscina = document.getElementById("piscina").checked;
@@ -129,7 +129,18 @@ document.addEventListener("DOMContentLoaded", () => {
     data.suites = parseInt(data.suites) || 0;
     data.banheiros = parseInt(data.banheiros) || 0;
     data.banheiros_com_chuveiro = parseInt(data.banheiros_com_chuveiro) || 0;
-
+  
+    // Garantir que todos os campos obrigatórios estejam presentes
+    data.tipo = data.tipo || '';
+    data.bairro = data.bairro || '';
+    data.cidade = data.cidade || '';
+    data.uf = data.uf || '';
+    data.descricao = data.descricao || '';
+    data.imagem = data.imagem || '';
+    data.endereco = data.endereco || '';
+    data.empreendimento_id = data.empreendimento_id || null;
+    data.valor_condominio = parseFloat(data.valor_condominio) || 0;
+  
     try {
       // Atualiza os dados principais via PUT
       const res = await fetch(`/api/imoveis/${id}`, {

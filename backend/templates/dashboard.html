@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8" />
   <title>Bresolin Imóveis | Dashboard</title>
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="/static/css/dashboard.css">
   <link rel="stylesheet" href="/static/css/components/card_imovel.css">
 </head>
+
 <body>
 
   <!-- ===========================
@@ -40,13 +42,13 @@
       </header>
 
       <div class="grid-blocos">
-        
+
         <!-- Bloco: Todos os Itens -->
         <div class="bloco">
           <div class="bloco-head">
             <h2>Todos</h2>
             <small class="bloco-subtitle">Clique no card para editar</small>
-            
+
             <!-- Filtros de Dashboard -->
             <div class="filtros-dashboard">
               <select id="filtro-tipo" class="filtro-select">
@@ -54,7 +56,7 @@
                 <option value="imoveis">Imóveis</option>
                 <option value="empreendimentos">Empreendimentos</option>
               </select>
-              
+
               <label class="switch filtro-switch">
                 <input type="checkbox" id="filtro-ativo" checked>
                 <span class="slider"></span>
@@ -66,8 +68,8 @@
             <!-- Os cards são renderizados via JS -->
           </div>
         </div>
-      
-        
+
+
 
       </div>
     </section>
@@ -125,7 +127,8 @@
 
           <!-- Campo: Preço -->
           <div class="campo-preco-admin input-metade">
-            <span id="preco-editavel-admin" contenteditable="true" class="preco-digitavel-admin" data-placeholder="Ex: 120.000,00"></span>
+            <span id="preco-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="Ex: 120.000,00"></span>
             <span class="prefixo-rs">R$</span>
             <input type="hidden" name="preco" id="preco-admin-real">
           </div>
@@ -174,9 +177,17 @@
 
           <!-- Valores Adicionais -->
           <div class="campo-preco-admin input-metade">
-            <span id="iptu-editavel-admin" contenteditable="true" class="preco-digitavel-admin" data-placeholder="IPTU"></span>
+            <span id="iptu-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="IPTU"></span>
             <span class="prefixo-rs">R$</span>
             <input type="hidden" name="iptu" id="iptu-admin-real">
+          </div>
+
+          <div class="campo-preco-admin input-metade">
+            <span id="condominio-editavel-admin" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="Condomínio"></span>
+            <span class="prefixo-rs">R$</span>
+            <input type="hidden" name="valor_condominio" id="condominio-admin-real">
           </div>
 
           <!-- Links e Extras -->
@@ -220,7 +231,7 @@
         <form id="form-empreendimento" class="form-grid">
           <input type="text" name="nome" placeholder="Nome do empreendimento" required>
           <textarea name="descricao" placeholder="Descrição do empreendimento"></textarea>
-          
+
           <!-- Grupo: Imagem Principal -->
           <div class="grupo-imagem-principal">
             <div class="coluna-imagem">
@@ -256,7 +267,7 @@
             <option value="PRONTO">PRONTO</option>
             <option value="ENTREGUE">ENTREGUE</option>
           </select>
-          
+
           <!-- <input type="date" name="lancamento" placeholder="Data de lançamento">
           <input type="date" name="entrega" placeholder="Previsão de entrega"> -->
 
@@ -269,20 +280,23 @@
             <span class="suffix">m²</span>
           </div> -->
 
-           <!-- Mensagem informativa -->
+          <!-- Mensagem informativa -->
           <div class="mensagem-automatica">
-            <p>Campos abaixo serão preenchidos automaticamente com informações dos imóveis disponíveis caso fiquem em branco.</p>
+            <p>Campos abaixo serão preenchidos automaticamente com informações dos imóveis disponíveis caso fiquem em
+              branco.</p>
           </div>
 
           <!-- Faixas de Preço -->
           <div class="campo-preco-admin input-metade">
-            <span id="preco-min-editavel" contenteditable="true" class="preco-digitavel-admin" data-placeholder="Preço mínimo"></span>
+            <span id="preco-min-editavel" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="Preço mínimo"></span>
             <span class="prefixo-rs">R$</span>
             <input type="hidden" name="preco_minimo" id="preco-min-real">
           </div>
 
           <div class="campo-preco-admin input-metade">
-            <span id="preco-max-editavel" contenteditable="true" class="preco-digitavel-admin" data-placeholder="Preço máximo"></span>
+            <span id="preco-max-editavel" contenteditable="true" class="preco-digitavel-admin"
+              data-placeholder="Preço máximo"></span>
             <span class="prefixo-rs">R$</span>
             <input type="hidden" name="preco_maximo" id="preco-max-real">
           </div>
@@ -332,6 +346,13 @@
             <small>Selecione os imóveis que fazem parte deste empreendimento</small>
           </div>
 
+
+          <label class="switch">
+            <input type="checkbox" name="ativo" checked>
+            <span class="slider"></span>
+            <small>Ativo</small>
+          </label>
+
           <div class="form-actions">
             <button type="submit" class="primary">Cadastrar Empreendimento</button>
           </div>
@@ -357,21 +378,21 @@
           <h3>Imóveis ativos</h3>
           <div id="kpi-ativos">—</div>
         </div>
-        
+
       </div>
 
       <!-- Bloco: Destaques -->
-        <div class="bloco">
-          <div class="bloco-head">
-            <h2>Em destaque <small id="cont-destaques">0/6</small></h2>
-          </div>
-          <div id="destaques-grid" class="cards cards-destaque">
-            <!-- Cards de destaque (preenchidos via JS) -->
-            <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
-              <span>+</span>
-            </div>
+      <div class="bloco">
+        <div class="bloco-head">
+          <h2>Em destaque <small id="cont-destaques">0/6</small></h2>
+        </div>
+        <div id="destaques-grid" class="cards cards-destaque">
+          <!-- Cards de destaque (preenchidos via JS) -->
+          <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
+            <span>+</span>
           </div>
         </div>
+      </div>
 
     </section>
 
@@ -390,7 +411,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="/static/js/admin.js"></script>
   <script src="/static/js/dashboard.js"></script>
 </body>
+
 </html>
