@@ -16,9 +16,9 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Para pc (não esquecer de abrir ssh)
-#DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+# DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
-# Para github
+# Para gthub
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
@@ -650,42 +650,58 @@ def api_imovel_id(imovel_id):
             data['id'] = imovel_id 
             
             # Tratamento para campos opcionais vazios
-            for campo in ['descricao', 'imagem', 'endereco', 'empreendimento_id']:
+            for campo in ['descricao', 'imagem', 'endereco', 'empreendimento_id', 'titulo', 'pretensao', 'link', 'estagio', 'maps_iframe', 'campo_extra2', 'entrega']:
                 if data.get(campo) == '':
                     data[campo] = None
 
             # Tratamento para campos numéricos
-            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas', 'valor_condominio', 'andar', 'suites', 'banheiros_com_chuveiro']:
+            for campo in ['preco', 'area', 'quartos', 'banheiros', 'vagas', 'valor_condominio', 'andar', 'suites', 'banheiros_com_chuveiro', 'iptu']:
                 if data.get(campo) in ('', None):
                     data[campo] = None
                 elif data.get(campo) is not None:
                     try:
-                        if campo == 'preco' or campo == 'area' or campo == 'valor_condominio':
+                        if campo in ['preco', 'area', 'valor_condominio', 'iptu']:
                             data[campo] = float(data[campo])
                         else:
                             data[campo] = int(data[campo])
                     except (ValueError, TypeError):
                         data[campo] = None
 
+            # Tratamento para campos booleanos
+            data['ativo'] = bool(data.get('ativo', False))
+            data['piscina'] = bool(data.get('piscina', False))
+            data['churrasqueira'] = bool(data.get('churrasqueira', False))
+
             con.execute(text('''
                 UPDATE imoveis SET
-                    tipo = :tipo,
+                    titulo = :titulo,
+                    descricao = :descricao,
                     preco = :preco,
                     area = :area,
+                    imagem = :imagem,
+                    tipo = :tipo,
+                    pretensao = :pretensao,
                     quartos = :quartos,
+                    suites = :suites,
                     banheiros = :banheiros,
+                    banheiros_com_chuveiro = :banheiros_com_chuveiro,
                     vagas = :vagas,
                     andar = :andar,
-                    suites = :suites,
-                    banheiros_com_chuveiro = :banheiros_com_chuveiro,
+                    endereco = :endereco,
                     bairro = :bairro,
                     cidade = :cidade,
                     uf = :uf,
-                    descricao = :descricao,
-                    imagem = :imagem,
-                    endereco = :endereco,
-                    empreendimento_id = :empreendimento_id,
-                    valor_condominio = :valor_condominio
+                    ativo = :ativo,
+                    link = :link,
+                    estagio = :estagio,
+                    maps_iframe = :maps_iframe,
+                    campo_extra2 = :campo_extra2,
+                    entrega = :entrega,
+                    valor_condominio = :valor_condominio,
+                    iptu = :iptu,
+                    piscina = :piscina,
+                    churrasqueira = :churrasqueira,
+                    empreendimento_id = :empreendimento_id
                 WHERE id = :id
             '''), data)
             

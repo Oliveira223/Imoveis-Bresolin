@@ -528,6 +528,15 @@ body.modo-escuro .titulo-similares {
   border-bottom: 1px solid rgba(255, 255, 255, 0.808);
 }
 
+/* Seletores mais específicos para garantir que a descrição fique branca no modo escuro */
+body.modo-escuro .coluna-direita .sobre-imovel .descricao {
+  color: #e0e0e0 !important;
+}
+
+body.modo-escuro .sobre-imovel .descricao {
+  color: #e0e0e0 !important;
+}
+
 /* ========================
    MEDIA QUERIES - DESKTOP
 =========================== */
