@@ -381,13 +381,8 @@ const HighlightsModule = {
     const contDestaques = document.getElementById('cont-destaques');
     if (!destaquesGrid) return;
 
-    // Mantém o botão "+" sempre presente
-    destaquesGrid.innerHTML = `
-      <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
-        <span>+</span>
-      </div>
-    `;
-    this.adicionarEventoBotaoDestaque();
+    // Limpa o grid
+    destaquesGrid.innerHTML = '';
 
     try {
       // Busca e exibe os imóveis em destaque
@@ -404,9 +399,17 @@ const HighlightsModule = {
         const temp = document.createElement('div');
         temp.innerHTML = html;
         const card = temp.firstElementChild;
-        // Adiciona o card antes do botão "+"
-        destaquesGrid.insertBefore(card, destaquesGrid.firstChild);
+        // Adiciona o card ao grid
+        destaquesGrid.appendChild(card);
       }
+      
+      // Adiciona o botão "+" no final
+      destaquesGrid.innerHTML += `
+        <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
+          <span>+</span>
+        </div>
+      `;
+      this.adicionarEventoBotaoDestaque();
     } catch (error) {
       console.error('Erro ao carregar destaques:', error);
     }
