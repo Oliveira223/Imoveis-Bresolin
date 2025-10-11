@@ -395,6 +395,47 @@
         </div>
       </div>
 
+      <!-- Bloco: Visualizações -->
+      <div class="bloco">
+        <div class="bloco-head">
+          <h2>Visualizações dos Imóveis</h2>
+          <button id="btn-atualizar-visualizacoes" class="btn-secundario">Atualizar</button>
+        </div>
+        <div class="visualizacoes-container">
+          <div class="visualizacoes-stats">
+            <div class="stat-card">
+              <h4>Total de Visualizações</h4>
+              <div id="total-visualizacoes">—</div>
+            </div>
+            <div class="stat-card">
+              <h4>Esta Semana</h4>
+              <div id="visualizacoes-semana">—</div>
+            </div>
+            <div class="stat-card">
+              <h4>Este Mês</h4>
+              <div id="visualizacoes-mes">—</div>
+            </div>
+          </div>
+          <div class="visualizacoes-tabela">
+            <table id="tabela-visualizacoes">
+              <thead>
+                <tr>
+                  <th>Imóvel</th>
+                  <th>Total</th>
+                  <th>7 dias</th>
+                  <th>30 dias</th>
+                </tr>
+              </thead>
+              <tbody id="lista-visualizacoes">
+                <tr>
+                  <td colspan="4" class="loading">Carregando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ===========================
