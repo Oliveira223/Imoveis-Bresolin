@@ -310,8 +310,10 @@ main.desktop {
   overflow-x: auto;
   gap: 1rem;
   padding: 1rem 0;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   scrollbar-width: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .galeria-imagens-scroll img {
@@ -918,5 +920,23 @@ body.modo-escuro .sobre-imovel .descricao {
   
   body.modo-escuro .coluna-esquerda::-webkit-scrollbar-thumb:hover {
     background: #444;
+  }
+}
+
+/* ========================
+   AJUSTES PARA MOBILE - GALERIA
+========================= */
+
+@media (max-width: 768px) {
+  .galeria-imagens-scroll {
+    scroll-snap-type: none;
+    scroll-padding: 0;
+    overscroll-behavior-x: contain;
+  }
+  
+  .galeria-imagens-scroll img {
+    scroll-snap-align: none;
+    width: 160px;
+    height: 120px;
   }
 }
