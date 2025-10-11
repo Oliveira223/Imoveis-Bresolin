@@ -49,6 +49,7 @@ const NavigationModule = {
         break;
       case 'view-info':
         KPIModule.preencherKpis();
+        VisualizacoesModule.carregarVisualizacoes();
         break;
       case 'view-interesse':
         InteresseModule.carregarInteresses();
@@ -78,9 +79,10 @@ const ListingModule = {
     
     try {
       // Busca dados em paralelo
-      const [imoveis, empreendimentos] = await Promise.all([
+      const [imoveis, empreendimentos, visualizacoes] = await Promise.all([
         fetch('/api/imoveis').then(r => r.json()),
-        fetch('/api/empreendimentos').then(r => r.json())
+        fetch('/api/empreendimentos').then(r => r.json()),
+        fetch('/api/imoveis/visualizacoes').then(r => r.json())
       ]);
       
       // Aplica filtros
@@ -93,7 +95,7 @@ const ListingModule = {
       if (filtroTipo === 'todos' || filtroTipo === 'imoveis') {
         const imoveisFiltrados = filtroAtivo ? imoveis.filter(i => !!i.ativo) : imoveis;
         imoveisFiltrados.forEach(imovel => {
-          lista.appendChild(this.criarCardImovel(imovel));
+          lista.appendChild(this.criarCardImovel(imovel, visualizacoes));
         });
       }
       
@@ -112,14 +114,25 @@ const ListingModule = {
   /**
    * Cria card visual para imóvel
    */
-  criarCardImovel(imovel) {
+  criarCardImovel(imovel, visualizacoesData = []) {
     const ativo = !!imovel.ativo;
+    
+    // Busca as visualizações deste imóvel
+    const visualizacaoImovel = visualizacoesData.find(v => v.id === imovel.id);
+    const visualizacoesMes = visualizacaoImovel ? visualizacaoImovel.visualizacoes_mes : 0;
+    
     const card = document.createElement('div');
     card.className = 'card imovel-admin';
     card.innerHTML = `
       <div class="thumb">
         <img src="${imovel.imagem && imovel.imagem.trim() !== "" ? imovel.imagem : '/static/img/casa.png'}" 
              alt="${imovel.titulo || 'Sem título'}">
+        <div class="visualizacoes-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="white"/>
+          </svg>
+          <span>${visualizacoesMes}</span>
+        </div>
       </div>
       <div class="title">${imovel.titulo || 'Sem título'} <small>(ID ${imovel.id})</small></div>
       <div class="meta">${ativo ? 'Ativo' : 'Inativo'}</div>
@@ -530,7 +543,87 @@ const KPIModule = {
 };
 
 // ========================================
-// MÓDULO 6: FORMULÁRIOS E ABAS
+// MÓDULO 6: VISUALIZAÇÕES
+// ========================================
+
+/**
+ * Gerencia as estatísticas de visualizações dos imóveis
+ */
+const VisualizacoesModule = {
+  /**
+   * Carrega e exibe as estatísticas de visualizações
+   */
+  async carregarVisualizacoes() {
+    try {
+      const response = await fetch('/api/imoveis/visualizacoes');
+      const visualizacoes = await response.json();
+      
+      this.atualizarEstatisticas(visualizacoes);
+      this.preencherTabela(visualizacoes);
+    } catch (error) {
+      console.error('Erro ao carregar visualizações:', error);
+      this.mostrarErro();
+    }
+  },
+
+  /**
+   * Atualiza os cards de estatísticas gerais
+   */
+  atualizarEstatisticas(visualizacoes) {
+    const totalGeral = visualizacoes.reduce((sum, item) => sum + item.total_visualizacoes, 0);
+    const totalSemana = visualizacoes.reduce((sum, item) => sum + item.visualizacoes_semana, 0);
+    const totalMes = visualizacoes.reduce((sum, item) => sum + item.visualizacoes_mes, 0);
+
+    document.getElementById('total-visualizacoes').textContent = totalGeral.toLocaleString('pt-BR');
+    document.getElementById('visualizacoes-semana').textContent = totalSemana.toLocaleString('pt-BR');
+    document.getElementById('visualizacoes-mes').textContent = totalMes.toLocaleString('pt-BR');
+  },
+
+  /**
+   * Preenche a tabela com os dados de visualizações por imóvel
+   */
+  preencherTabela(visualizacoes) {
+    const tbody = document.getElementById('lista-visualizacoes');
+    
+    if (visualizacoes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty">Nenhuma visualização encontrada</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = visualizacoes.map(item => `
+      <tr>
+        <td class="imovel-titulo">#${item.id} - ${this.escapeHtml(item.titulo)}</td>
+        <td class="numero">${item.total_visualizacoes.toLocaleString('pt-BR')}</td>
+        <td class="numero">${item.visualizacoes_semana.toLocaleString('pt-BR')}</td>
+        <td class="numero">${item.visualizacoes_mes.toLocaleString('pt-BR')}</td>
+      </tr>
+    `).join('');
+  },
+
+  /**
+   * Mostra mensagem de erro
+   */
+  mostrarErro() {
+    const tbody = document.getElementById('lista-visualizacoes');
+    tbody.innerHTML = '<tr><td colspan="4" class="error">Erro ao carregar dados de visualizações</td></tr>';
+    
+    document.getElementById('total-visualizacoes').textContent = '—';
+    document.getElementById('visualizacoes-semana').textContent = '—';
+    document.getElementById('visualizacoes-mes').textContent = '—';
+  },
+
+  /**
+   * Escapa HTML para prevenir XSS
+   */
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+};
+
+// ========================================
+// MÓDULO 7: FORMULÁRIOS E ABAS
 // ========================================
 
 /**
@@ -1889,6 +1982,7 @@ if (typeof module !== 'undefined' && module.exports) {
     FilterModule,
     HighlightsModule,
     KPIModule,
+    VisualizacoesModule,
     FormModule,
     ImovelModule,
     EmpreendimentoModule,
@@ -1897,4 +1991,14 @@ if (typeof module !== 'undefined' && module.exports) {
     InteresseModule,
     AppModule
   };
+
+  // Event listener para botão de atualizar visualizações
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnAtualizarVisualizacoes = document.getElementById('btn-atualizar-visualizacoes');
+    if (btnAtualizarVisualizacoes) {
+      btnAtualizarVisualizacoes.addEventListener('click', () => {
+        VisualizacoesModule.carregarVisualizacoes();
+      });
+    }
+  });
 }
