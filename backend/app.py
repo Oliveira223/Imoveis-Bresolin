@@ -735,6 +735,27 @@ def definir_destaques():
             )
     return jsonify({'sucesso': True})
 
+# Rota para buscar estatísticas de visualizações
+@app.route('/api/imoveis/visualizacoes', methods=['GET'])
+def visualizacoes_imoveis():
+    with engine.connect() as con:
+        # Busca total de visualizações por imóvel
+        result = con.execute(text('''
+            SELECT 
+                i.id,
+                i.titulo,
+                COALESCE(COUNT(a.id), 0) as total_visualizacoes,
+                COALESCE(COUNT(CASE WHEN a.timestamp >= NOW() - INTERVAL '7 days' THEN 1 END), 0) as visualizacoes_semana,
+                COALESCE(COUNT(CASE WHEN a.timestamp >= NOW() - INTERVAL '30 days' THEN 1 END), 0) as visualizacoes_mes
+            FROM imoveis i
+            LEFT JOIN acessos a ON i.id = a.imovel_id
+            WHERE i.ativo = TRUE
+            GROUP BY i.id, i.titulo
+            ORDER BY total_visualizacoes DESC
+        '''))
+        
+        visualizacoes = [dict(row._mapping) for row in result]
+        return jsonify(visualizacoes)
 
 
 # ==============================
