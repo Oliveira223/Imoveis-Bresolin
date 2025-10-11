@@ -280,6 +280,7 @@ body.no-scroll {
   margin-top: 2vw;
   margin-left: 14.5vw;
   margin-right: 10vw;
+  margin-bottom: 5vw;
 }
 
 .titulo h1 {
@@ -300,7 +301,7 @@ body.no-scroll {
 ============================ */
 .ver-mais-container {
   text-align: center;
-  margin-top: 1em;
+  margin-top: 3.5rem;
   margin-bottom: 3.5rem;
 }
 
