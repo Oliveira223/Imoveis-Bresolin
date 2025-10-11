@@ -21,6 +21,7 @@
       <button class="menu-item active" data-target="view-imoveis">Imóveis</button>
       <button class="menu-item" data-target="view-cadastro">Cadastro</button>
       <button class="menu-item" data-target="view-info">Info</button>
+      <button class="menu-item" data-target="view-interesse">Interesse</button>
     </nav>
   </aside>
 
@@ -391,6 +392,54 @@
           <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
             <span>+</span>
           </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===========================
+         MÓDULO: VIEW INTERESSE
+         =========================== -->
+    <section id="view-interesse" class="view">
+      <header class="view-header">
+        <h1>Cadastros de Interesse</h1>
+        <div class="actions">
+          <button id="btn-atualizar">Atualizar</button>
+        </div>
+      </header>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <h3>Total de cadastros</h3>
+          <div id="kpi-total-interesse">—</div>
+        </div>
+        <div class="info-card">
+          <h3>Cadastros hoje</h3>
+          <div id="kpi-hoje-interesse">—</div>
+        </div>
+      </div>
+
+      <!-- Tabela de Interesse -->
+      <div class="bloco">
+        <div class="bloco-head">
+          <h2>Clientes Interessados</h2>
+          <small class="bloco-subtitle">Clique no WhatsApp para conversar diretamente</small>
+        </div>
+        <div class="interesse-table-container">
+          <table id="tabela-interesse" class="interesse-table">
+            <thead>
+               <tr>
+                 <th>Nome</th>
+                 <th>Email</th>
+                 <th>WhatsApp</th>
+                 <th>Data/Hora</th>
+                 <th>Ações</th>
+               </tr>
+             </thead>
+            <tbody id="lista-interesse">
+              <!-- Dados carregados via JavaScript -->
+            </tbody>
+          </table>
         </div>
       </div>
 
