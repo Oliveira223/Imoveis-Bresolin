@@ -16,9 +16,9 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Para pc (não esquecer de abrir ssh)
-# DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+#DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
-# Para gthub
+# Para github
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
@@ -1036,6 +1036,114 @@ def api_sugestoes():
 
 
 # ==============================
+# PÁGINA DE CADASTRO DE INTERESSE
+# ==============================
+@app.route('/cadastro')
+def pagina_cadastro():
+    return render_template('cadastro.html')
+
+# ==============================
+# API - CADASTRO DE INTERESSE
+# ==============================
+@app.route('/api/interesse', methods=['POST'])
+def api_interesse():
+    try:
+        data = request.json
+        
+        # Validação básica
+        if not data.get('nome') or not data.get('email') or not data.get('whatsapp'):
+            return jsonify({'erro': 'Todos os campos são obrigatórios'}), 400
+        
+        # Validação de email básica
+        email = data.get('email')
+        if '@' not in email or '.' not in email:
+            return jsonify({'erro': 'Email inválido'}), 400
+        
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO interesse (nome, email, whatsapp)
+                    VALUES (%s, %s, %s)
+                """, (data['nome'], data['email'], data['whatsapp']))
+                conn.commit()
+        
+        return jsonify({'sucesso': True, 'mensagem': 'Interesse cadastrado com sucesso!'}), 201
+    
+    except Exception as e:
+        print(f"[ERROR] Erro ao cadastrar interesse: {e}")
+        return jsonify({'erro': 'Erro interno do servidor'}), 500
+
+# ==============================
+# API - LISTAR INTERESSES (Admin)
+# ==============================
+@app.route('/api/interesse', methods=['GET'])
+@requires_auth
+def api_listar_interesse():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT id, nome, email, whatsapp, atendido, timestamp
+                    FROM interesse
+                    ORDER BY timestamp DESC
+                """)
+                interesses = cur.fetchall()
+        
+        return jsonify([dict(interesse) for interesse in interesses])
+    
+    except Exception as e:
+        print(f"[ERROR] Erro ao listar interesses: {e}")
+        return jsonify({'erro': 'Erro interno do servidor'}), 500
+
+# ==============================
+# API - EXCLUIR INTERESSE (Admin)
+# ==============================
+@app.route('/api/interesse/<int:interesse_id>', methods=['DELETE'])
+@requires_auth
+def api_excluir_interesse(interesse_id):
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM interesse WHERE id = %s", (interesse_id,))
+                if cur.rowcount == 0:
+                    return jsonify({'erro': 'Interesse não encontrado'}), 404
+                conn.commit()
+        
+        return jsonify({'sucesso': True, 'mensagem': 'Interesse excluído com sucesso!'}), 200
+    
+    except Exception as e:
+        print(f"[ERROR] Erro ao excluir interesse: {e}")
+        return jsonify({'erro': 'Erro interno do servidor'}), 500
+
+# ==============================
+# API - MARCAR INTERESSE COMO ATENDIDO (Admin)
+# ==============================
+@app.route('/api/interesse/<int:interesse_id>/atendido', methods=['PUT'])
+@requires_auth
+def api_marcar_atendido(interesse_id):
+    try:
+        data = request.json
+        atendido = data.get('atendido', True)
+        
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE interesse SET atendido = %s WHERE id = %s",
+                    (atendido, interesse_id)
+                )
+                if cur.rowcount == 0:
+                    return jsonify({'erro': 'Interesse não encontrado'}), 404
+                conn.commit()
+        
+        status = 'atendido' if atendido else 'não atendido'
+        return jsonify({'sucesso': True, 'mensagem': f'Interesse marcado como {status}!'}), 200
+    
+    except Exception as e:
+        print(f"[ERROR] Erro ao atualizar status do interesse: {e}")
+        return jsonify({'erro': 'Erro interno do servidor'}), 500
+
+
+# ==============================
 # CONEXÃO COM O POSTGRES (Render)
 # ==============================
 def get_connection():
@@ -1056,8 +1164,27 @@ def criar_tabela_acessos():
             """)
             conn.commit()
 
+# ==============================
+# CRIA TABELA DE INTERESSE (se não existir)
+# ==============================
+def criar_tabela_interesse():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS interesse (
+                    id SERIAL PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    whatsapp VARCHAR(20) NOT NULL,
+                    atendido BOOLEAN DEFAULT FALSE,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            conn.commit()
+
 # chama ao iniciar o app
 criar_tabela_acessos()
+criar_tabela_interesse()
 
 
 def registrar_acesso(imovel_id=None):

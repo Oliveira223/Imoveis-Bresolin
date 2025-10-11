@@ -24,6 +24,7 @@
   --btn-secondary-hover-bg: #e9f1fb;
   --btn-secondary-hover-border: #0d4d8f;
   
+  
   /* Sombras */
   --btn-shadow: 0 2px 8px rgba(42, 94, 154, 0.08);
   --card-shadow: 0 2px 8px rgba(42, 94, 154, 0.08);
@@ -806,6 +807,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
+  margin-bottom: 1.75rem;
 }
 
 .info-card {
@@ -827,7 +829,125 @@ textarea {
 }
 
 /* ===========================
-   MÓDULO: MODAL
+   MÓDULO: TABELA DE INTERESSE
+   =========================== */
+
+.interesse-table-container {
+  background: var(--panel);
+  border-radius: 0.8em;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-top: 1.5em;
+}
+
+.interesse-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.interesse-table th {
+  background: var(--brand);
+  color: white;
+  padding: 1em;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--brand-2);
+}
+
+.interesse-table td {
+  padding: 1em;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.interesse-table tbody tr:hover {
+  background: var(--card);
+  transition: background 0.2s;
+}
+
+.interesse-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 1em;
+  background: #25d366;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5em;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 0.9em;
+}
+
+.whatsapp-link:hover {
+  background: #1da851;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.email-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.btn-copy-email {
+  padding: 0.3em 0.6em;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
+  border-radius: 0.4em;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.btn-copy-email:hover {
+  background: var(--btn-secondary-hover-bg);
+  border-color: var(--btn-secondary-hover-border);
+  transform: translateY(-1px);
+}
+
+.btn-copy-email.copied {
+  background: #27ae60;
+  border-color: #27ae60;
+  color: white;
+}
+
+.copy-icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.interesse-timestamp {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.interesse-empty {
+  text-align: center;
+  padding: 3em;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ===========================
+   MÓDULO: MODAL DESTAQUES
    =========================== */
 
 .modal {
@@ -1066,5 +1186,119 @@ textarea {
   
   .imoveis-list select {
     min-height: 100px;
+  }
+}
+
+/* ===========================
+   MÓDULO: BOTÕES DE AÇÃO
+   =========================== */
+.interesse-acoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-acao {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-pendente {
+  background-color: #fbbf24;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.btn-pendente:hover {
+  background-color: #f59e0b;
+  color: #78350f;
+}
+
+.btn-atendido {
+  background-color: #34d399;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.btn-atendido:hover {
+  background-color: #10b981;
+  color: #064e3b;
+}
+
+.btn-excluir {
+  background-color: #f87171;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.btn-excluir:hover {
+  background-color: #ef4444;
+  color: #7f1d1d;
+}
+
+/* ===========================
+   MÓDULO: MENSAGENS DE FEEDBACK
+   =========================== */
+.feedback-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feedback-message.sucesso {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.feedback-message.erro {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsividade para botões de ação */
+@media (max-width: 768px) {
+  .interesse-acoes {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .btn-acao {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .feedback-message {
+    right: 10px;
+    left: 10px;
+    top: 10px;
   }
 }
