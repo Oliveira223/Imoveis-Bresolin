@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from uuid import uuid4
 from dotenv import load_dotenv
 import os
+import json
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -38,6 +39,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+SLIDES_CONFIG_PATH = os.path.join(BASE_DIR, 'slides_config.json')
+
 # ==============================
 # Inicialização do aplicativo Flask
 # ==============================
@@ -56,12 +59,32 @@ print("[INFO] DATABASE_URL:", DATABASE_URL)
 # Gerar ID dos empreendimentos
 # ================================
 def gerar_proximo_codigo_empreendimento():
-    """Gera o próximo código sequencial para empreendimentos (EMP1, EMP2, etc.)"""
     with engine.connect() as con:
-        # Como não há empreendimentos antigos, só conta quantos existem
         result = con.execute(text("SELECT COUNT(*) FROM empreendimentos"))
         count = result.fetchone()[0]
         return f"EMP{count + 1}"
+
+
+def carregar_config_slides():
+    if os.path.exists(SLIDES_CONFIG_PATH):
+        try:
+            with open(SLIDES_CONFIG_PATH, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            ids = data.get('ids', [])
+            interval_seconds = int(data.get('interval_seconds', 8))
+            return ids, interval_seconds
+        except Exception:
+            return [], 8
+    return [], 8
+
+
+def salvar_config_slides(ids, interval_seconds):
+    dados = {
+        'ids': ids,
+        'interval_seconds': int(interval_seconds)
+    }
+    with open(SLIDES_CONFIG_PATH, 'w', encoding='utf-8') as f:
+        json.dump(dados, f)
 
 
 # ================================
@@ -165,6 +188,12 @@ def api_empreendimento_imoveis(empreendimento_id):
 def index():
     registrar_acesso()  # registra acesso geral à home
     return render_template('index.html')
+
+
+@app.route('/slides')
+def slides_page():
+    ids, interval_seconds = carregar_config_slides()
+    return render_template('slides.html', interval_seconds=interval_seconds)
 
 
 # Página de detalhes do imóvel
@@ -757,7 +786,96 @@ def visualizacoes_imoveis():
         visualizacoes = [dict(row._mapping) for row in result]
         return jsonify(visualizacoes)
 
+# =======================
+# Slides
+# =======================
+@app.route('/api/slides/config', methods=['GET', 'POST'])
+@requires_auth
+def slides_config():
+    ids_config, intervalo_config = carregar_config_slides()
 
+    if request.method == 'GET':
+        with engine.connect() as con:
+            imoveis = []
+            if ids_config:
+                result = con.execute(
+                    text('SELECT * FROM imoveis WHERE id = ANY(:ids) AND ativo = TRUE ORDER BY id'),
+                    {'ids': ids_config}
+                )
+                imoveis = [dict(row._mapping) for row in result]
+        return jsonify({'imoveis': imoveis, 'interval_seconds': intervalo_config})
+
+    data = request.json or {}
+    ids_brutos = data.get('ids', [])
+    if not isinstance(ids_brutos, list):
+        return jsonify({'erro': 'Formato de ids inválido'}), 400
+
+    ids_filtrados = []
+    for valor in ids_brutos:
+        try:
+            ids_filtrados.append(int(valor))
+        except (TypeError, ValueError):
+            continue
+
+    intervalo = data.get('interval_seconds', intervalo_config)
+    try:
+        intervalo = int(intervalo)
+    except (TypeError, ValueError):
+        intervalo = intervalo_config
+
+    if intervalo < 3:
+        intervalo = 3
+    if intervalo > 60:
+        intervalo = 60
+
+    salvar_config_slides(ids_filtrados, intervalo)
+    return jsonify({'sucesso': True})
+
+
+@app.route('/api/slides/data', methods=['GET'])
+def slides_data():
+    ids_config, intervalo_config = carregar_config_slides()
+
+    with engine.connect() as con:
+        if ids_config:
+            result = con.execute(
+                text('SELECT * FROM imoveis WHERE id = ANY(:ids) AND ativo = TRUE ORDER BY id'),
+                {'ids': ids_config}
+            )
+        else:
+            result = con.execute(
+                text('SELECT * FROM imoveis WHERE ativo = TRUE ORDER BY id DESC LIMIT 10')
+            )
+
+        imoveis = []
+        for row in result.mappings():
+            imovel = dict(row)
+            preco_valor = imovel.get('preco')
+            area_valor = imovel.get('area')
+            imoveis.append({
+                'id': imovel.get('id'),
+                'titulo': imovel.get('titulo'),
+                'tipo': imovel.get('tipo'),
+                'pretensao': imovel.get('pretensao'),
+                'preco': float(preco_valor) if preco_valor is not None else None,
+                'bairro': imovel.get('bairro'),
+                'cidade': imovel.get('cidade'),
+                'area': float(area_valor) if area_valor is not None else None,
+                'quartos': imovel.get('quartos'),
+                'vagas': imovel.get('vagas'),
+                'imagem': imovel.get('imagem') or '',
+                'descricao': imovel.get('descricao'),
+                'banheiros': imovel.get('banheiros'),
+                'suites': imovel.get('suites'),
+                'piscina': bool(imovel.get('piscina')),
+                'churrasqueira': bool(imovel.get('churrasqueira')),
+                'condominio': float(imovel.get('valor_condominio')) if imovel.get('valor_condominio') else None,
+                'iptu': float(imovel.get('iptu')) if imovel.get('iptu') else None
+            })
+
+    return jsonify({'interval_seconds': intervalo_config, 'imoveis': imoveis})
+
+    
 # ==============================
 # API - Imagens do Imóvel
 # ==============================
