@@ -18,23 +18,17 @@ const NavigationModule = {
 
     menuItems.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Remove classe active de todos os itens
         menuItems.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Controla visibilidade das views
         const target = btn.dataset.target;
         views.forEach(v => v.classList.toggle('active', v.id === target));
 
-        // Carregamento lazy das seções
         this.handleViewLoad(target);
       });
     });
   },
 
-  /**
-   * Gerencia o carregamento específico de cada view
-   */
   handleViewLoad(target) {
     switch(target) {
       case 'view-imoveis':
@@ -43,7 +37,6 @@ const NavigationModule = {
         KPIModule.preencherKpis();
         break;
       case 'view-cadastro':
-        // Carrega lista de empreendimentos
         EmpreendimentoModule.listarEmpreendimentos();
         ImovelModule.listarImoveisDisponiveis();
         break;
@@ -54,6 +47,9 @@ const NavigationModule = {
       case 'view-interesse':
         InteresseModule.carregarInteresses();
         InteresseModule.preencherKpisInteresse();
+        break;
+      case 'view-slides':
+        SlidesAdminModule.loadConfig();
         break;
     }
   }
@@ -381,8 +377,13 @@ const HighlightsModule = {
     const contDestaques = document.getElementById('cont-destaques');
     if (!destaquesGrid) return;
 
-    // Limpa o grid
-    destaquesGrid.innerHTML = '';
+    // Mantém o botão "+" sempre presente
+    destaquesGrid.innerHTML = `
+      <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
+        <span>+</span>
+      </div>
+    `;
+    this.adicionarEventoBotaoDestaque();
 
     try {
       // Busca e exibe os imóveis em destaque
@@ -399,17 +400,9 @@ const HighlightsModule = {
         const temp = document.createElement('div');
         temp.innerHTML = html;
         const card = temp.firstElementChild;
-        // Adiciona o card ao grid
+        // Adiciona o card após o botão "+"
         destaquesGrid.appendChild(card);
       }
-      
-      // Adiciona o botão "+" no final
-      destaquesGrid.innerHTML += `
-        <div class="card add-card" id="btn-add-destaque" title="Adicionar destaque">
-          <span>+</span>
-        </div>
-      `;
-      this.adicionarEventoBotaoDestaque();
     } catch (error) {
       console.error('Erro ao carregar destaques:', error);
     }
@@ -1058,6 +1051,157 @@ const ImovelModule = {
     
     // Inicializar estado dos botões
     this.atualizarBotoesImoveis();
+  }
+};
+
+// ========================================
+// MÓDULO 9: CONFIGURAÇÃO DE SLIDES
+// ========================================
+
+const SlidesAdminModule = {
+  async loadConfig() {
+    try {
+      const response = await fetch('/api/slides/config');
+      if (!response.ok) {
+        throw new Error('Erro ao carregar configuração de slides');
+      }
+
+      const data = await response.json();
+      this.preencherListas(data.imoveis || []);
+      this.preencherIntervalo(data.interval_seconds || 8);
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Erro ao carregar configuração de slides:', error);
+      this.preencherListas([]);
+      this.preencherIntervalo(8);
+      this.setupEventListeners();
+    }
+  },
+
+  preencherListas(imoveisSelecionados) {
+    fetch('/api/imoveis')
+      .then(r => r.json())
+      .then(imoveis => {
+        const disponiveisSelect = document.getElementById('slides-imoveis-disponiveis');
+        const selecionadosSelect = document.getElementById('slides-imoveis-selecionados');
+
+        if (!disponiveisSelect || !selecionadosSelect) return;
+
+        disponiveisSelect.innerHTML = '';
+        selecionadosSelect.innerHTML = '';
+
+        const selecionadosIds = new Set(imoveisSelecionados.map(i => i.id));
+
+        imoveis
+          .filter(imovel => !!imovel.ativo)
+          .forEach(imovel => {
+            const option = document.createElement('option');
+            option.value = imovel.id;
+            option.textContent = `${imovel.titulo || 'Sem título'} - ${imovel.tipo || ''} - R$ ${imovel.preco ? parseFloat(imovel.preco).toLocaleString('pt-BR') : 'N/A'}`;
+
+            if (selecionadosIds.has(imovel.id)) {
+              selecionadosSelect.appendChild(option);
+            } else {
+              disponiveisSelect.appendChild(option);
+            }
+          });
+
+        this.atualizarBotoes();
+      })
+      .catch(error => {
+        console.error('Erro ao carregar imóveis para slides:', error);
+      });
+  },
+
+  preencherIntervalo(intervalo) {
+    const input = document.getElementById('slides-intervalo-input');
+    if (input) {
+      input.value = intervalo;
+    }
+  },
+
+  setupEventListeners() {
+    const btnAdicionar = document.getElementById('btn-slides-adicionar');
+    const btnRemover = document.getElementById('btn-slides-remover');
+    const disponiveis = document.getElementById('slides-imoveis-disponiveis');
+    const selecionados = document.getElementById('slides-imoveis-selecionados');
+    const btnSalvar = document.getElementById('btn-slides-salvar');
+
+    if (btnAdicionar) {
+      btnAdicionar.onclick = () => this.moverSelecionados(disponiveis, selecionados);
+    }
+
+    if (btnRemover) {
+      btnRemover.onclick = () => this.moverSelecionados(selecionados, disponiveis);
+    }
+
+    if (disponiveis) {
+      disponiveis.onchange = () => this.atualizarBotoes();
+    }
+
+    if (selecionados) {
+      selecionados.onchange = () => this.atualizarBotoes();
+    }
+
+    if (btnSalvar) {
+      btnSalvar.onclick = () => this.salvarConfiguracao();
+    }
+
+    this.atualizarBotoes();
+  },
+
+  moverSelecionados(origem, destino) {
+    if (!origem || !destino) return;
+
+    const options = Array.from(origem.selectedOptions);
+    options.forEach(option => {
+      destino.appendChild(option);
+    });
+
+    this.atualizarBotoes();
+  },
+
+  atualizarBotoes() {
+    const disponiveis = document.getElementById('slides-imoveis-disponiveis');
+    const selecionados = document.getElementById('slides-imoveis-selecionados');
+    const btnAdicionar = document.getElementById('btn-slides-adicionar');
+    const btnRemover = document.getElementById('btn-slides-remover');
+
+    if (btnAdicionar) {
+      btnAdicionar.disabled = !disponiveis || disponiveis.selectedIndex < 0;
+    }
+
+    if (btnRemover) {
+      btnRemover.disabled = !selecionados || selecionados.selectedIndex < 0;
+    }
+  },
+
+  salvarConfiguracao() {
+    const selecionados = document.getElementById('slides-imoveis-selecionados');
+    const intervaloInput = document.getElementById('slides-intervalo-input');
+
+    if (!selecionados || !intervaloInput) return;
+
+    const ids = [];
+    for (let i = 0; i < selecionados.options.length; i++) {
+      ids.push(parseInt(selecionados.options[i].value));
+    }
+
+    const intervalo = parseInt(intervaloInput.value, 10) || 8;
+
+    fetch('/api/slides/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, interval_seconds: intervalo })
+    })
+      .then(r => r.json())
+      .then(() => {
+        alert('Configuração de slides salva com sucesso!');
+      })
+      .catch(error => {
+        console.error('Erro ao salvar configuração de slides:', error);
+        alert('Erro ao salvar configuração de slides.');
+      });
   }
 };
 
