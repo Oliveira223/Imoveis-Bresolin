@@ -16,5 +16,5 @@ COPY . .
 # Expor a porta do Flask
 EXPOSE 5000
 
-# Comando padrão para rodar o app
-CMD ["python", "app.py"]
+# Comando padrão para rodar o app com Gunicorn (Produção)
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "app:app"]
