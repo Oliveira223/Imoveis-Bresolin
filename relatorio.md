@@ -136,7 +136,7 @@ Paginação eficiente carrega apenas resultados visíveis, melhorando performanc
 
 ## 11. Automação e Manutenção
 
-O sistema inclui rotinas automatizadas que executam tarefas de manutenção sem intervenção manual. Backups do banco de dados são executados semanalmente, criando cópias comprimidas organizadas por data para facilitar recuperação.
+O sistema inclui rotinas automatizadas que executam tarefas de manutenção sem intervenção manual. Backup do banco de dados é executado regularmente, criando cópias comprimidas organizadas por data para facilitar recuperação.
 
 Relatórios semanais são gerados automaticamente, compilando métricas sobre performance do site, novos imóveis cadastrados e estatísticas de acesso. Estes relatórios são enviados por email para gestores e equipe de vendas.
 
@@ -152,7 +152,7 @@ Docker Compose orquestra estes containers, definindo como eles se comunicam, com
 
 O pipeline de deploy utiliza GitHub Actions para automação completa desde commit até produção. Quando código é enviado para o repositório principal, testes automatizados são executados, imagens Docker são construídas e o deploy é realizado automaticamente.
 
-Estratégias de deploy blue-green minimizam downtime durante atualizações, mantendo a versão anterior rodando enquanto a nova é preparada e testada. Rollback automático é ativado se problemas são detectados.
+Estrategias de deploy blue-green minimizam downtime durante atualizações, mantendo a versão anterior rodando enquanto a nova é preparada e testada. Rollback automático é ativado se problemas são detectados.
 
 Monitoramento contínuo coleta métricas de sistema e aplicação, incluindo uso de CPU, memória, tempo de resposta e taxa de erro. Alertas são configurados para condições críticas.
 
@@ -166,13 +166,19 @@ O sistema operacional Linux Ubuntu LTS fornece estabilidade e segurança de long
 
 Nginx atua como proxy reverso na frente da aplicação Flask, oferecendo múltiplos benefícios: terminação SSL/TLS, compressão gzip automática, cache de arquivos estáticos, balanceamento de carga e proteção contra ataques DDoS básicos. Esta configuração melhora significativamente a performance e segurança.
 
-Docker Compose orquestra todos os serviços em produção, incluindo a aplicação Flask, banco PostgreSQL, Nginx e ferramentas de monitoramento. Esta abordagem containerizada garante isolamento entre serviços e facilita atualizações sem downtime.
+O Docker Compose orquestra todos os serviços em produção, incluindo a aplicação Flask, banco PostgreSQL, Nginx e ferramentas de monitoramento. Esta abordagem containerizada garante isolamento entre serviços e facilita atualizações sem downtime.
+
+Backups automatizados são executados semanalmente, criando snapshots completos do sistema e backups incrementais do banco de dados. Estes backups são armazenados tanto localmente quanto em storage externo, garantindo múltiplas camadas de proteção contra perda de dados.
+
+Monitoramento contínuo acompanha métricas vitais do servidor: uso de CPU, memória, espaço em disco, tráfego de rede e tempo de resposta da aplicação. Alertas automáticos são enviados quando thresholds críticos são atingidos, permitindo intervenção proativa.
 
 O firewall configurado permite apenas tráfego necessário, bloqueando portas desnecessárias e implementando rate limiting para prevenir ataques de força bruta. Fail2ban monitora logs de acesso e bloqueia automaticamente IPs suspeitos.
 
 Certificados SSL são gerenciados através do Let's Encrypt com renovação automática, garantindo que a comunicação entre usuários e servidor permaneça sempre criptografada. HTTPS é obrigatório para todas as conexões, com redirecionamento automático de HTTP.
 
 Logs centralizados coletam informações de todos os serviços, facilitando debugging e análise de performance. Rotação automática de logs previne que arquivos cresçam indefinidamente e consumam espaço em disco.
+
+Procedimentos de deploy automatizados através de GitHub Actions permitem atualizações rápidas e seguras, com rollback automático em caso de problemas. O processo inclui testes automatizados, build de imagens Docker e deploy gradual para minimizar impacto.
 
 ## 14. Segurança e Proteção
 
@@ -182,50 +188,24 @@ Upload de arquivos inclui verificação de tipo MIME, validação de extensão e
 
 Cabeçalhos de segurança HTTP são configurados para proteger contra ataques de clickjacking, sniffing de conteúdo e outros vetores comuns. Content Security Policy restringe fontes de recursos externos.
 
+HTTPS é obrigatório em produção, com redirecionamento automático de conexões inseguras. Certificados SSL são renovados automaticamente para manter criptografia sempre atualizada.
+
 Backups são criptografados e armazenados em múltiplas localizações para proteção contra perda de dados. Acesso a backups é restrito e auditado.
 
 ## 15. Configuração e Operação
 
 A configuração inicial requer Docker e Docker Compose instalados no sistema. Após clonar o repositório, variáveis de ambiente devem ser configuradas através do arquivo .env, incluindo credenciais de banco, configurações de email e chaves administrativas.
 
-### Desenvolvimento Local
+Para desenvolvimento local, recomenda-se executar apenas o banco via Docker e rodar a aplicação Flask diretamente, facilitando debugging e desenvolvimento iterativo. Dependências Python são gerenciadas através do arquivo requirements.txt.
 
-Para executar o sistema localmente:
+Produção utiliza Docker Compose completo, iniciando todos os serviços em containers isolados. Volumes persistentes garantem que dados sobrevivam a restarts e atualizações.
 
-1. Clone o repositório e navegue até o diretório
-2. Copie `.env.example` para `.env` e configure as variáveis necessárias
-3. Execute `docker-compose up --build` para construir e iniciar os containers
-4. Acesse `http://localhost:5000` para visualizar a aplicação
-5. Use `python criar_banco.py` para inicializar o banco de dados com estrutura básica
+Inicialização do banco é realizada através de script dedicado que cria todas as tabelas e relacionamentos necessários. Este script pode ser executado múltiplas vezes sem causar problemas.
 
-### Deploy em Produção
+Monitoramento de saúde pode ser implementado através de endpoints dedicados que verificam conectividade do banco e integridade básica do sistema. Load balancers podem utilizar estes endpoints para health checks automáticos.
 
-O deploy em produção utiliza GitHub Actions que automaticamente:
+Logs são acessíveis através de comandos Docker Compose, permitindo monitoramento em tempo real de atividade do sistema e debugging de problemas. Diferentes níveis de log podem ser configurados conforme necessidade.
 
-1. Executa testes de qualidade de código
-2. Constrói imagens Docker otimizadas
-3. Realiza deploy no servidor VPS via SSH
-4. Executa verificações de saúde pós-deploy
-5. Envia notificações sobre status do deploy
-
-### Monitoramento e Saúde
-
-O sistema fornece endpoints de health check que podem ser monitorados:
-
-- `/health` - Status geral da aplicação
-- `/health/db` - Conectividade com banco de dados
-- `/health/disk` - Espaço disponível em disco
-
-Logs são acessíveis através de `docker-compose logs -f` para acompanhamento em tempo real. Métricas de performance são coletadas automaticamente e disponibilizadas para análise.
-
-### Backup e Restauração
-
-Backups semanais automáticos incluem:
-
-- Dump completo do banco PostgreSQL
-- Arquivos de imagem e documentos
-- Configurações e logs importantes
-
-Procedimentos de restauração estão documentados e testados regularmente para garantir recuperação rápida em caso de necessidade.
+Backup e restauração de dados seguem procedimentos padronizados usando ferramentas nativas do PostgreSQL. Scripts automatizados facilitam estas operações e garantem consistência dos procedimentos.
 
 O sistema foi projetado para ser facilmente mantido e expandido, com arquitetura modular que permite adição de novas funcionalidades sem impactar componentes existentes.
