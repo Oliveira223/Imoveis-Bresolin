@@ -429,10 +429,18 @@ button.fab {
 }
 
 .cards-destaque {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Sobrescreve larguras fixas dos cards de destaque */
+.cards-destaque .card-link {
+  width: 100% !important;
+  flex-shrink: 1;
+}
+
+.cards-destaque .card-container {
+  width: 100% !important;
+  max-width: none;
 }
 
 /* Card individual */

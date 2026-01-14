@@ -21,6 +21,7 @@
       <button class="menu-item active" data-target="view-imoveis">Imóveis</button>
       <button class="menu-item" data-target="view-cadastro">Cadastro</button>
       <button class="menu-item" data-target="view-info">Info</button>
+      <button class="menu-item" data-target="view-slides">Slides</button>
       <button class="menu-item" data-target="view-interesse">Interesse</button>
     </nav>
   </aside>
@@ -436,6 +437,55 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- ===========================
+         MÓDULO: VIEW SLIDES
+         =========================== -->
+    <section id="view-slides" class="view">
+      <header class="view-header">
+        <h1>Slides de Exposição</h1>
+        <div class="actions">
+          <a href="/slides" target="_blank" class="primary link-button">Abrir apresentação</a>
+        </div>
+      </header>
+
+      <div class="bloco">
+        <div class="bloco-head">
+          <h2>Configuração dos slides</h2>
+          <small class="bloco-subtitle">Escolha os imóveis e o tempo de exibição</small>
+        </div>
+
+        <div class="slides-config">
+          <div class="grupo-imoveis-empreendimento">
+            <label>Imóveis na apresentação:</label>
+            <div class="imoveis-selection-container">
+              <div class="imoveis-list">
+                <h4>Disponíveis</h4>
+                <select id="slides-imoveis-disponiveis" multiple size="10">
+                </select>
+              </div>
+              <div class="imoveis-controls">
+                <button type="button" id="btn-slides-adicionar">→</button>
+                <button type="button" id="btn-slides-remover">←</button>
+              </div>
+              <div class="imoveis-list">
+                <h4>Selecionados</h4>
+                <select id="slides-imoveis-selecionados" multiple size="10">
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="slides-config-row">
+            <div class="slides-intervalo">
+              <label for="slides-intervalo-input">Tempo por slide (segundos)</label>
+              <input type="number" id="slides-intervalo-input" min="3" max="60" step="1" value="8">
+            </div>
+            <button type="button" id="btn-slides-salvar" class="primary">Salvar configuração</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ===========================
