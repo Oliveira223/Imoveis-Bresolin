@@ -15,8 +15,9 @@ load_dotenv()
 EMAIL_REMETENTE = "imoveisbresolinsite@gmail.com"
 SENHA_APP_GMAIL = "yaax cfbu qfml kutj"
 DESTINATARIOS = [
-    "pedrohenrique@gmail.com",
-    "imoveisbresolinsite@gmail.com"
+    "oliveira.phno@gmail.com"
+    #"pedrohenrique@gmail.com",
+    #"imoveisbresolinsite@gmail.com"
     # "otavio.bresolin@creci.org.br"
 ]
 
