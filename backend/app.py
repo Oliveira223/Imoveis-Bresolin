@@ -8,6 +8,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 import os
 import json
+import time
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -1321,9 +1322,21 @@ def criar_tabela_interesse():
             """)
             conn.commit()
 
-# chama ao iniciar o app
-criar_tabela_acessos()
-criar_tabela_interesse()
+
+def inicializar_banco(max_tentativas=20, atraso=3):
+    for tentativa in range(1, max_tentativas + 1):
+        try:
+            criar_tabela_acessos()
+            criar_tabela_interesse()
+            print("[INFO] Tabelas acessos/interesse verificadas com sucesso")
+            return
+        except Exception as e:
+            print(f"[WARN] Erro ao inicializar banco (tentativa {tentativa}/{max_tentativas}): {e}")
+            time.sleep(atraso)
+    print("[ERROR] Não foi possível inicializar o banco após múltiplas tentativas")
+
+
+inicializar_banco()
 
 
 def registrar_acesso(imovel_id=None):
