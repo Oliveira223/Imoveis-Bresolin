@@ -18,10 +18,10 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Para pc (não esquecer de abrir ssh)
-#DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 # Para github
-DATABASE_URL = os.getenv("DATABASE_URL")
+#DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 if not DATABASE_URL:
@@ -870,8 +870,8 @@ def slides_data():
                 'suites': imovel.get('suites'),
                 'piscina': bool(imovel.get('piscina')),
                 'churrasqueira': bool(imovel.get('churrasqueira')),
-                'condominio': float(imovel.get('valor_condominio')) if imovel.get('valor_condominio') else None,
-                'iptu': float(imovel.get('iptu')) if imovel.get('iptu') else None
+                'condominio': float(imovel.get('valor_condominio')) if imovel.get('valor_condominio') else None
+                #'iptu': float(imovel.get('iptu')) if imovel.get('iptu') else None
             })
 
     return jsonify({'interval_seconds': intervalo_config, 'imoveis': imoveis})
