@@ -75,11 +75,11 @@ html, body {
   left: 0;
   width: 40%;
   height: 100%;
-  padding: 4rem 3rem;
+  padding: 4vh 3rem 4rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 3;
 }
 
@@ -159,7 +159,7 @@ html, body {
   color: #ccc;
   margin-bottom: 2rem;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -198,9 +198,42 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   font-size: 1.5rem;
   color: #888;
+}
+
+/* ============================
+   LOGO OVERLAY
+   ============================ */
+.slides-logo {
+  position: absolute;
+  bottom: 4vh;
+  left: 2.7rem;
+  z-index: 1000;
+  text-align: left;
+  opacity: 0.9;
+  font-family: 'Spectral', serif;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.slides-logo h1 {
+  font-size: 1.8rem;
+  letter-spacing: 0.6rem;
+  font-weight: 100;
+  margin: 0;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.slides-logo h2 {
+  font-size: 0.7rem;
+  letter-spacing: 0.2rem;
+  font-weight: 100;
+  margin: 0;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+  color: #ddd;
 }
 
 /* Responsive */
@@ -256,13 +289,48 @@ html, body {
   .slide-price {
     font-size: 1.8rem;
   }
-}
-  
-  .slide-price {
-    font-size: 2rem;
+
+  /* Ajustar logo para mobile */
+  .slides-logo {
+    top: 1.5rem;
+    left: 1.5rem;
   }
-  
-  .slide-description {
-    display: none; /* Hide desc on mobile to save space */
+
+  .slides-logo h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.4rem;
+  }
+
+  .slides-logo h2 {
+    font-size: 0.6rem;
+    letter-spacing: 0.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .slide-price {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .slide-stats {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .slide-stat-item {
+    font-size: 0.9rem;
+  }
+
+  .slide-badge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
   }
 }
