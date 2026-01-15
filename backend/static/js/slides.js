@@ -128,7 +128,7 @@
         tmp.innerHTML = imovel.descricao;
         let text = tmp.textContent || tmp.innerText || '';
         // Limit chars manually just in case CSS line-clamp fails or for safety
-        if (text.length > 300) text = text.substring(0, 300) + '...';
+        if (text.length > 300) text = text.substring(0, 400) + '...';
         desc.textContent = text;
         content.appendChild(desc);
       }
