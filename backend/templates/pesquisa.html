@@ -89,6 +89,16 @@
                 <form action="/pesquisa" method="get">
                     <input type="hidden" name="termo" value="{{ termo }}">
 
+                    <!-- PRETENSÃO -->
+                    <div class="campo">
+                        <label for="pretensao">Pretensão</label>
+                        <select name="pretensao" id="pretensao">
+                            <option value="">Todos</option>
+                            <option value="Venda" {% if pretensao=='Venda' %}selected{% endif %}>Comprar</option>
+                            <option value="Aluguel" {% if pretensao=='Aluguel' %}selected{% endif %}>Alugar</option>
+                        </select>
+                    </div>
+
                     <!-- TIPO -->
                     <div class="campo">
                         <label for="tipo">Tipo de imóvel</label>
