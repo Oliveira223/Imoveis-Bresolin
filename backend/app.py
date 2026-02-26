@@ -18,10 +18,10 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Para pc (não esquecer de abrir ssh)
-#DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 # Para github
-DATABASE_URL = os.getenv("DATABASE_URL")
+#DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 if not DATABASE_URL:
@@ -387,6 +387,7 @@ def api_card_empreendimento(empreendimento_id):
 @app.route('/pesquisa')
 def pagina_pesquisa():
     termo      = request.args.get('termo', '')
+    pretensao  = request.args.get('pretensao', '')
     localizacao = request.args.get('localizacao', '')  # Novo campo unificado
     cidade     = request.args.get('cidade', '')
     uf         = request.args.get('uf', '')
@@ -557,6 +558,13 @@ def pagina_pesquisa():
             query += " AND tipo ILIKE :tipo"
             params['tipo'] = tipo
 
+        if pretensao:
+            # Se for "Venda" ou "Aluguel", filtrar normalmente. 
+            # Se for string vazia (Todos), o backend já não aplicaria o filtro,
+            # mas vamos garantir que ele só filtre se houver um valor real.
+            query += " AND pretensao ILIKE :pretensao"
+            params['pretensao'] = pretensao
+
         if max_preco:
             query += " AND preco <= :max_preco"
             params['max_preco'] = max_preco
@@ -608,7 +616,7 @@ def pagina_pesquisa():
     return render_template("pesquisa.html", 
                    empreendimentos=empreendimentos,
                    imoveis=imoveis,
-                   termo=termo, localizacao=localizacao, tipo=tipo,
+                   termo=termo, pretensao=pretensao, localizacao=localizacao, tipo=tipo,
                    max_preco=max_preco, id=id_, quartos=quartos,
                    banheiros=banheiros, vagas=vagas,
                    area_min=area_min, area_max=area_max,

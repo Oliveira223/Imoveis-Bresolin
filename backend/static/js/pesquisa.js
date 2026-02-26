@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLimparDesktop = document.getElementById('limpar-pesquisa-desktop');
   
   // Elementos do formulário de filtros
+  const pretensaoSelect = document.getElementById('pretensao');
   const tipoSelect = document.getElementById('tipo');
   const localizacaoInput = document.getElementById('localizacao');
   const areaMinInput = document.getElementById('area_min');
@@ -158,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Obter valores dos filtros
     const filtros = {
       termo: (termoInputMobile?.value || termoInputDesktop?.value || '').toLowerCase().trim(),
+      pretensao: pretensaoSelect?.value || '',
       tipo: tipoSelect?.value || '',
       localizacao: localizacaoInput?.value.toLowerCase().trim() || '',
       precoMax: precoReal?.value ? parseInt(precoReal.value) : null,
@@ -203,6 +205,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!textoCard.includes(filtros.termo)) {
           isVisible = false;
+        }
+      }
+  
+      // Filtro por pretensão
+      if (isVisible && filtros.pretensao) {
+        if (isEmpreendimento) {
+          // Empreendimentos geralmente não têm pretensão direta no card principal.
+          // Ocultamos se houver um filtro específico de pretensão para focar em unidades.
+          isVisible = false;
+        } else {
+          const pretensaoImovel = card.querySelector('.pretensao')?.textContent.toLowerCase() || '';
+          // Se o filtro for "Venda", deve conter "venda"
+          // Se o filtro for "Aluguel", deve conter "aluguel"
+          if (!pretensaoImovel.includes(filtros.pretensao.toLowerCase())) {
+            isVisible = false;
+          }
         }
       }
   
@@ -527,6 +545,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners para filtros automáticos
   // ================================
   
+  // Pretensão
+  if (pretensaoSelect) {
+    pretensaoSelect.addEventListener('change', aplicarFiltrosCompletos);
+  }
+
   // Tipo de imóvel
   if (tipoSelect) {
     tipoSelect.addEventListener('change', aplicarFiltrosCompletos);
