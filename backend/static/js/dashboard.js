@@ -1259,6 +1259,89 @@ const ImageUploadModule = {
     this.setupEmpreendimentoImageUpload();
     this.setupEmpreendimentoSecondaryImagesUpload(); // Nova função
     this.setupEmpreendimentoSecondaryImagesEdit(); // Nova função para edição
+    this.setupBackup(); // Nova função para backup
+  },
+
+  /**
+   * Configura o botão de backup e exportação completa
+   */
+  setupBackup() {
+    const btnBackup = document.getElementById('btn-backup');
+    const btnExportar = document.getElementById('btn-exportar-completo');
+
+    if (btnBackup) {
+      btnBackup.onclick = async () => {
+        const originalText = btnBackup.innerHTML;
+        btnBackup.disabled = true;
+        btnBackup.innerHTML = 'Gerando backup...';
+
+        try {
+          const response = await fetch('/api/admin/backup');
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            a.href = url;
+            a.download = `backup_bresolin_${timestamp}.sql`;
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            alert("Backup SQL concluído! Guarde este arquivo em local seguro.");
+          } else {
+            const errorData = await response.json();
+            alert("Erro ao gerar backup: " + (errorData.erro || "Erro desconhecido"));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erro ao conectar com o servidor para o backup.");
+        } finally {
+          btnBackup.disabled = false;
+          btnBackup.innerHTML = originalText;
+        }
+      };
+    }
+
+    if (btnExportar) {
+      btnExportar.onclick = async () => {
+        const originalText = btnExportar.innerHTML;
+        btnExportar.disabled = true;
+        btnExportar.innerHTML = 'Exportando...';
+
+        try {
+          const response = await fetch('/api/admin/exportar-completo');
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            a.href = url;
+            a.download = `exportacao_completa_bresolin_${timestamp}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            alert("Exportação concluída! O arquivo ZIP contém planilhas de Imóveis, Empreendimentos, Leads e Acessos.");
+          } else {
+            const errorData = await response.json();
+            alert("Erro ao exportar: " + (errorData.erro || "Erro desconhecido"));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erro ao conectar com o servidor para a exportação.");
+        } finally {
+          btnExportar.disabled = false;
+          btnExportar.innerHTML = originalText;
+        }
+      };
+    }
   },
 
   /**

@@ -23,6 +23,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const plantasNovas = [];
 
   // ===========================
+  // Configuração de Reordenação (SortableJS)
+  // ===========================
+
+  const initSortable = (containerId) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    Sortable.create(el, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      handle: '.imagem-container', // Permite arrastar clicando em qualquer lugar do container
+      onEnd: async () => {
+        const ids = Array.from(el.querySelectorAll('.imagem-container'))
+                         .map(item => item.dataset.id)
+                         .filter(id => id); // Apenas imagens que já estão no banco (têm ID)
+
+        if (ids.length > 0) {
+          try {
+            const response = await fetch(`/api/imoveis/${id}/imagens/reordenar`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ordem_ids: ids })
+            });
+            if (!response.ok) throw new Error('Erro ao salvar nova ordem');
+            console.log(`Ordem da galeria ${containerId} atualizada!`);
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao salvar a nova ordem das imagens.');
+          }
+        }
+      }
+    });
+  };
+
+  initSortable('galeria-secundarias');
+  initSortable('galeria-plantas');
+
+  // ===========================
   // Upload da imagem principal
   // ===========================
 

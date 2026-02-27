@@ -1,4 +1,49 @@
 // ===========================
+// Backup do Banco de Dados
+// ===========================
+
+const btnBackup = document.getElementById('btn-backup');
+if (btnBackup) {
+  btnBackup.onclick = async function () {
+    const originalText = this.innerHTML;
+    this.disabled = true;
+    this.innerHTML = 'Gerando backup...';
+
+    try {
+      const response = await fetch('/api/admin/backup');
+      if (response.ok) {
+        // Obter o blob do arquivo
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        // Criar um link temporário para download
+        const a = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        a.href = url;
+        a.download = `backup_bresolin_${timestamp}.sql`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpar
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        alert("Backup concluído com sucesso!");
+      } else {
+        const errorData = await response.json();
+        alert("Erro ao gerar backup: " + (errorData.erro || "Erro desconhecido"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao conectar com o servidor para o backup.");
+    } finally {
+      this.disabled = false;
+      this.innerHTML = originalText;
+    }
+  };
+}
+
+// ===========================
 // Habilita campo de entrega conforme estágio do imóvel
 // ===========================
 

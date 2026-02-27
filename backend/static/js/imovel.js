@@ -1,258 +1,139 @@
 // ================================
-// Visualizador de imagens estilo galeria (com scroll e botões)
+// Galeria Unificada com Navegação por Setas
 // ================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  const imagens = Array.from(document.querySelectorAll(".thumb-secundaria"));
-  if (imagens.length === 0) return;
+  // 1. Coleta todas as imagens da galeria (Principal + Secundárias)
+  const thumbs = Array.from(document.querySelectorAll(".coluna-esquerda .thumb-galeria, .mobile .thumb-galeria"));
+  // Remove duplicatas de URL mantendo a ordem (caso o mesmo seletor pegue mobile e desktop)
+  const urlsGaleria = [...new Set(thumbs.map(img => img.src))];
+  
+  const imgPrincipalDesktop = document.getElementById("imagemPrincipal");
+  const imgPrincipalMobile = document.querySelector(".mobile .imagem-principal");
+  const contadorMobile = document.querySelector(".contador-fotos-mobile");
+  
+  let indiceAtual = 0;
 
   // ================================
-  // Criação do visualizador fullscreen
+  // Funções de Navegação
+  // ================================
+
+  window.atualizarVisualizacaoGaleria = (novoIndice) => {
+    if (novoIndice < 0) novoIndice = urlsGaleria.length - 1;
+    if (novoIndice >= urlsGaleria.length) novoIndice = 0;
+    
+    indiceAtual = novoIndice;
+    const novaUrl = urlsGaleria[indiceAtual];
+
+    // Atualiza imagem principal no Desktop
+    if (imgPrincipalDesktop) {
+      imgPrincipalDesktop.src = novaUrl;
+      imgPrincipalDesktop.dataset.index = indiceAtual;
+    }
+
+    // Atualiza imagem principal no Mobile
+    if (imgPrincipalMobile) {
+      imgPrincipalMobile.src = novaUrl;
+      imgPrincipalMobile.dataset.index = indiceAtual;
+    }
+
+    // Atualiza contador no Mobile
+    if (contadorMobile) {
+      contadorMobile.textContent = `${indiceAtual + 1} / ${urlsGaleria.length}`;
+    }
+
+    // Destaca a miniatura ativa (Desktop)
+    document.querySelectorAll(".coluna-esquerda .thumb-galeria").forEach((thumb, i) => {
+      thumb.classList.toggle("ativa", i === indiceAtual);
+    });
+  };
+
+  window.navegarSlideMobile = (direcao) => {
+    atualizarVisualizacaoGaleria(indiceAtual + direcao);
+  };
+
+  window.navegarSlideDesktop = (direcao) => {
+    atualizarVisualizacaoGaleria(indiceAtual + direcao);
+  };
+
+  // Clique nas miniaturas
+  document.querySelectorAll(".thumb-galeria").forEach((thumb) => {
+    thumb.addEventListener("click", function() {
+      const index = parseInt(this.dataset.index);
+      if (!isNaN(index)) {
+        atualizarVisualizacaoGaleria(index);
+      }
+    });
+  });
+
+  // ================================
+  // Visualizador Fullscreen (Modal)
   // ================================
   const viewer = document.createElement("div");
   viewer.id = "imagem-viewer";
   viewer.innerHTML = `
-  <button class="fechar">
-    <img src="/static/img/icons/close.svg" alt="Fechar">
-  </button>
-
-  <button class="navegacao prev">
-    <img src="/static/img/icons/arrow-left.svg" alt="Anterior">
-  </button>
-
-  <div class="imagem-scroll-container"></div>
-  <button class="navegacao next">
-    <img src="/static/img/icons/arrow-right.svg" alt="Próxima">
-  </button>
-`;
+    <button class="fechar"><img src="/static/img/icons/close.svg" alt="Fechar"></button>
+    <button class="navegacao prev"><img src="/static/img/icons/arrow-left.svg" alt="Anterior"></button>
+    <div class="imagem-scroll-container"></div>
+    <button class="navegacao next"><img src="/static/img/icons/arrow-right.svg" alt="Próxima"></button>
+  `;
   document.body.appendChild(viewer);
 
   const scrollContainer = viewer.querySelector(".imagem-scroll-container");
-  let atual = 0;
 
-  // ================================
-  // Clona as miniaturas para o viewer fullscreen
-  // ================================
-  imagens.forEach((img) => {
+  // Clona todas as imagens para o modal
+  urlsGaleria.forEach((url) => {
     const clone = document.createElement("img");
-    clone.src = img.src;
+    clone.src = url;
     clone.classList.add("imagem-fullscreen");
     scrollContainer.appendChild(clone);
   });
 
   const imagensFullscreen = scrollContainer.querySelectorAll(".imagem-fullscreen");
 
-  // ================================
-  // Abrir visualizador e posicionar a imagem atual
-  // ================================
-  function abrir(index) {
-    atual = index;
+  function abrirModal(index) {
+    indiceAtual = index;
     viewer.style.display = "flex";
     document.body.classList.add("modal-aberto");
-
-    const targetImage = imagensFullscreen[atual];
-    targetImage.scrollIntoView({
-      behavior: "auto",
-      inline: "center",
-      block: "nearest"
-    });
+    sincronizarScrollModal();
   }
 
-  // ================================
-  // Fechar visualizador
-  // ================================
-  function fechar() {
+  function sincronizarScrollModal() {
+    if (imagensFullscreen[indiceAtual]) {
+      imagensFullscreen[indiceAtual].scrollIntoView({
+        behavior: "auto",
+        inline: "center",
+        block: "nearest"
+      });
+    }
+  }
+
+  function fecharModal() {
     viewer.style.display = "none";
     document.body.classList.remove("modal-aberto");
+    // Ao fechar o modal, sincroniza a galeria da página com a última imagem vista
+    atualizarVisualizacaoGaleria(indiceAtual);
   }
 
-  // ================================
-  // Navegação com botões
-  // ================================
-  function proxima() {
-    atual = (atual + 1) % imagensFullscreen.length;
-    imagensFullscreen[atual].scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest"
-    });
+  function proximaModal() {
+    indiceAtual = (indiceAtual + 1) % imagensFullscreen.length;
+    imagensFullscreen[indiceAtual].scrollIntoView({ behavior: "smooth", inline: "center" });
   }
 
-  function anterior() {
-    atual = (atual - 1 + imagensFullscreen.length) % imagensFullscreen.length;
-    imagensFullscreen[atual].scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest"
-    });
+  function anteriorModal() {
+    indiceAtual = (indiceAtual - 1 + imagensFullscreen.length) % imagensFullscreen.length;
+    imagensFullscreen[indiceAtual].scrollIntoView({ behavior: "smooth", inline: "center" });
   }
 
-  // ================================
-  // Eventos
-  // ================================
-  imagens.forEach((img, index) => {
-    img.addEventListener("click", () => abrir(index));
-  });
+  // Eventos do Modal
+  viewer.querySelector(".fechar").onclick = fecharModal;
+  viewer.querySelector(".next").onclick = proximaModal;
+  viewer.querySelector(".prev").onclick = anteriorModal;
 
-  viewer.querySelector(".fechar").addEventListener("click", fechar);
-  viewer.querySelector(".next").addEventListener("click", proxima);
-  viewer.querySelector(".prev").addEventListener("click", anterior);
+  // Abrir modal ao clicar na imagem principal (Desktop e Mobile)
+  if (imgPrincipalDesktop) imgPrincipalDesktop.onclick = () => abrirModal(indiceAtual);
+  if (imgPrincipalMobile) imgPrincipalMobile.onclick = () => abrirModal(indiceAtual);
 
-  // Tecla Esc fecha o visualizador
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") fechar();
-  });
-
-  // ================================
-  // Atualiza índice ao rolar manualmente
-  // ================================
-  scrollContainer.addEventListener("scroll", () => {
-    const scrollLeft = scrollContainer.scrollLeft;
-    let maisProxima = 0;
-    let menorDistancia = Infinity;
-
-    imagensFullscreen.forEach((img, i) => {
-      const distancia = Math.abs(img.offsetLeft - scrollLeft);
-      if (distancia < menorDistancia) {
-        menorDistancia = distancia;
-        maisProxima = i;
-      }
-    });
-
-    atual = maisProxima;
-  });
-});
-
-// ================================
-// Modo Escuro
-// ================================
-function alternarTema() {
-  const body = document.body;
-  const icone = document.getElementById("icone-tema");
-
-  body.classList.toggle("modo-escuro");
-
-  if (body.classList.contains("modo-escuro")) {
-    icone.src = "/static/img/icons/icon_sun.svg";
-    icone.alt = "Modo Claro";
-    localStorage.setItem("tema", "escuro");
-  } else {
-    icone.src = "/static/img/icons/icon_moon.svg";
-    icone.alt = "Modo Escuro";
-    localStorage.setItem("tema", "claro");
-  }
-}
-
-// Aplica tema salvo anteriormente
-document.addEventListener("DOMContentLoaded", () => {
-  const temaSalvo = localStorage.getItem("tema");
-  const body = document.body;
-  const icone = document.getElementById("icone-tema");
-
-  // if (temaSalvo === "claro") {
-  //   body.classList.remove("modo-escuro");
-  //   if (icone) {
-  //     icone.src = "/static/img/icons/icon_moon.svg";
-  //     icone.alt = "Modo Escuro";
-  //   }
-  // } else {
-  //   body.classList.add("modo-escuro"); // Padrão: escuro
-  //   if (icone) {
-  //     icone.src = "/static/img/icons/icon_sun.svg";
-  //     icone.alt = "Modo Claro";
-  //   }
-  // }
-
-
-  // PADRÃO CLARO
-    if (temaSalvo === "escuro") {
-    body.classList.add("modo-escuro");
-    if (icone) {
-      icone.src = "/static/img/icons/icon_sun.svg";
-      icone.alt = "Modo Claro";
-    }
-  } else {
-    body.classList.remove("modo-escuro"); 
-    if (icone) {
-      icone.src = "/static/img/icons/icon_moon.svg";
-      icone.alt = "Modo Escuro";
-    }
-  }
-});
-
-
-
-function alternarMapa() {
-  const img = document.getElementById("imagemPrincipal");
-  const mapa = document.getElementById("mapaPrincipal");
-  const botao = document.querySelector(".botao-mapa-toggle");
-
-  if (img.style.display !== "none") {
-    img.style.display = "none";
-    mapa.style.display = "block";
-    botao.textContent = "Ver imagem";
-  } else {
-    img.style.display = "block";
-    mapa.style.display = "none";
-    botao.textContent = "Ver no mapa";
-  }
-}
-
-
-// ================================
-// Fullscreen da imagem principal
-// ================================
-// ================================
-// Visualizador simples da imagem principal
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-  const img = document.getElementById("imagemPrincipal");
-
-  if (img) {
-    // Cria o visualizador
-    const viewer = document.createElement("div");
-    viewer.id = "viewer-principal";
-    viewer.style.cssText = `
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.95);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    `;
-
-    const imagemAmpliada = document.createElement("img");
-    imagemAmpliada.style.cssText = `
-      max-width: 90vw;
-      max-height: 90vh;
-      border-radius: 8px;
-    `;
-
-    viewer.appendChild(imagemAmpliada);
-    document.body.appendChild(viewer);
-
-    // Abrir
-    img.addEventListener("click", () => {
-      imagemAmpliada.src = img.src;
-      viewer.style.display = "flex";
-      document.body.classList.add("modal-aberto");
-    });
-
-    // Fechar ao clicar fora
-    viewer.addEventListener("click", (e) => {
-      if (e.target === viewer) {
-        viewer.style.display = "none";
-        document.body.classList.remove("modal-aberto");
-      }
-    });
-
-    // Fechar com ESC
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        viewer.style.display = "none";
-        document.body.classList.remove("modal-aberto");
-      }
-    });
-  }
+  // Inicializa a primeira thumbnail como ativa
+  atualizarVisualizacaoGaleria(0);
 });

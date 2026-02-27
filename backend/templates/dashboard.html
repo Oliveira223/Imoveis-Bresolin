@@ -383,6 +383,31 @@
 
       </div>
 
+      <!-- Bloco: Sistema e Backup -->
+      <div class="bloco">
+        <div class="bloco-head">
+          <h2>Sistema e Backups</h2>
+          <small class="bloco-subtitle">Gerencie os dados e realize cópias de segurança</small>
+        </div>
+        <div class="acoes-sistema">
+          <p style="margin-bottom: 1rem; color: #666;">Use as opções abaixo para gerenciar a segurança e visualização dos dados.</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <button id="btn-backup" class="primary">
+              <img src="/static/img/icons/icon_link.svg" alt="" style="width: 16px; filter: invert(1); margin-right: 8px;">
+              Backup de Segurança (.sql)
+            </button>
+            <button id="btn-exportar-completo" class="primary" style="background-color: #28a745;">
+              <img src="/static/img/icons/icon_link.svg" alt="" style="width: 16px; filter: invert(1); margin-right: 8px;">
+              Exportar Dados Completos (.zip)
+            </button>
+          </div>
+          <small style="display: block; margin-top: 10px; color: #888;">
+            * O arquivo <b>.sql</b> é para restauração completa em caso de perda total.<br>
+            * O arquivo <b>.zip</b> contém planilhas (CSVs) de imóveis, empreendimentos, leads e acessos.
+          </small>
+        </div>
+      </div>
+
       <!-- Bloco: Destaques -->
       <div class="bloco">
         <div class="bloco-head">

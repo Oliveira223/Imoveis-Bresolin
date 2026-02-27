@@ -118,9 +118,6 @@ anotações
 - Marca da agua nas fotos
 
 ### Correções:
-Aluguel da home não está passando para filtro de imoveis
-Mudar setas e fechar da visualização de imagens
-
 Seta na foto principal para ir para secundárias
 - Ordenar ordem das fotos
 

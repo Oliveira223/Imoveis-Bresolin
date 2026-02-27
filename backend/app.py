@@ -1,7 +1,7 @@
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_file
 from sqlalchemy import create_engine, text
 from werkzeug.utils import secure_filename
 from uuid import uuid4
@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 import os
 import json
 import time
+import subprocess
+import csv
+import io
+import zipfile
+from datetime import datetime
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -18,10 +23,13 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 load_dotenv()
 # Lógica automática para banco de dados: 
-# Priorizamos a DATABASE_URL (que na VPS aponta para o container do banco).
-# Se não existir, usamos a LOCAL para desenvolvimento.
-DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL_LOCAL")
+# Localmente (Windows), priorizamos DATABASE_URL_LOCAL.
+# Em outros ambientes (Linux/Docker/VPS), usamos DATABASE_URL.
 
+if os.name == 'nt': # Windows
+    DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
+else: # Linux/VPS/Docker
+    DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL_LOCAL")
 
 if not DATABASE_URL:
     raise Exception("A variável de ambiente DATABASE_URL não está definida.")
@@ -212,7 +220,7 @@ def pagina_imovel(imovel_id):
             return render_template('404.html', mensagem="Imóvel não encontrado ou inativo"), 404
 
         imagens_result = con.execute(
-            text('SELECT url, tipo FROM imagens_imovel WHERE imovel_id = :id'),
+            text('SELECT id, url, tipo, ordem FROM imagens_imovel WHERE imovel_id = :id ORDER BY ordem ASC, id ASC'),
             {'id': imovel_id}
         )
         imagens = [dict(row._mapping) for row in imagens_result]
@@ -263,7 +271,7 @@ def pagina_empreendimento(empreendimento_id):
 
         # Busca imagens do empreendimento
         imagens_result = con.execute(
-            text('SELECT url, tipo FROM imagens_empreendimento WHERE empreendimento_id = :id'),
+            text('SELECT id, url, tipo, ordem FROM imagens_empreendimento WHERE empreendimento_id = :id ORDER BY ordem ASC, id ASC'),
             {'id': empreendimento_id}
         )
         imagens = [dict(row._mapping) for row in imagens_result]
@@ -324,6 +332,128 @@ def pagina_empreendimento(empreendimento_id):
                          imagens=imagens,
                          imoveis_relacionados=imoveis_relacionados,
                          empreendimentos_similares=empreendimentos_similares)
+
+# ==============================
+# Rota de Backup do Banco de Dados
+# ==============================
+@app.route('/api/admin/backup')
+def admin_backup():
+    try:
+        # Nome do arquivo com timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"backup_bresolin_{timestamp}.sql"
+        filepath = os.path.join(BASE_DIR, filename)
+
+        # Executa o pg_dump usando a DATABASE_URL diretamente
+        # O pg_dump suporta a URL de conexão do PostgreSQL
+        # Usamos flags para garantir que o backup seja completo e restaurável
+        command = [
+            "pg_dump",
+            DATABASE_URL,
+            "-f", filepath,
+            "--no-owner",
+            "--no-privileges",
+            "--clean", # Adiciona DROP TABLE antes de CREATE TABLE para facilitar a restauração
+            "--if-exists"
+        ]
+
+        # Executa o comando
+        process = subprocess.run(command, capture_output=True, text=True)
+
+        if process.returncode != 0:
+            print(f"[ERRO] Falha no pg_dump: {process.stderr}")
+            return jsonify({"erro": "Falha ao gerar backup"}), 500
+
+        # Envia o arquivo para download e depois o remove
+        def generate():
+            with open(filepath, "rb") as f:
+                yield from f
+            try:
+                os.remove(filepath)
+            except Exception as e:
+                print(f"[AVISO] Não foi possível remover o arquivo temporário de backup: {e}")
+
+        return Response(
+            generate(),
+            mimetype="application/sql",
+            headers={"Content-Disposition": f"attachment;filename={filename}"}
+        )
+
+    except Exception as e:
+        print(f"[ERRO] Erro inesperado no backup: {e}")
+        return jsonify({"erro": str(e)}), 500
+
+# ==============================
+# Rota para Exportar Dados Completos (ZIP com CSVs)
+# ==============================
+@app.route('/api/admin/exportar-completo')
+def admin_exportar_completo():
+    try:
+        # Buffer para o arquivo ZIP
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+            # 1. Exportar Imóveis
+            with engine.connect() as conn:
+                res_imoveis = conn.execute(text("SELECT * FROM imoveis ORDER BY id DESC")).mappings()
+                imoveis = [dict(row) for row in res_imoveis]
+                
+                if imoveis:
+                    output = io.StringIO()
+                    writer = csv.DictWriter(output, fieldnames=imoveis[0].keys(), delimiter=';')
+                    writer.writeheader()
+                    writer.writerows(imoveis)
+                    zip_file.writestr('imoveis_completo.csv', output.getvalue())
+
+            # 2. Exportar Empreendimentos
+            with engine.connect() as conn:
+                res_emp = conn.execute(text("SELECT * FROM empreendimentos ORDER BY id DESC")).mappings()
+                emps = [dict(row) for row in res_emp]
+                
+                if emps:
+                    output = io.StringIO()
+                    writer = csv.DictWriter(output, fieldnames=emps[0].keys(), delimiter=';')
+                    writer.writeheader()
+                    writer.writerows(emps)
+                    zip_file.writestr('empreendimentos.csv', output.getvalue())
+
+            # 3. Exportar Acessos/Visualizações
+            with engine.connect() as conn:
+                res_acessos = conn.execute(text("SELECT * FROM acessos ORDER BY timestamp DESC")).mappings()
+                acessos = [dict(row) for row in res_acessos]
+                
+                if acessos:
+                    output = io.StringIO()
+                    writer = csv.DictWriter(output, fieldnames=acessos[0].keys(), delimiter=';')
+                    writer.writeheader()
+                    writer.writerows(acessos)
+                    zip_file.writestr('historico_acessos.csv', output.getvalue())
+
+            # 4. Exportar Interesses (Leads)
+            with engine.connect() as conn:
+                res_leads = conn.execute(text("SELECT * FROM interesse ORDER BY timestamp DESC")).mappings()
+                leads = [dict(row) for row in res_leads]
+                
+                if leads:
+                    output = io.StringIO()
+                    writer = csv.DictWriter(output, fieldnames=leads[0].keys(), delimiter=';')
+                    writer.writeheader()
+                    writer.writerows(leads)
+                    zip_file.writestr('leads_contato.csv', output.getvalue())
+
+        zip_buffer.seek(0)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"exportacao_completa_bresolin_{timestamp}.zip"
+        
+        return Response(
+            zip_buffer.getvalue(),
+            mimetype="application/zip",
+            headers={"Content-Disposition": f"attachment;filename={filename}"}
+        )
+
+    except Exception as e:
+        print(f"[ERRO] Erro na exportação completa: {e}")
+        return jsonify({"erro": str(e)}), 500
 
 # ==============================
 # API - Renderização do mini-card reutilizável
@@ -772,6 +902,48 @@ def definir_destaques():
             )
     return jsonify({'sucesso': True})
 
+# Rota para reordenar imagens do imóvel
+@app.route('/api/imoveis/<int:imovel_id>/imagens/reordenar', methods=['POST'])
+def reordenar_imagens_imovel(imovel_id):
+    data = request.json
+    ordem_ids = data.get('ordem_ids', []) # Lista de IDs na nova ordem
+    
+    if not ordem_ids:
+        return jsonify({'erro': 'Lista de IDs não fornecida'}), 400
+        
+    try:
+        with engine.begin() as con:
+            for index, img_id in enumerate(ordem_ids):
+                con.execute(
+                    text('UPDATE imagens_imovel SET ordem = :ordem WHERE id = :id AND imovel_id = :imovel_id'),
+                    {'ordem': index, 'id': img_id, 'imovel_id': imovel_id}
+                )
+        return jsonify({'sucesso': True})
+    except Exception as e:
+        print(f"[ERRO] Falha ao reordenar imagens do imóvel: {e}")
+        return jsonify({'erro': str(e)}), 500
+
+# Rota para reordenar imagens do empreendimento
+@app.route('/api/empreendimentos/<int:emp_id>/imagens/reordenar', methods=['POST'])
+def reordenar_imagens_empreendimento(emp_id):
+    data = request.json
+    ordem_ids = data.get('ordem_ids', [])
+    
+    if not ordem_ids:
+        return jsonify({'erro': 'Lista de IDs não fornecida'}), 400
+        
+    try:
+        with engine.begin() as con:
+            for index, img_id in enumerate(ordem_ids):
+                con.execute(
+                    text('UPDATE imagens_empreendimento SET ordem = :ordem WHERE id = :id AND empreendimento_id = :emp_id'),
+                    {'ordem': index, 'id': img_id, 'emp_id': emp_id}
+                )
+        return jsonify({'sucesso': True})
+    except Exception as e:
+        print(f"[ERRO] Falha ao reordenar imagens do empreendimento: {e}")
+        return jsonify({'erro': str(e)}), 500
+
 # Rota para buscar estatísticas de visualizações
 @app.route('/api/imoveis/visualizacoes', methods=['GET'])
 def visualizacoes_imoveis():
@@ -892,19 +1064,31 @@ def slides_data():
 def imagens_do_imovel(imovel_id):
     with engine.begin() as con:
         if request.method == 'GET':
-            result = con.execute(text('SELECT id, url, tipo FROM imagens_imovel WHERE imovel_id = :id'), {'id': imovel_id})
+            result = con.execute(
+                text('SELECT id, url, tipo, ordem FROM imagens_imovel WHERE imovel_id = :id ORDER BY ordem ASC, id ASC'), 
+                {'id': imovel_id}
+            )
             imagens = [dict(row._mapping) for row in result]
             return jsonify(imagens)
 
         if request.method == 'POST':
             data = request.json
+            
+            # Busca a última ordem para inserir no final
+            result_ordem = con.execute(
+                text('SELECT COALESCE(MAX(ordem), -1) + 1 as prox_ordem FROM imagens_imovel WHERE imovel_id = :id'),
+                {'id': imovel_id}
+            ).fetchone()
+            ordem = result_ordem.prox_ordem if result_ordem else 0
+
             con.execute(text('''
-                INSERT INTO imagens_imovel (imovel_id, url, tipo)
-                VALUES (:imovel_id, :url, :tipo)
+                INSERT INTO imagens_imovel (imovel_id, url, tipo, ordem)
+                VALUES (:imovel_id, :url, :tipo, :ordem)
             '''), {
                 'imovel_id': imovel_id,
                 'url': data.get('url'),
-                'tipo': data.get('tipo')
+                'tipo': data.get('tipo'),
+                'ordem': ordem
             })
             return '', 201
 
@@ -923,19 +1107,31 @@ def deletar_imagem(imagem_id):
 def imagens_do_empreendimento(empreendimento_id):
     with engine.begin() as con:
         if request.method == 'GET':
-            result = con.execute(text('SELECT id, url, tipo FROM imagens_empreendimento WHERE empreendimento_id = :id'), {'id': empreendimento_id})
+            result = con.execute(
+                text('SELECT id, url, tipo, ordem FROM imagens_empreendimento WHERE empreendimento_id = :id ORDER BY ordem ASC, id ASC'), 
+                {'id': empreendimento_id}
+            )
             imagens = [dict(row._mapping) for row in result]
             return jsonify(imagens)
 
         if request.method == 'POST':
             data = request.json
+            
+            # Busca a última ordem para inserir no final
+            result_ordem = con.execute(
+                text('SELECT COALESCE(MAX(ordem), -1) + 1 as prox_ordem FROM imagens_empreendimento WHERE empreendimento_id = :id'),
+                {'id': empreendimento_id}
+            ).fetchone()
+            ordem = result_ordem.prox_ordem if result_ordem else 0
+
             con.execute(text('''
-                INSERT INTO imagens_empreendimento (empreendimento_id, url, tipo)
-                VALUES (:empreendimento_id, :url, :tipo)
+                INSERT INTO imagens_empreendimento (empreendimento_id, url, tipo, ordem)
+                VALUES (:empreendimento_id, :url, :tipo, :ordem)
             '''), {
                 'empreendimento_id': empreendimento_id,
                 'url': data.get('url'),
-                'tipo': data.get('tipo')
+                'tipo': data.get('tipo'),
+                'ordem': ordem
             })
             return '', 201
 
