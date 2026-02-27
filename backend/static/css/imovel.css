@@ -356,46 +356,62 @@ main.desktop {
   top: 50%;
   transform: translateY(-50%);
   color: white;
-  background: none;
+  background: rgba(0, 0, 0, 0.5);
   border: none;
   cursor: pointer;
   user-select: none;
-  padding: 2vw;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 999;
+}
+
+#imagem-viewer .navegacao:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#imagem-viewer .navegacao img {
+  width: 30px;
+  height: 30px;
 }
 
 #imagem-viewer .prev {
-  padding-right: 10vw;
-  padding-top: 10vw;
-  padding-bottom: 10vw;
-  left: 2vw;
-  z-index: 999;
+  left: 20px;
 }
 
 #imagem-viewer .next {
-  padding-left: 10vw;
-  padding-top: 10vw;
-  padding-bottom: 10vw;
-  right: 2vw;
-  z-index: 999;
+  right: 20px;
 }
 
 #imagem-viewer .fechar {
   position: absolute;
-  top: 3vw;
-  right: 3vw;
-  background: none;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
   border: none;
   color: white;
   cursor: pointer;
-  padding-top: 2vw;
-  padding-right: 2vw;
-  padding-left: 100vw;
-  padding-bottom: 100vw;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: background 0.2s;
+}
+
+#imagem-viewer .fechar:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 #imagem-viewer .fechar img {
-  width: 20vw;
-  height: auto;
+  width: 25px;
+  height: 25px;
   pointer-events: none;
 }
 
