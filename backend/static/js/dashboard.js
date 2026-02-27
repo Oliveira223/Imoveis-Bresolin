@@ -44,9 +44,8 @@ const NavigationModule = {
         KPIModule.preencherKpis();
         VisualizacoesModule.carregarVisualizacoes();
         break;
-      case 'view-interesse':
-        InteresseModule.carregarInteresses();
-        InteresseModule.preencherKpisInteresse();
+      case 'view-corretores':
+        CorretoresModule.init();
         break;
       case 'view-slides':
         SlidesAdminModule.loadConfig();
@@ -2232,3 +2231,174 @@ if (typeof module !== 'undefined' && module.exports) {
     }
   });
 }
+
+// ========================================
+// MÓDULO 10: GESTÃO DE CORRETORES E LINKS
+// ========================================
+
+const CorretoresModule = {
+  initialized: false,
+
+  init() {
+    if (this.initialized) {
+        this.listarCorretores(); // Recarrega a lista sempre que entra
+        return; 
+    }
+
+    this.setupFormNovoCorretor();
+    this.setupGeradorLinks();
+    this.listarCorretores();
+    this.initialized = true;
+  },
+
+  setupFormNovoCorretor() {
+    const form = document.getElementById('form-novo-corretor');
+    if (!form) return;
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const nomeInput = document.getElementById('novo-corretor-nome');
+      const senhaInput = document.getElementById('novo-corretor-senha');
+
+      if (!nomeInput || !senhaInput) return;
+
+      const nome = nomeInput.value;
+      const senha = senhaInput.value;
+
+      try {
+        const res = await fetch('/api/corretores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, senha })
+        });
+
+        if (res.ok) {
+          alert('Corretor adicionado com sucesso!');
+          form.reset();
+          this.listarCorretores();
+        } else {
+          const data = await res.json();
+          alert('Erro: ' + (data.erro || 'Erro desconhecido'));
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao conectar com o servidor.');
+      }
+    };
+  },
+
+  listarCorretores() {
+    const tbody = document.getElementById('lista-corretores');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
+
+    fetch('/api/corretores')
+      .then(r => r.json())
+      .then(corretores => {
+        tbody.innerHTML = '';
+        if (corretores.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3">Nenhum corretor cadastrado.</td></tr>';
+            return;
+        }
+
+        corretores.forEach(c => {
+          tbody.innerHTML += `
+            <tr>
+              <td style="padding: 10px;">${c.nome}</td>
+              <td style="padding: 10px;">${c.ativo ? '<span style="color:green">Ativo</span>' : '<span style="color:red">Inativo</span>'}</td>
+              <td style="padding: 10px;">
+                <button onclick="CorretoresModule.editarSenha(${c.id})" class="btn-editar" style="padding: 5px 10px; margin-right: 5px; cursor:pointer;">Senha</button>
+                <button onclick="CorretoresModule.excluirCorretor(${c.id})" class="btn-excluir" style="padding: 5px 10px; cursor:pointer;">Excluir</button>
+              </td>
+            </tr>
+          `;
+        });
+      })
+      .catch(err => {
+          console.error('Erro ao listar corretores:', err);
+          tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar corretores.</td></tr>';
+      });
+  },
+
+  excluirCorretor(id) {
+    if (!confirm('Tem certeza que deseja excluir este corretor?')) return;
+    
+    fetch(`/api/corretores/${id}`, { method: 'DELETE' })
+      .then(res => {
+        if (res.ok) {
+          this.listarCorretores();
+        } else {
+          alert('Erro ao excluir corretor.');
+        }
+      })
+      .catch(err => console.error(err));
+  },
+
+  editarSenha(id) {
+    const novaSenha = prompt("Digite a nova senha para este corretor:");
+    if (novaSenha === null) return; // Cancelou
+    
+    if (!novaSenha.trim()) {
+        alert("A senha não pode ser vazia.");
+        return;
+    }
+    
+    fetch(`/api/corretores/${id}`, { 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha: novaSenha })
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("Senha alterada com sucesso!");
+        } else {
+            alert("Erro ao alterar senha.");
+        }
+    })
+    .catch(err => console.error(err));
+  },
+
+  setupGeradorLinks() {
+    const selectImovelLink = document.getElementById('select-imovel-link');
+    const btnGerarLink = document.getElementById('btn-gerar-link');
+    const containerLinkGerado = document.getElementById('container-link-gerado');
+    const inputLinkGerado = document.getElementById('link-gerado');
+    const btnCopiarLink = document.getElementById('btn-copiar-link');
+
+    if (selectImovelLink) {
+      // Carregar imóveis para o select
+      fetch('/api/imoveis')
+        .then(r => r.json())
+        .then(imoveis => {
+          selectImovelLink.innerHTML = '<option value="">Selecione um imóvel...</option>';
+          imoveis.forEach(imovel => {
+            if (imovel.ativo) {
+                const option = document.createElement('option');
+                option.value = imovel.id;
+                option.textContent = `ID ${imovel.id} - ${imovel.titulo}`;
+                selectImovelLink.appendChild(option);
+            }
+          });
+        });
+
+      btnGerarLink.onclick = () => {
+        const id = selectImovelLink.value;
+        if (!id) {
+          alert('Selecione um imóvel primeiro.');
+          return;
+        }
+        
+        const link = `${window.location.origin}/cadastro/${id}`;
+        inputLinkGerado.value = link;
+        containerLinkGerado.style.display = 'block';
+      };
+
+      btnCopiarLink.onclick = () => {
+        inputLinkGerado.select();
+        document.execCommand('copy');
+        alert('Link copiado!');
+      };
+    }
+  }
+};

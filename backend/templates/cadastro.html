@@ -45,11 +45,28 @@
     <div class="container">
       <div class="cadastro-card">
         <div class="card-header">
-          <h1>Cadastro de Interesse</h1>
-          <p>Deixe seus dados e entraremos em contato com as melhores oportunidades para você</p>
+          <h1>Interesse no Imóvel</h1>
+          <p>Preencha seus dados e retornaremos com mais detalhes sobre essa oportunidade.</p>
         </div>
 
+        {% if imovel %}
+        <div class="imovel-resumo">
+            <div class="img-wrapper">
+                <img src="{{ imovel.imagem or '/static/img/casa.png' }}" alt="{{ imovel.titulo }}">
+            </div>
+            <div class="info">
+                <span>Você está vendo:</span>
+                <h3>{{ imovel.titulo }}</h3>
+                <p>{{ imovel.bairro }}</p>
+                {% if imovel.preco %}
+                <p class="preco">R$ {{ '{:,.2f}'.format(imovel.preco).replace(',', 'X').replace('.', ',').replace('X', '.') }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <form id="form-interesse" class="cadastro-form">
+          <input type="hidden" id="imovel_interesse_id" name="imovel_interesse_id" value="{{ imovel_id or '' }}">
           <div class="form-group">
             <label for="nome">Nome completo</label>
             <input type="text" id="nome" name="nome" required placeholder="Digite seu nome completo">
@@ -62,7 +79,21 @@
 
           <div class="form-group">
             <label for="whatsapp">WhatsApp</label>
-            <input type="tel" id="whatsapp" name="whatsapp" required placeholder="(00) 00000-0000">
+            <input type="tel" id="whatsapp" name="whatsapp" required placeholder="(00) 00000-0000" maxlength="15">
+          </div>
+
+          <div class="form-group">
+            <label>Qual seu objetivo?</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="objetivo" value="Moradia" required>
+                    Moradia
+                </label>
+                <label>
+                    <input type="radio" name="objetivo" value="Investimento">
+                    Investimento
+                </label>
+            </div>
           </div>
 
           <button type="submit" class="btn-submit" id="btn-submit">

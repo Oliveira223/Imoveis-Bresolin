@@ -3,7 +3,7 @@
 # ==============================
 from flask import Flask, render_template, request, jsonify, Response, send_file
 from sqlalchemy import create_engine, text
-from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4
 from dotenv import load_dotenv
 import os
@@ -14,6 +14,7 @@ import csv
 import io
 import zipfile
 from datetime import datetime
+from database import engine
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -21,7 +22,6 @@ from psycopg2.extras import RealDictCursor
 # ==============================
 # Carrega variáveis de ambiente do .env
 # ==============================
-load_dotenv()
 # Lógica automática para banco de dados: 
 # Localmente (Windows), priorizamos DATABASE_URL_LOCAL.
 # Em outros ambientes (Linux/Docker/VPS), usamos DATABASE_URL.
@@ -38,25 +38,25 @@ if not DATABASE_URL:
 # Cria engine de conexão com o PostgreSQL
 # ==============================
 engine = create_engine(DATABASE_URL)
-
 # ==============================
 # Configurações de diretórios e uploads
 # ==============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-SLIDES_CONFIG_PATH = os.path.join(BASE_DIR, 'slides_config.json')
-
-# ==============================
-# Inicialização do aplicativo Flask
-# ==============================
+# Importa e Registra o Blueprint do CRM
+from crm.routes import crm_bp
 app = Flask(
     __name__,
     static_folder='static',
     template_folder='templates'
 )
+app.secret_key = os.getenv('SECRET_KEY', 'chave_secreta_padrao_bresolin_2025')
+app.register_blueprint(crm_bp)
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+SLIDES_CONFIG_PATH = os.path.join(BASE_DIR, 'slides_config.json')
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -1383,10 +1383,25 @@ def api_sugestoes():
 # ==============================
 @app.route('/cadastro')
 def pagina_cadastro():
-    return render_template('cadastro.html')
+    return render_template('cadastro.html', imovel_id=None, imovel=None)
+
+@app.route('/cadastro/<int:imovel_id>')
+def pagina_cadastro_imovel(imovel_id):
+    imovel = None
+    with engine.connect() as con:
+        # Busca apenas dados essenciais para mostrar no card
+        result = con.execute(
+            text("SELECT id, titulo, bairro, imagem, preco FROM imoveis WHERE id = :id"),
+            {'id': imovel_id}
+        )
+        row = result.mappings().first()
+        if row:
+            imovel = dict(row)
+            
+    return render_template('cadastro.html', imovel_id=imovel_id, imovel=imovel)
 
 # ==============================
-# API - CADASTRO DE INTERESSE
+# API - CADASTRO DE INTERESSE (CLIENTES)
 # ==============================
 @app.route('/api/interesse', methods=['POST'])
 def api_interesse():
@@ -1394,27 +1409,101 @@ def api_interesse():
         data = request.json
         
         # Validação básica
-        if not data.get('nome') or not data.get('email') or not data.get('whatsapp'):
-            return jsonify({'erro': 'Todos os campos são obrigatórios'}), 400
+        if not data.get('nome') or not data.get('whatsapp'):
+            return jsonify({'erro': 'Nome e WhatsApp são obrigatórios'}), 400
         
-        # Validação de email básica
+        # Formatação do WhatsApp para padrão internacional (+55...)
+        whatsapp_raw = data.get('whatsapp', '').replace(' ', '').replace('(', '').replace(')', '').replace('-', '')
+        if not whatsapp_raw.startswith('+'):
+            whatsapp_formatted = f"+55{whatsapp_raw}"
+        else:
+            whatsapp_formatted = whatsapp_raw
+
+        # Validação de email (opcional no novo CRM, mas bom ter)
         email = data.get('email')
-        if '@' not in email or '.' not in email:
-            return jsonify({'erro': 'Email inválido'}), 400
         
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    INSERT INTO interesse (nome, email, whatsapp)
-                    VALUES (%s, %s, %s)
-                """, (data['nome'], data['email'], data['whatsapp']))
-                conn.commit()
+        imovel_id = data.get('imovel_interesse_id')
+        if imovel_id == '':
+            imovel_id = None
+            
+        with engine.begin() as conn:
+            conn.execute(text("""
+                INSERT INTO clientes (nome, email, telefone, objetivo, imovel_interesse_id, status, nivel_funil)
+                VALUES (:nome, :email, :whatsapp, :objetivo, :imovel_id, 'Novo', 1)
+            """), {
+                'nome': data['nome'],
+                'email': email,
+                'whatsapp': whatsapp_formatted,
+                'objetivo': data.get('objetivo'),
+                'imovel_id': imovel_id
+            })
         
         return jsonify({'sucesso': True, 'mensagem': 'Interesse cadastrado com sucesso!'}), 201
     
     except Exception as e:
         print(f"[ERROR] Erro ao cadastrar interesse: {e}")
         return jsonify({'erro': 'Erro interno do servidor'}), 500
+
+# ==============================
+# API - GESTÃO DE CORRETORES
+# ==============================
+@app.route('/api/corretores', methods=['GET', 'POST'])
+@requires_auth
+def api_corretores():
+    if request.method == 'GET':
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT id, nome, ativo, data_criacao FROM corretores ORDER BY nome"))
+            corretores = [dict(row._mapping) for row in result]
+        return jsonify(corretores)
+
+    if request.method == 'POST':
+        data = request.json
+        nome = data.get('nome')
+        senha = data.get('senha')
+        
+        if not nome or not senha:
+            return jsonify({'erro': 'Nome e senha são obrigatórios'}), 400
+            
+        senha_hash = generate_password_hash(senha)
+        
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("""
+                    INSERT INTO corretores (nome, senha_hash, ativo)
+                    VALUES (:nome, :senha_hash, TRUE)
+                """), {'nome': nome, 'senha_hash': senha_hash})
+            return jsonify({'sucesso': True}), 201
+        except Exception as e:
+            print(f"[ERROR] Erro ao criar corretor: {e}")
+            return jsonify({'erro': 'Erro ao criar corretor'}), 500
+
+@app.route('/api/corretores/<int:id>', methods=['DELETE', 'PUT'])
+@requires_auth
+def api_corretor_id(id):
+    if request.method == 'DELETE':
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("DELETE FROM corretores WHERE id = :id"), {'id': id})
+            return jsonify({'sucesso': True}), 204
+        except Exception as e:
+            return jsonify({'erro': str(e)}), 500
+
+    if request.method == 'PUT':
+        data = request.json
+        nova_senha = data.get('senha')
+        
+        if not nova_senha:
+            return jsonify({'erro': 'Nova senha é obrigatória'}), 400
+            
+        senha_hash = generate_password_hash(nova_senha)
+        
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("UPDATE corretores SET senha_hash = :senha WHERE id = :id"), 
+                            {'senha': senha_hash, 'id': id})
+            return jsonify({'sucesso': True}), 200
+        except Exception as e:
+            return jsonify({'erro': str(e)}), 500
 
 # ==============================
 # API - LISTAR INTERESSES (Admin)

@@ -576,3 +576,143 @@ function cadastrarEmpreendimento(event) {
         alert('Erro ao cadastrar empreendimento');
     });
 }
+
+// ===========================
+// Gestão de Corretores
+// ===========================
+
+const formNovoCorretor = document.getElementById('form-novo-corretor');
+const listaCorretores = document.getElementById('lista-corretores');
+
+if (formNovoCorretor) {
+    listarCorretores();
+
+    formNovoCorretor.onsubmit = async function(e) {
+        e.preventDefault();
+        const nome = document.getElementById('novo-corretor-nome').value;
+        const senha = document.getElementById('novo-corretor-senha').value;
+
+        try {
+            const res = await fetch('/api/corretores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, senha })
+            });
+
+            if (res.ok) {
+                alert('Corretor adicionado com sucesso!');
+                formNovoCorretor.reset();
+                listarCorretores();
+            } else {
+                const data = await res.json();
+                alert('Erro: ' + (data.erro || 'Erro desconhecido'));
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao conectar com o servidor.');
+        }
+    };
+}
+
+function listarCorretores() {
+    fetch('/api/corretores')
+        .then(r => r.json())
+        .then(corretores => {
+            listaCorretores.innerHTML = '';
+            corretores.forEach(c => {
+                const dataCriacao = new Date(c.data_criacao).toLocaleDateString('pt-BR');
+                listaCorretores.innerHTML += `
+                    <tr>
+                        <td style="padding: 10px;">${c.nome}</td>
+                        <td style="padding: 10px;">${c.ativo ? 'Ativo' : 'Inativo'}</td>
+                        <td style="padding: 10px;">
+                            <button onclick="editarSenhaCorretor(${c.id})" class="btn-editar" style="padding: 5px 10px; margin-right: 5px;">Senha</button>
+                            <button onclick="excluirCorretor(${c.id})" class="btn-excluir" style="padding: 5px 10px;">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => console.error('Erro ao listar corretores:', err));
+}
+
+function excluirCorretor(id) {
+    if (!confirm('Tem certeza que deseja excluir este corretor?')) return;
+    
+    fetch(`/api/corretores/${id}`, { method: 'DELETE' })
+        .then(res => {
+            if (res.ok) {
+                listarCorretores();
+            } else {
+                alert('Erro ao excluir corretor.');
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+// ===========================
+// Gerador de Link Personalizado
+// ===========================
+
+const selectImovelLink = document.getElementById('select-imovel-link');
+const btnGerarLink = document.getElementById('btn-gerar-link');
+const containerLinkGerado = document.getElementById('container-link-gerado');
+const inputLinkGerado = document.getElementById('link-gerado');
+const btnCopiarLink = document.getElementById('btn-copiar-link');
+
+if (selectImovelLink) {
+    // Carregar imóveis para o select
+    fetch('/api/imoveis')
+        .then(r => r.json())
+        .then(imoveis => {
+            selectImovelLink.innerHTML = '<option value="">Selecione um imóvel...</option>';
+            imoveis.forEach(imovel => {
+                const option = document.createElement('option');
+                option.value = imovel.id;
+                option.textContent = `ID ${imovel.id} - ${imovel.titulo}`;
+                selectImovelLink.appendChild(option);
+            });
+        });
+
+    btnGerarLink.onclick = function() {
+        const id = selectImovelLink.value;
+        if (!id) {
+            alert('Selecione um imóvel primeiro.');
+            return;
+        }
+        
+        const link = `${window.location.origin}/cadastro/${id}`;
+        inputLinkGerado.value = link;
+        containerLinkGerado.style.display = 'block';
+    };
+
+    btnCopiarLink.onclick = function() {
+        inputLinkGerado.select();
+        document.execCommand('copy');
+        alert('Link copiado!');
+    };
+}
+
+function editarSenhaCorretor(id) {
+    const novaSenha = prompt("Digite a nova senha para este corretor:");
+    if (novaSenha === null) return; // Cancelou
+    
+    if (!novaSenha.trim()) {
+        alert("A senha não pode ser vazia.");
+        return;
+    }
+    
+    fetch(`/api/corretores/${id}`, { 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha: novaSenha })
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("Senha alterada com sucesso!");
+        } else {
+            alert("Erro ao alterar senha.");
+        }
+    })
+    .catch(err => console.error(err));
+}
