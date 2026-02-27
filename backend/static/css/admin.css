@@ -29,8 +29,46 @@ body {
 
 
 /* =========================
-   TÍTULOS E SEÇÕES
+   SEÇÃO SISTEMA E BACKUP
 ========================= */
+
+.secao-sistema {
+  border-left: 5px solid #005b8f;
+}
+
+.card-admin {
+  text-align: center;
+  padding: 1rem;
+}
+
+.acoes-sistema {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-primario {
+  background-color: #005b8f;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primario:hover {
+  background-color: #004a75;
+}
+
+.btn-primario:active {
+  transform: scale(0.98);
+}
 
 h1, h2 {
   text-align: center;

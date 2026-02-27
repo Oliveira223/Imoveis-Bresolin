@@ -7,6 +7,8 @@
     <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
     
     <link rel="stylesheet" href="/static/css/editar_imovel.css">
+    <!-- SortableJS para Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 
 <body>
@@ -57,13 +59,14 @@
             <!-- =========================
              Imagens secundárias
             ========================== -->
-            <label>Imagens secundárias:</label>
+            <label>Imagens secundárias (Arraste para reordenar):</label>
             <input type="file" id="file-secundarias" multiple accept="image/*">
-            <div id="galeria-secundarias" class="galeria-preview">
+            <div id="galeria-secundarias" class="galeria-preview sortable-container">
                 {% for img in imagens if img.tipo == 'secundaria' %}
-                <div class="imagem-container">
+                <div class="imagem-container" data-id="{{ img.id }}">
                     <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
                     <img src="{{ img.url }}" class="thumb-secundaria">
+                    <div class="drag-handle">::</div>
                 </div>
                 {% endfor %}
             </div>
@@ -72,13 +75,14 @@
             <!-- =========================
             Plantas
             ========================== -->
-            <label>Plantas:</label>
+            <label>Plantas (Arraste para reordenar):</label>
             <input type="file" id="file-plantas" multiple accept="image/*">
-            <div id="galeria-plantas" class="galeria-preview">
+            <div id="galeria-plantas" class="galeria-preview sortable-container">
                 {% for img in imagens if img.tipo == 'planta' %}
-                <div class="imagem-container">
+                <div class="imagem-container" data-id="{{ img.id }}">
                     <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
                     <img src="{{ img.url }}" class="thumb-secundaria">
+                    <div class="drag-handle">::</div>
                 </div>
                 {% endfor %}
             </div>
