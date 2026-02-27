@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Corretor - Bresolin Imóveis</title>
+    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-area">
+                <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Bresolin Imóveis">
+                <h2>Área do Corretor</h2>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('crm.login') }}" method="POST">
+                <div class="form-group">
+                    <label for="nome">Nome de Usuário</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Seu nome de usuário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required placeholder="Sua senha">
+                </div>
+                
+                <button type="submit" class="btn-login">Entrar</button>
+            </form>
+            
+            <p class="footer-text">© 2025 Bresolin Imóveis</p>
+        </div>
+    </div>
+</body>
+</html>

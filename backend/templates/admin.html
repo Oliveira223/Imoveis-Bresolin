@@ -211,6 +211,63 @@
   </section>
 
   <!-- ========================
+       Seção: Gestão de Corretores e Links
+  ========================= -->
+  <section class="admin-section">
+    <h2>Gestão de Corretores</h2>
+    <div class="card-admin">
+      <h3>Adicionar Novo Corretor</h3>
+      <form id="form-novo-corretor" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="novo-corretor-nome" placeholder="Nome do Corretor" required style="flex: 1;">
+        <input type="text" id="novo-corretor-senha" placeholder="Senha de Acesso" required style="flex: 1;">
+        <button type="submit" class="btn-primario">Adicionar</button>
+      </form>
+
+      <h3>Corretores Cadastrados</h3>
+      <table class="tabela-admin" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #f4f4f4; text-align: left;">
+            <th style="padding: 10px;">Nome</th>
+            <th style="padding: 10px;">Status</th>
+            <th style="padding: 10px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista-corretores">
+          <!-- Preenchido via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top: 40px;">Gerador de Link Personalizado</h2>
+    <div class="card-admin">
+      <div style="background: #e8f4fd; padding: 15px; border-radius: 6px; border-left: 4px solid #2196F3; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 10px 0; color: #0d47a1;">💡 Como usar Links Personalizados</h4>
+        <ol style="margin: 0; padding-left: 20px; color: #333; line-height: 1.6;">
+            <li>Selecione um imóvel na lista abaixo.</li>
+            <li>Clique em <b>"Gerar Link"</b>.</li>
+            <li>Copie o link gerado e use em seus anúncios (Instagram, Facebook, WhatsApp).</li>
+            <li>Quando o cliente se cadastrar por esse link, ele cairá no sistema já vinculado a este imóvel!</li>
+        </ol>
+      </div>
+
+      <p>Selecione um imóvel para gerar um link de cadastro específico.</p>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <select id="select-imovel-link" style="flex: 1; padding: 10px;">
+          <option value="">Carregando imóveis...</option>
+        </select>
+        <button id="btn-gerar-link" class="btn-primario">Gerar Link</button>
+      </div>
+      
+      <div id="container-link-gerado" style="margin-top: 15px; display: none;">
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="link-gerado" readonly style="flex: 1; padding: 10px; background: #eee; border: 1px solid #ddd;">
+            <button id="btn-copiar-link" class="btn-secundario">Copiar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================
        Lista de imóveis cadastrados
   ========================= -->
   <section>
