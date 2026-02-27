@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="/static/css/imovel.css">
   <link rel="stylesheet" href="/static/css/global.css">
   <link rel="stylesheet" href="/static/css/components/card_imovel.css">
-  <link rel="stylesheet" href="/static/css/galeria_navegacao.css">
 
 
 </head>
@@ -81,20 +80,7 @@
     {% set secundarias = imagens | selectattr("tipo", "equalto", "secundaria") | list %}
     {% set plantas = imagens | selectattr("tipo", "equalto", "planta") | list %}
     {% endif %}
-    
-    <div class="imagem-principal-container-mobile">
-      <img class="imagem-principal thumb-galeria" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}" data-index="0">
-      
-      {% if secundarias %}
-      <button class="navegacao-seta-mobile prev" onclick="navegarSlideMobile(-1)">
-        <img src="/static/img/icons/arrow-left.svg" alt="Anterior">
-      </button>
-      <button class="navegacao-seta-mobile next" onclick="navegarSlideMobile(1)">
-        <img src="/static/img/icons/arrow-right.svg" alt="Próxima">
-      </button>
-      <div class="contador-fotos-mobile">1 / {{ secundarias|length + 1 }}</div>
-      {% endif %}
-    </div>
+    <img class="imagem-principal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
     {% endif %}
 
     <!-- Galeria de imagens secundárias -->
@@ -103,7 +89,7 @@
       <!-- <h3>Mais imagens</h3> -->
       <div class="galeria-imagens-scroll">
         {% for img in secundarias %}
-        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-galeria thumb-secundaria" data-index="{{ loop.index }}">
+        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
         {% endfor %}
       </div>
     </div>
@@ -214,11 +200,8 @@
 
       {% if secundarias %}
       <div class="coluna-esquerda">
-        <!-- Thumbnail da imagem principal -->
-        <img src="{{ imovel.imagem }}" alt="Imagem principal" class="thumb-galeria thumb-secundaria" data-index="0">
-        
         {% for img in secundarias %}
-        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-galeria thumb-secundaria" data-index="{{ loop.index }}">
+        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
         {% endfor %}
       </div>
       {% endif %}
@@ -227,18 +210,7 @@
         {% if imovel.imagem %}
 
         <div class="imagem-principal-container">
-          <div class="visualizador-principal-desktop">
-            <img class="imagem-principal thumb-galeria" id="imagemPrincipal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}" data-index="0">
-            
-            {% if secundarias %}
-            <button class="navegacao-seta-desktop prev" onclick="navegarSlideDesktop(-1)">
-              <img src="/static/img/icons/arrow-left.svg" alt="Anterior">
-            </button>
-            <button class="navegacao-seta-desktop next" onclick="navegarSlideDesktop(1)">
-              <img src="/static/img/icons/arrow-right.svg" alt="Próxima">
-            </button>
-            {% endif %}
-          </div>
+          <img class="imagem-principal" id="imagemPrincipal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
 
           {% if imovel.maps_iframe %}
           <div class="mapa-principal" id="mapaPrincipal">
