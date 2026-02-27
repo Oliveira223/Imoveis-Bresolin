@@ -17,11 +17,10 @@ from psycopg2.extras import RealDictCursor
 # Carrega variáveis de ambiente do .env
 # ==============================
 load_dotenv()
-# Para pc (não esquecer de abrir ssh)
-DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
-
-# Para github
-#DATABASE_URL = os.getenv("DATABASE_URL")
+# Lógica automática para banco de dados: 
+# Priorizamos a DATABASE_URL (que na VPS aponta para o container do banco).
+# Se não existir, usamos a LOCAL para desenvolvimento.
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL_LOCAL")
 
 
 if not DATABASE_URL:
