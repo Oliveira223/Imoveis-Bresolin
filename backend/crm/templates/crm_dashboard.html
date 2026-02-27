@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Corretores - Bresolin Imóveis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- Sidebar Esquerda -->
+    <aside class="sidebar-left">
+        <div class="brand">
+            <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Bresolin Logo">
+            <span>CRM Bresolin</span>
+        </div>
+        
+        <nav class="menu">
+            <button class="menu-item active" data-view="kanban">
+                <i class="fas fa-columns"></i> Funil de Vendas
+            </button>
+            <button class="menu-item" data-view="clientes">
+                <i class="fas fa-users"></i> Clientes
+            </button>
+            <button class="menu-item" data-view="imoveis">
+                <i class="fas fa-home"></i> Imóveis
+            </button>
+            <button class="menu-item" data-view="tarefas">
+                <i class="fas fa-check-square"></i> Tarefas
+            </button>
+        </nav>
+
+        <div class="user-profile">
+            <div class="avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="info">
+                <strong>{{ session.get('corretor_nome', 'Corretor') }}</strong>
+                <a href="{{ url_for('crm.logout') }}" class="logout-link">Sair</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Pesquisar cliente, telefone...">
+            </div>
+            <div class="actions">
+                <button class="btn-primary" id="btn-novo-cliente">
+                    <i class="fas fa-plus"></i> Novo Cliente
+                </button>
+                <button class="btn-icon" id="btn-toggle-notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- View: Kanban / Funil -->
+        <section id="view-kanban" class="view-section active">
+            <div class="kanban-header">
+                <h2>Funil de Vendas</h2>
+                <div class="kanban-filters">
+                    <select>
+                        <option>Todos os Clientes</option>
+                        <option>Meus Clientes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="kanban-board">
+                <!-- Coluna 1: LEAD -->
+                <div class="kanban-column" data-status="1">
+                    <div class="column-header lead">
+                        <h3>LEAD</h3>
+                        <span class="count">0</span>
+                    </div>
+                    <div class="column-body" id="col-lead">
+                        <!-- Cards serão inseridos aqui via JS -->
+                    </div>
+                </div>
+
+                <!-- Coluna 2: CONTATO -->
+                <div class="kanban-column" data-status="2">
+                    <div class="column-header contato">
+                        <h3>EM CONTATO</h3>
+                        <span class="count">0</span>
+                    </div>
+                    <div class="column-body" id="col-contato"></div>
+                </div>
+
+                <!-- Coluna 3: VISITA -->
+                <div class="kanban-column" data-status="3">
+                    <div class="column-header visita">
+                        <h3>VISITA</h3>
+                        <span class="count">0</span>
+                    </div>
+                    <div class="column-body" id="col-visita"></div>
+                </div>
+
+                <!-- Coluna 4: PROPOSTA -->
+                <div class="kanban-column" data-status="4">
+                    <div class="column-header proposta">
+                        <h3>PROPOSTA</h3>
+                        <span class="count">0</span>
+                    </div>
+                    <div class="column-body" id="col-proposta"></div>
+                </div>
+
+                <!-- Coluna 5: VENDA -->
+                <div class="kanban-column" data-status="5">
+                    <div class="column-header venda">
+                        <h3>VENDA</h3>
+                        <span class="count">0</span>
+                    </div>
+                    <div class="column-body" id="col-venda"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Outras Views (Placeholder) -->
+        <section id="view-clientes" class="view-section" style="display:none;">
+            <h2>Lista de Clientes</h2>
+            <p>Em breve...</p>
+        </section>
+    </main>
+
+    <!-- Sidebar Direita (Notificações) -->
+    <aside class="sidebar-right" id="notifications-panel">
+        <div class="panel-header">
+            <h3>Notificações</h3>
+            <button class="close-panel"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content">
+            <div class="notification-item">
+                <span class="time">10:30</span>
+                <p>Novo lead cadastrado: <strong>João Silva</strong> interessado no Imóvel #45</p>
+            </div>
+            <div class="notification-item">
+                <span class="time">Ontem</span>
+                <p>Tarefa pendente: Ligar para Maria</p>
+            </div>
+        </div>
+    </aside>
+
+    <script src="{{ url_for('crm.static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

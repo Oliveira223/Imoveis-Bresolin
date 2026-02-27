@@ -1,0 +1,380 @@
+:root {
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --bg-sidebar: #181818;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --primary-color: #d4af37; /* Dourado */
+    --accent-color: #2196F3;
+    --border-color: #333;
+    
+    /* Cores do Kanban */
+    --col-lead: #FF9800;
+    --col-contato: #2196F3;
+    --col-visita: #9C27B0;
+    --col-proposta: #00BCD4;
+    --col-venda: #4CAF50;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ================= Sidebar Esquerda ================= */
+.sidebar-left {
+    width: 250px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.brand {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.brand img {
+    width: 30px;
+    height: 30px;
+}
+
+.brand span {
+    font-family: 'Spectral', serif;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+.menu {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.menu-item:hover, .menu-item.active {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+}
+
+.user-profile {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+.info strong {
+    font-size: 0.9rem;
+}
+
+.logout-link {
+    font-size: 0.8rem;
+    color: #666;
+    text-decoration: none;
+}
+
+.logout-link:hover {
+    color: #d4af37;
+}
+
+/* ================= Conteúdo Principal ================= */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.top-bar {
+    height: 60px;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-dark);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    width: 300px;
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    margin-left: 10px;
+    width: 100%;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #1a1a1a;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #f44336;
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    border-radius: 10px;
+}
+
+/* ================= Kanban Board ================= */
+.view-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.kanban-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 15px;
+    height: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.kanban-column {
+    min-width: 280px;
+    width: 280px;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+}
+
+.column-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 4px solid transparent;
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.column-header.lead { border-top-color: var(--col-lead); color: var(--col-lead); }
+.column-header.contato { border-top-color: var(--col-contato); color: var(--col-contato); }
+.column-header.visita { border-top-color: var(--col-visita); color: var(--col-visita); }
+.column-header.proposta { border-top-color: var(--col-proposta); color: var(--col-proposta); }
+.column-header.venda { border-top-color: var(--col-venda); color: var(--col-venda); }
+
+.count {
+    background-color: rgba(255,255,255,0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.column-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Card do Kanban */
+.kanban-card {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-color: #555;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.card-info {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.tag {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.tag-investimento { background-color: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+.tag-moradia { background-color: rgba(33, 150, 243, 0.2); color: #2196F3; }
+
+/* ================= Sidebar Direita ================= */
+.sidebar-right {
+    width: 300px;
+    background-color: var(--bg-card);
+    border-left: 1px solid var(--border-color);
+    position: absolute;
+    right: -300px;
+    top: 0;
+    height: 100%;
+    transition: right 0.3s ease;
+    z-index: 100;
+}
+
+.sidebar-right.open {
+    right: 0;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+}
+
+.panel-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-content {
+    padding: 20px;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.notification-item .time {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #121212;
+}
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

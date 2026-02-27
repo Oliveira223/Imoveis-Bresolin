@@ -20,16 +20,24 @@ $(document).ready(function() {
 
     // Máscara para WhatsApp
     whatsappInput.on('input', function() {
+        // Remove tudo que não for dígito
         let value = this.value.replace(/\D/g, '');
         
-        if (value.length <= 11) {
-            if (value.length <= 2) {
-                value = value.replace(/(\d{0,2})/, '($1');
-            } else if (value.length <= 7) {
-                value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-            } else {
-                value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-            }
+        // Limita a 11 dígitos (DDD + 9 dígitos)
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+
+        // Aplica a formatação
+        if (value.length <= 2) {
+            // (11
+            value = value.replace(/(\d{0,2})/, '($1');
+        } else if (value.length <= 7) {
+            // (11) 91234
+            value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+        } else {
+            // (11) 91234-5678
+            value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
         }
         
         this.value = value;
@@ -161,7 +169,9 @@ $(document).ready(function() {
         const dados = {
             nome: nomeInput.val().trim(),
             email: emailInput.val().trim(),
-            whatsapp: whatsappInput.val().trim()
+            whatsapp: whatsappInput.val().trim(),
+            objetivo: $('input[name="objetivo"]:checked').val(),
+            imovel_interesse_id: $('#imovel_interesse_id').val()
         };
         
         try {

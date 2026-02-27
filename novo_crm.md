@@ -117,9 +117,6 @@ anotações
 
 - Marca da agua nas fotos
 
-### Correções:
-Seta na foto principal para ir para secundárias
-- Ordenar ordem das fotos
 
 - imobiliaria@imoveisbresolin.com.br
 
