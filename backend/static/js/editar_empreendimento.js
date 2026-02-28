@@ -14,6 +14,47 @@ document.addEventListener("DOMContentLoaded", () => {
   const hiddenImagemPrincipal = document.getElementById("input-imagem-principal");
 
   // ===========================
+  // Configuração de Reordenação (SortableJS)
+  // ===========================
+
+  const initSortable = (containerId) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    Sortable.create(el, {
+      animation: 200,
+      ghostClass: 'sortable-ghost',
+      handle: '.imagem-container', 
+      onEnd: async () => {
+        const ids = Array.from(el.querySelectorAll('.imagem-container .imagem-checkbox'))
+                         .map(checkbox => checkbox.value)
+                         .filter(id => id); 
+
+        if (ids.length > 0) {
+          try {
+            // Tenta enviar a nova ordem para o backend (se a rota existir)
+            const response = await fetch(`/api/empreendimentos/${id}/imagens/reordenar`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ordem_ids: ids })
+            });
+            if (!response.ok) {
+                // Se der 404 ou erro, apenas loga, pois pode não estar implementado no back ainda
+                console.warn('Rota de reordenação não encontrada ou erro ao salvar ordem.');
+            } else {
+                console.log(`Ordem da galeria ${containerId} atualizada!`);
+            }
+          } catch (err) {
+            console.error('Erro ao tentar reordenar:', err);
+          }
+        }
+      }
+    });
+  };
+
+  initSortable('lista-secundarias-emp-edit');
+
+  // ===========================
   // Upload da imagem principal
   // ===========================
 
