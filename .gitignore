@@ -7,6 +7,7 @@
 # Arquivos com informações sensíveis
 dados.txt
 notas.txt
+notas.md
 config.txt
 
 # Logs
