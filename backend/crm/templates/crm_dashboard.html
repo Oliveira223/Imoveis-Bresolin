@@ -10,86 +10,140 @@
 </head>
 <body>
     
-    <!-- Sidebar Esquerda -->
-    <aside class="sidebar-left">
-        <div class="brand">
-            <img src="/static/img/icons/white_minimal_home_icon2.svg" alt="Bresolin Logo">
-            <span>CRM Bresolin</span>
-        </div>
-        
-        <nav class="menu">
-            <button class="menu-item active" data-view="kanban">
-                <i class="fas fa-columns"></i> Funil de Vendas
-            </button>
-            <button class="menu-item" data-view="clientes">
-                <i class="fas fa-users"></i> Clientes
-            </button>
-            <button class="menu-item" data-view="imoveis">
-                <i class="fas fa-home"></i> Imóveis
-            </button>
-            <button class="menu-item" data-view="tarefas">
-                <i class="fas fa-check-square"></i> Tarefas
-            </button>
-        </nav>
+    <!-- Topbar Mobile-First -->
+    <header class="topbar">
+        <!-- Esquerda: Menu Hambúrguer -->
+        <button class="icon-btn" id="btn-menu-lateral">
+            <i class="fas fa-bars"></i>
+        </button>
 
-        <div class="user-profile">
-            <div class="avatar">
-                <i class="fas fa-user"></i>
+        <!-- Centro: Título Dinâmico (JS) ou Vazio -->
+        <div class="central-nav">
+            <!-- Navegação removida, será apenas título ou vazio -->
+        </div>
+
+        <!-- Direita: Agenda e Perfil -->
+        <div class="right-actions">
+            <button class="icon-btn" id="btn-agenda" title="Minha Agenda">
+                <i class="far fa-calendar-alt"></i>
+            </button>
+            <div class="user-avatar" title="{{ session.get('corretor_nome') }}">
+                {{ session.get('corretor_nome')[0] }}
             </div>
-            <div class="info">
-                <strong>{{ session.get('corretor_nome', 'Corretor') }}</strong>
-                <a href="{{ url_for('crm.logout') }}" class="logout-link">Sair</a>
+        </div>
+    </header>
+
+    <!-- Sidebar Lateral (Off-canvas) -->
+    <aside class="sidebar-offcanvas" id="sidebar-lateral">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button class="close-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sidebar-content">
+            <a href="#" class="sidebar-link"><i class="fas fa-home"></i> Imóveis no Site</a>
+            <a href="#" class="sidebar-link"><i class="fas fa-cog"></i> Configurações</a>
+            <div class="divider"></div>
+            <a href="{{ url_for('crm.logout') }}" class="sidebar-link logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        </div>
+    </aside>
+
+    <!-- Sidebar Agenda (Off-canvas Direita) -->
+    <aside class="sidebar-agenda" id="sidebar-agenda">
+        <div class="sidebar-header">
+            <h3>Minha Agenda</h3>
+            <button class="close-btn" id="close-agenda"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="agenda-content">
+            <div class="empty-state">
+                <i class="far fa-calendar-check"></i>
+                <p>Nenhuma tarefa para hoje.</p>
+                <button class="btn-small">Adicionar Tarefa</button>
             </div>
         </div>
     </aside>
 
     <!-- Conteúdo Principal -->
     <main class="main-content">
-        <header class="top-bar">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Pesquisar cliente, telefone...">
-            </div>
-            <div class="actions">
-                <button class="btn-primary" id="btn-novo-cliente">
-                    <i class="fas fa-plus"></i> Novo Cliente
+        <!-- Dashboard Inicial Minimalista -->
+        <section id="view-home" class="view-section minimal-home active">
+            <div class="home-icons">
+                <button class="home-btn" onclick="SidebarModule.navigateTo('novos')">
+                    <div class="icon-wrapper"><i class="fas fa-user-plus"></i></div>
+                    <span>Novos Leads</span>
                 </button>
-                <button class="btn-icon" id="btn-toggle-notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
+                <button class="home-btn" onclick="SidebarModule.navigateTo('kanban')">
+                    <div class="icon-wrapper"><i class="fas fa-columns"></i></div>
+                    <span>Funil</span>
+                </button>
+                <button class="home-btn" onclick="SidebarModule.navigateTo('dados')">
+                    <div class="icon-wrapper"><i class="fas fa-chart-pie"></i></div>
+                    <span>Dados</span>
                 </button>
             </div>
-        </header>
+        </section>
+
+        <!-- View: Novos Leads (Sem Dono) -->
+        <section id="view-novos" class="view-section">
+            <div class="kanban-header">
+                <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <h2>Novos Leads Disponíveis</h2>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-novos-leads" placeholder="Buscar por nome ou telefone..." onkeyup="NovosLeadsModule.filtrarLeads()">
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="custom-table" id="tabela-novos-leads">
+                    <thead>
+                        <tr>
+                            <th width="50"></th> <!-- Avatar/Icon -->
+                            <th>Nome do Cliente</th>
+                            <th>Contato</th>
+                            <th>Interesse</th>
+                            <th>Data</th>
+                            <th width="100">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-novos-leads-body">
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Modal/Painel de Detalhes (Overlay) -->
+            <div id="lead-details-panel" class="details-panel">
+                <div class="panel-header">
+                    <h3>Detalhes do Lead</h3>
+                    <button class="close-panel-btn" onclick="NovosLeadsModule.fecharDetalhes()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-content" id="lead-details-content">
+                    <!-- Conteúdo dinâmico -->
+                </div>
+            </div>
+        </section>
 
         <!-- View: Kanban / Funil -->
-        <section id="view-kanban" class="view-section active">
+        <section id="view-kanban" class="view-section">
             <div class="kanban-header">
+                <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <h2>Funil de Vendas</h2>
-                <div class="kanban-filters">
-                    <select>
-                        <option>Todos os Clientes</option>
-                        <option>Meus Clientes</option>
-                    </select>
-                </div>
+                <button class="btn-new-lead"><i class="fas fa-plus"></i> Novo</button>
             </div>
 
             <div class="kanban-board">
                 <!-- Coluna 1: LEAD -->
                 <div class="kanban-column" data-status="1">
                     <div class="column-header lead">
-                        <h3>LEAD</h3>
-                        <span class="count">0</span>
+                        <h3>LEAD <span class="count">0</span></h3>
                     </div>
-                    <div class="column-body" id="col-lead">
-                        <!-- Cards serão inseridos aqui via JS -->
-                    </div>
+                    <div class="column-body" id="col-lead"></div>
                 </div>
 
                 <!-- Coluna 2: CONTATO -->
                 <div class="kanban-column" data-status="2">
                     <div class="column-header contato">
-                        <h3>EM CONTATO</h3>
-                        <span class="count">0</span>
+                        <h3>CONTATO <span class="count">0</span></h3>
                     </div>
                     <div class="column-body" id="col-contato"></div>
                 </div>
@@ -97,8 +151,7 @@
                 <!-- Coluna 3: VISITA -->
                 <div class="kanban-column" data-status="3">
                     <div class="column-header visita">
-                        <h3>VISITA</h3>
-                        <span class="count">0</span>
+                        <h3>VISITA <span class="count">0</span></h3>
                     </div>
                     <div class="column-body" id="col-visita"></div>
                 </div>
@@ -106,8 +159,7 @@
                 <!-- Coluna 4: PROPOSTA -->
                 <div class="kanban-column" data-status="4">
                     <div class="column-header proposta">
-                        <h3>PROPOSTA</h3>
-                        <span class="count">0</span>
+                        <h3>PROPOSTA <span class="count">0</span></h3>
                     </div>
                     <div class="column-body" id="col-proposta"></div>
                 </div>
@@ -115,38 +167,35 @@
                 <!-- Coluna 5: VENDA -->
                 <div class="kanban-column" data-status="5">
                     <div class="column-header venda">
-                        <h3>VENDA</h3>
-                        <span class="count">0</span>
+                        <h3>VENDA <span class="count">0</span></h3>
                     </div>
                     <div class="column-body" id="col-venda"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Outras Views (Placeholder) -->
+        <!-- Outras Views -->
         <section id="view-clientes" class="view-section" style="display:none;">
-            <h2>Lista de Clientes</h2>
-            <p>Em breve...</p>
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h2>Meus Clientes</h2>
+                <p>Lista completa de clientes e filtros avançados em breve.</p>
+            </div>
+        </section>
+
+        <section id="view-dados" class="view-section" style="display:none;">
+            <div class="kanban-header">
+                <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <h2>Estatísticas</h2>
+            </div>
+            <div class="empty-state">
+                <i class="fas fa-chart-pie"></i>
+                <p>Visão geral de desempenho em breve.</p>
+            </div>
         </section>
     </main>
 
-    <!-- Sidebar Direita (Notificações) -->
-    <aside class="sidebar-right" id="notifications-panel">
-        <div class="panel-header">
-            <h3>Notificações</h3>
-            <button class="close-panel"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="panel-content">
-            <div class="notification-item">
-                <span class="time">10:30</span>
-                <p>Novo lead cadastrado: <strong>João Silva</strong> interessado no Imóvel #45</p>
-            </div>
-            <div class="notification-item">
-                <span class="time">Ontem</span>
-                <p>Tarefa pendente: Ligar para Maria</p>
-            </div>
-        </div>
-    </aside>
+    <div class="overlay" id="overlay"></div>
 
     <script src="{{ url_for('crm.static', filename='js/dashboard.js') }}"></script>
 </body>

@@ -38,3 +38,15 @@ CREATE TABLE IF NOT EXISTS tarefas (
 CREATE INDEX IF NOT EXISTS idx_clientes_corretor ON clientes(corretor_id);
 CREATE INDEX IF NOT EXISTS idx_clientes_status ON clientes(status);
 CREATE INDEX IF NOT EXISTS idx_tarefas_corretor ON tarefas(corretor_id);
+
+-- Tabela de Comentários de Clientes
+CREATE TABLE IF NOT EXISTS comentarios_clientes (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
+    corretor_id INTEGER REFERENCES corretores(id) ON DELETE SET NULL,
+    texto TEXT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices
+CREATE INDEX IF NOT EXISTS idx_comentarios_cliente ON comentarios_clientes(cliente_id);
