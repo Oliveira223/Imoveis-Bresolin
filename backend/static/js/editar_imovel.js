@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!el) return;
 
     Sortable.create(el, {
-      animation: 150,
+      animation: 200,
       ghostClass: 'sortable-ghost',
       handle: '.imagem-container', // Permite arrastar clicando em qualquer lugar do container
       onEnd: async () => {

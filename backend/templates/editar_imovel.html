@@ -21,188 +21,234 @@
     </header>
 
     <main class="conteudo-imovel">
-        <form id="form-editar-imovel">
+        <form id="form-editar-imovel" class="form-grid">
             <input type="hidden" name="id" value="{{ imovel.id }}">
 
-            <!-- =========================
-            Dados básicos
-            ========================== -->
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" value="{{ imovel.titulo }}" required>
+            <!-- Coluna Esquerda -->
+            <div class="col-main">
+                <!-- Card: Dados Básicos -->
+                <div class="card-section">
+                    <h2>Dados Básicos</h2>
+                    <div class="form-group">
+                        <label for="titulo">Título</label>
+                        <input type="text" id="titulo" name="titulo" value="{{ imovel.titulo }}" required class="input-full">
+                    </div>
 
-            <label for="descricao">Descrição:</label>
-            <textarea id="descricao" name="descricao">{{ imovel.descricao }}</textarea>
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <textarea id="descricao" name="descricao" class="input-full">{{ imovel.descricao }}</textarea>
+                    </div>
 
-            <label for="preco">Preço:</label>
-            <input type="number" id="preco" name="preco" step="0.01" value="{{ imovel.preco or '' }}">
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="tipo">Tipo</label>
+                            <select id="tipo" name="tipo" required>
+                                <option value="">Selecione</option>
+                                {% for tipo in ['Casa', 'Apartamento', 'Terreno', 'Cobertura'] %}
+                                <option value="{{ tipo }}" {% if imovel.tipo==tipo %}selected{% endif %}>{{ tipo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pretensao">Finalidade</label>
+                            <select id="pretensao" name="pretensao">
+                                <option value="">Selecione</option>
+                                {% for valor in ['Venda', 'Aluguel'] %}
+                                <option value="{{ valor }}" {% if imovel.pretensao==valor %}selected{% endif %}>{{ valor }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
 
-            <label for="area">Área (m²):</label>
-            <input type="number" id="area" name="area" value="{{ imovel.area or '' }}">
-
-            <!-- =========================
-            Imagem principal
-            ========================== -->
-            <label for="file-imagem-principal">Imagem principal (upload):</label>
-            <input type="file" id="file-imagem-principal" accept="image/*">
-            <input type="hidden" name="imagem" id="input-imagem-principal" value="{{ imovel.imagem or '' }}">
-
-            {% if imovel.imagem %}
-            <label>Prévia da imagem principal:</label>
-            <img id="preview-imagem-principal" src="{{ imovel.imagem }}"
-                style="max-height: 200px; margin:1rem 0; display: block;">
-            {% else %}
-            <label>Prévia da imagem principal:</label>
-            <img id="preview-imagem-principal" style="max-height: 200px; margin:1rem 0; display: none;">
-            {% endif %}
-
-
-            <!-- =========================
-             Imagens secundárias
-            ========================== -->
-            <label>Imagens secundárias (Arraste para reordenar):</label>
-            <input type="file" id="file-secundarias" multiple accept="image/*">
-            <div id="galeria-secundarias" class="galeria-preview sortable-container">
-                {% for img in imagens if img.tipo == 'secundaria' %}
-                <div class="imagem-container" data-id="{{ img.id }}">
-                    <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
-                    <img src="{{ img.url }}" class="thumb-secundaria">
-                    <div class="drag-handle">::</div>
+                    <div class="row-2">
+                         <div class="form-group">
+                            <label for="preco">Preço (R$)</label>
+                            <input type="number" id="preco" name="preco" step="0.01" value="{{ imovel.preco or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Área (m²)</label>
+                            <input type="number" id="area" name="area" value="{{ imovel.area or '' }}">
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
-            </div>
-            <button type="button" id="btn-excluir-secundarias">Excluir imagens selecionadas</button>
 
-            <!-- =========================
-            Plantas
-            ========================== -->
-            <label>Plantas (Arraste para reordenar):</label>
-            <input type="file" id="file-plantas" multiple accept="image/*">
-            <div id="galeria-plantas" class="galeria-preview sortable-container">
-                {% for img in imagens if img.tipo == 'planta' %}
-                <div class="imagem-container" data-id="{{ img.id }}">
-                    <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
-                    <img src="{{ img.url }}" class="thumb-secundaria">
-                    <div class="drag-handle">::</div>
+                <!-- Card: Mídia -->
+                <div class="card-section">
+                    <h2>Mídia</h2>
+                    
+                    <div class="form-group">
+                        <label>Imagem Principal</label>
+                        <div class="image-upload-area">
+                            {% if imovel.imagem %}
+                            <img id="preview-imagem-principal" src="{{ imovel.imagem }}" class="preview-main">
+                            {% else %}
+                            <img id="preview-imagem-principal" class="preview-main" style="display: none;">
+                            <div class="placeholder-text">Nenhuma imagem selecionada</div>
+                            {% endif %}
+                            <input type="file" id="file-imagem-principal" accept="image/*" class="file-input">
+                            <input type="hidden" name="imagem" id="input-imagem-principal" value="{{ imovel.imagem or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Imagens Secundárias <small>(Arraste para reordenar)</small></label>
+                        <input type="file" id="file-secundarias" multiple accept="image/*" class="file-input-secondary">
+                        <div id="galeria-secundarias" class="galeria-preview sortable-container">
+                            {% for img in imagens if img.tipo == 'secundaria' %}
+                            <div class="imagem-container" data-id="{{ img.id }}">
+                                <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
+                                <img src="{{ img.url }}" class="thumb-secundaria">
+                                <div class="drag-handle">::</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" id="btn-excluir-secundarias" class="btn-small btn-danger">Excluir selecionadas</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Plantas <small>(Arraste para reordenar)</small></label>
+                        <input type="file" id="file-plantas" multiple accept="image/*" class="file-input-secondary">
+                        <div id="galeria-plantas" class="galeria-preview sortable-container">
+                            {% for img in imagens if img.tipo == 'planta' %}
+                            <div class="imagem-container" data-id="{{ img.id }}">
+                                <input type="checkbox" class="imagem-checkbox" value="{{ img.id }}">
+                                <img src="{{ img.url }}" class="thumb-secundaria">
+                                <div class="drag-handle">::</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" id="btn-excluir-plantas" class="btn-small btn-danger">Excluir selecionadas</button>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
 
-            <button type="button" id="btn-excluir-plantas">Excluir plantas selecionadas</button>
+            <!-- Coluna Direita -->
+            <div class="col-sidebar">
+                
+                <!-- Card: Ações -->
+                <div class="card-section sticky-card">
+                    <div class="form-group checkbox-wrapper">
+                        <label class="checkbox-custom">
+                            <input type="checkbox" name="ativo" {% if imovel.ativo %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Imóvel Ativo no Site
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-save">Salvar Alterações</button>
+                </div>
 
-            <!-- =========================
-            Seleções
-            ========================== -->
-            <label for="tipo">Tipo:</label>
-            <select id="tipo" name="tipo" required>
-                <option value="">Selecione</option>
-                {% for tipo in ['Casa', 'Apartamento', 'Terreno', 'Cobertura'] %}
-                <option value="{{ tipo }}" {% if imovel.tipo==tipo %}selected{% endif %}>{{ tipo }}</option>
-                {% endfor %}
-            </select>
+                <!-- Card: Características -->
+                <div class="card-section">
+                    <h2>Características</h2>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label for="quartos">Quartos</label>
+                            <input type="number" id="quartos" name="quartos" value="{{ imovel.quartos or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="suites">Suítes</label>
+                            <input type="number" id="suites" name="suites" value="{{ imovel.suites or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="banheiros">Banheiros</label>
+                            <input type="number" id="banheiros" name="banheiros" value="{{ imovel.banheiros or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="banheiros_com_chuveiro">Banh. Chuv.</label>
+                            <input type="number" id="banheiros_com_chuveiro" name="banheiros_com_chuveiro" value="{{ imovel.banheiros_com_chuveiro or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="vagas">Vagas</label>
+                            <input type="number" id="vagas" name="vagas" value="{{ imovel.vagas or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="andar">Andar</label>
+                            <input type="number" id="andar" name="andar" value="{{ imovel.andar or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="features-checkboxes">
+                        <label class="checkbox-custom">
+                            <input type="checkbox" name="piscina" id="piscina" {% if imovel.piscina %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Piscina
+                        </label>
+                        <label class="checkbox-custom">
+                            <input type="checkbox" name="churrasqueira" id="churrasqueira" {% if imovel.churrasqueira %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Churrasqueira
+                        </label>
+                    </div>
+                </div>
 
-            <label for="pretensao">Finalidade:</label>
-            <select id="pretensao" name="pretensao">
-                <option value="">Selecione</option>
-                {% for valor in ['Venda', 'Aluguel'] %}
-                <option value="{{ valor }}" {% if imovel.pretensao==valor %}selected{% endif %}>{{ valor }}</option>
-                {% endfor %}
-            </select>
+                <!-- Card: Localização -->
+                <div class="card-section">
+                    <h2>Localização</h2>
+                    <div class="form-group">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" id="endereco" name="endereco" value="{{ imovel.endereco or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" id="bairro" name="bairro" value="{{ imovel.bairro or '' }}">
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" id="cidade" name="cidade" value="{{ imovel.cidade or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="uf">UF</label>
+                            <input type="text" id="uf" name="uf" maxlength="2" value="{{ imovel.uf or '' }}" class="input-short">
+                        </div>
+                    </div>
+                </div>
 
-            <!-- =========================
-            Campos numéricos
-            ========================== -->
-            <label for="quartos">Quartos:</label>
-            <input type="number" id="quartos" name="quartos" value="{{ imovel.quartos or '' }}">
+                <!-- Card: Custos -->
+                <div class="card-section">
+                    <h2>Custos Adicionais</h2>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="valor_condominio">Condomínio</label>
+                            <input type="number" id="valor_condominio" name="valor_condominio" step="0.01" value="{{ imovel.valor_condominio or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="iptu">IPTU</label>
+                            <input type="number" id="iptu" name="iptu" step="0.01" value="{{ imovel.iptu or '' }}">
+                        </div>
+                    </div>
+                </div>
 
-            <label for="suites">Suítes:</label>
-            <input type="number" id="suites" name="suites" value="{{ imovel.suites or '' }}">
+                <!-- Card: Extras -->
+                <div class="card-section">
+                    <h2>Informações Adicionais</h2>
+                    <div class="form-group">
+                        <label for="estagio">Estágio da obra</label>
+                        <select id="estagio" name="estagio">
+                            <option value="">Selecione</option>
+                            <option value="PRONTA" {% if imovel.estagio=='PRONTA' %}selected{% endif %}>PRONTA</option>
+                            <option value="EM CONSTRUÇÃO" {% if imovel.estagio=='EM CONSTRUÇÃO' %}selected{% endif %}>EM CONSTRUÇÃO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="entrega">Previsão de entrega</label>
+                        <input type="text" id="entrega" name="entrega" value="{{ imovel.entrega or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="link">Link externo</label>
+                        <input type="text" id="link" name="link" value="{{ imovel.link or '' }}" placeholder="Ex: Google Maps">
+                    </div>
+                    <div class="form-group">
+                        <label for="maps_iframe">Maps Iframe</label>
+                        <input type="text" id="maps_iframe" name="maps_iframe" value="{{ imovel.maps_iframe or '' }}">
+                    </div>
+                     <div class="form-group">
+                        <label for="campo_extra2">Campo Extra 2</label>
+                        <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
+                    </div>
+                </div>
 
-            <label for="banheiros">Banheiros:</label>
-            <input type="number" id="banheiros" name="banheiros" value="{{ imovel.banheiros or '' }}">
-
-            <label for="banheiros_com_chuveiro">Banheiros com chuveiro:</label>
-            <input type="number" id="banheiros_com_chuveiro" name="banheiros_com_chuveiro"
-                value="{{ imovel.banheiros_com_chuveiro or '' }}">
-
-            <label for="vagas">Vagas de garagem:</label>
-            <input type="number" id="vagas" name="vagas" value="{{ imovel.vagas or '' }}">
-
-            <label for="andar">Andar:</label>
-            <input type="number" id="andar" name="andar" value="{{ imovel.andar or '' }}">
-
-
-            <label for="valor_condominio">Condomínio:</label>
-            <input type="number" id="valor_condominio" name="valor_condominio" step="0.01"
-                value="{{ imovel.valor_condominio or '' }}">
-
-            <label for="iptu">IPTU:</label>
-            <input type="number" id="iptu" name="iptu" step="0.01" value="{{ imovel.iptu or '' }}">
-
-           
-            <!-- =========================
-            Endereço
-            ========================== -->
-            <label for="endereco">Endereço:</label>
-            <input type="text" id="endereco" name="endereco" value="{{ imovel.endereco or '' }}">
-
-            <label for="bairro">Bairro:</label>
-            <input type="text" id="bairro" name="bairro" value="{{ imovel.bairro or '' }}">
-
-            <label for="cidade">Cidade:</label>
-            <input type="text" id="cidade" name="cidade" value="{{ imovel.cidade or '' }}">
-
-            <label for="uf">UF:</label>
-            <input type="text" id="uf" name="uf" maxlength="2" value="{{ imovel.uf or '' }}">
-
-
-
-            <!-- =========================
-            Extras e links
-            ========================== -->
-
-
-
-            <label for="estagio">Estágio da obra:</label>
-            <select id="estagio" name="estagio">
-                <option value="">Selecione</option>
-                <option value="PRONTA" {% if imovel.estagio=='PRONTA' %}selected{% endif %}>PRONTA</option>
-                <option value="EM CONSTRUÇÃO" {% if imovel.estagio=='EM CONSTRUÇÃO' %}selected{% endif %}>EM CONSTRUÇÃO
-                </option>
-            </select>
-
-            <label for="entrega">Previsão de entrega:</label>
-            <input type="text" id="entrega" name="entrega" value="{{ imovel.entrega or '' }}">
-
-
-            <label for="link">Link externo (ex: Google Maps):</label>
-            <input type="text" id="link" name="link" value="{{ imovel.link or '' }}">
-
-            <label for="maps_iframe">Maps Iframe:</label>
-            <input type="text" id="maps_iframe" name="maps_iframe" value="{{ imovel.maps_iframe or '' }}">
-
-            <label for="campo_extra2">Campo Extra 2:</label>
-            <input type="text" id="campo_extra2" name="campo_extra2" value="{{ imovel.campo_extra2 or '' }}">
-
-             <label class="checkbox-custom">
-                <input type="checkbox" name="piscina" id="piscina" {% if imovel.piscina %}checked{% endif %}>
-                <span class="checkmark"></span>
-                Piscina
-            </label>
-
-            <label class="checkbox-custom">
-                <input type="checkbox" name="churrasqueira" id="churrasqueira" {% if imovel.churrasqueira %}checked{%
-                    endif %}>
-                <span class="checkmark"></span>
-                Churrasqueira
-            </label>
-
-            <!-- =========================
-            Ativo
-             ========================== -->
-            <label><input type="checkbox" name="ativo" {% if imovel.ativo %}checked{% endif %}> Imóvel ativo</label>
-
-            <br><br>
-            <button type="submit">Salvar alterações</button>
+            </div>
         </form>
     </main>
 
