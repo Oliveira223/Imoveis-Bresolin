@@ -409,6 +409,7 @@ def api_tarefas():
                     SELECT 
                         t.id, 
                         t.descricao, 
+                        to_char(t.data_limite, 'YYYY-MM-DD HH24:MI:SS') as data_limite,
                         to_char(t.data_limite, 'DD/MM/YYYY HH24:MI') as data_formatada,
                         t.concluida,
                         t.tipo,

@@ -14,8 +14,8 @@
 
 /* === ACTIONS === */
 .btn-primary-action {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #45a049 100%);
-    color: white;
+    background: var(--primary-color);
+    color: #1a1a1a;
     border: none;
     padding: 0 20px;
     height: 40px;
@@ -25,14 +25,12 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    transition: all 0.2s ease;
 }
 
 .btn-primary-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
-    filter: brightness(1.1);
+    background: #e6c200; /* Um tom levemente mais escuro ou claro da primária */
+    transform: translateY(-1px);
 }
 
 .btn-primary-action i {
