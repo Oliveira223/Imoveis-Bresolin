@@ -203,6 +203,77 @@
             </div>
         </section>
 
+        <!-- View: Agenda Completa -->
+        <section id="view-agenda" class="view-section" style="display:none;">
+            <div class="kanban-header">
+                <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <h2>Minha Agenda</h2>
+                <div class="header-actions">
+                    <button class="btn-primary-action" onclick="AgendaModule.abrirModalNovaTarefa()">
+                        <i class="fas fa-plus"></i> Nova Tarefa
+                    </button>
+                </div>
+            </div>
+
+            <div class="agenda-layout">
+                <!-- Coluna Esquerda: Calendário Mensal -->
+                <div class="agenda-sidebar-panel">
+                    <div class="calendar-wrapper">
+                        <div class="calendar-header">
+                            <button id="prev-month" onclick="AgendaModule.mudarMes(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <h3 id="current-month-year">--</h3>
+                            <button id="next-month" onclick="AgendaModule.mudarMes(1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                        </div>
+                        <div class="calendar-grid" id="mini-calendar">
+                            <!-- Dias da semana e dias do mês gerados via JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="agenda-summary">
+                        <div id="today-events-list" class="mini-events-list">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Visão Semanal/Diária -->
+                <div class="agenda-main-panel">
+                    <div class="agenda-view-controls">
+                        <div class="view-toggles">
+                            <button class="view-btn active" onclick="AgendaModule.mudarVisualizacao('week')" data-view="week">Semana</button>
+                            <button class="view-btn" onclick="AgendaModule.mudarVisualizacao('day')" data-view="day">Dia</button>
+                        </div>
+                        <span id="current-week-range">--</span>
+                    </div>
+                    
+                    <div class="agenda-timeline-container">
+                        <div class="time-column">
+                            <!-- Horários 08:00 - 18:00 -->
+                            <div class="time-slot">08:00</div>
+                            <div class="time-slot">09:00</div>
+                            <div class="time-slot">10:00</div>
+                            <div class="time-slot">11:00</div>
+                            <div class="time-slot">12:00</div>
+                            <div class="time-slot">13:00</div>
+                            <div class="time-slot">14:00</div>
+                            <div class="time-slot">15:00</div>
+                            <div class="time-slot">16:00</div>
+                            <div class="time-slot">17:00</div>
+                            <div class="time-slot">18:00</div>
+                            <div class="time-slot">19:00</div>
+                            <div class="time-slot">20:00</div>
+                        </div>
+                        <div class="events-grid" id="agenda-grid">
+                            <!-- Colunas dos dias da semana -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Outras Views -->
         <section id="view-clientes" class="view-section" style="display:none;">
             <div class="empty-state">
@@ -301,6 +372,89 @@
         </div>
     </div>
 
+    <!-- Modal Nova Tarefa Manual -->
+    <div id="modal-nova-tarefa" class="custom-modal-overlay">
+        <div class="custom-modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Nova Tarefa</h3>
+                <button class="close-btn-modal" onclick="document.getElementById('modal-nova-tarefa').classList.remove('active')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-nova-tarefa" onsubmit="event.preventDefault(); AgendaModule.salvarNovaTarefa()">
+                    <div class="form-group">
+                        <label>Descrição *</label>
+                        <input type="text" id="nova-tarefa-descricao" name="descricao" required placeholder="Ex: Reunião com cliente..." autofocus>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Data e Hora *</label>
+                        <input type="datetime-local" id="nova-tarefa-data" name="data_limite" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cliente (Opcional)</label>
+                        <select id="nova-tarefa-cliente">
+                            <option value="">Nenhum / Tarefa Avulsa</option>
+                            <!-- Preenchido via JS -->
+                        </select>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('modal-nova-tarefa').classList.remove('active')">Cancelar</button>
+                        <button type="submit" class="btn-confirm">Salvar Tarefa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes da Tarefa -->
+    <div id="modal-detalhes-tarefa" class="custom-modal-overlay">
+        <div class="custom-modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Detalhes da Tarefa</h3>
+                <button class="close-btn-modal" onclick="document.getElementById('modal-detalhes-tarefa').classList.remove('active')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="text-align: left;">
+                <div class="task-details-row" style="margin-bottom: 20px;">
+                    <label style="display:block; color:var(--text-secondary); font-size:0.85rem; margin-bottom:5px;">Descrição</label>
+                    <div id="detalhe-tarefa-descricao" style="font-size:1.1rem; color:var(--text-primary); font-weight:500;"></div>
+                </div>
+
+                <div class="task-details-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <label style="display:block; color:var(--text-secondary); font-size:0.85rem; margin-bottom:5px;">Data e Hora</label>
+                        <div id="detalhe-tarefa-data" style="color:var(--text-primary); display:flex; align-items:center; gap:8px;"></div>
+                    </div>
+                    <div>
+                        <label style="display:block; color:var(--text-secondary); font-size:0.85rem; margin-bottom:5px;">Cliente</label>
+                        <div id="detalhe-tarefa-cliente" style="color:var(--text-primary);"></div>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button class="btn-cancel" onclick="document.getElementById('modal-detalhes-tarefa').classList.remove('active')">Fechar</button>
+                    <button id="btn-concluir-tarefa" class="btn-confirm" style="background: var(--success-color, #4CAF50); border-color: var(--success-color, #4CAF50); color: white;">
+                        <i class="fas fa-check"></i> Concluir Tarefa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modules -->
+    <script src="{{ url_for('crm.static', filename='js/modules/utils.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/modal.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/clock.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/sidebar.js') }}"></script>
+    
+    <!-- Business Logic -->
+    <script src="{{ url_for('crm.static', filename='js/modules/listas.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/leads.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/agenda.js') }}"></script>
+    <script src="{{ url_for('crm.static', filename='js/modules/kanban.js') }}"></script>
+
+    <!-- Main Controller -->
     <script src="{{ url_for('crm.static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

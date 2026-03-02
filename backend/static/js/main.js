@@ -38,28 +38,28 @@ window.addEventListener("DOMContentLoaded", () => {
   }, totalTime + 200);
 
   // ================================
-  // Carrega imóveis em destaque na homepage
+  // Carrega imóveis em destaque na homepage (OTIMIZADO)
   // ================================
-  fetch('/api/imoveis')
-    .then(res => res.json())
-    .then(imoveis => {
-      const listaDestaques = document.getElementById('lista-destaques');
-      listaDestaques.innerHTML = '';
-
-      // Filtra e exibe até 6 imóveis marcados como destaque e ativos
-      const destaques = imoveis
-        .filter(imovel => !!imovel.ativo && !!imovel.destaque)
-        .sort((a, b) => Number(b.id) - Number(a.id))
-        .slice(0, 6);
-
-      destaques.forEach(imovel => {
-        fetch(`/api/card/${imovel.id}`)
-          .then(res => res.text())
-          .then(html => {
-            listaDestaques.innerHTML += html;
-          });
+  const listaDestaques = document.getElementById('lista-destaques');
+  if (listaDestaques) {
+    // Adiciona loading state se necessário
+    listaDestaques.innerHTML = '<div class="loading-placeholder">Carregando destaques...</div>';
+    
+    fetch('/api/imoveis/destaques')
+      .then(res => res.text())
+      .then(html => {
+        if (!html.trim()) {
+          listaDestaques.innerHTML = '<p class="sem-destaques">Nenhum imóvel em destaque no momento.</p>';
+          return;
+        }
+        // Injeta o HTML renderizado pelo servidor de uma vez
+        listaDestaques.innerHTML = html;
+      })
+      .catch(err => {
+        console.error("Erro ao carregar destaques:", err);
+        listaDestaques.innerHTML = '<p class="erro-destaques">Erro ao carregar destaques.</p>';
       });
-    });
+  }
 
   // ================================
   // Sugestões de pesquisa dinâmica

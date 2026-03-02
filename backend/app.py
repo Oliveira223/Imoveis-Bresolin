@@ -764,6 +764,35 @@ def pagina_pesquisa():
 # API - CRUD de Imóveis
 # ==============================
 
+@app.route('/api/imoveis/destaques')
+def api_imoveis_destaques():
+    """
+    Retorna o HTML dos 6 últimos imóveis em destaque ativos.
+    Otimização: Substitui o fetch de todos os imóveis + filtro no cliente.
+    """
+    try:
+        with engine.connect() as con:
+            # Busca apenas os 6 destaques ativos mais recentes
+            query = text("""
+                SELECT * FROM imoveis 
+                WHERE ativo = TRUE AND destaque = TRUE 
+                ORDER BY id DESC 
+                LIMIT 6
+            """)
+            result = con.execute(query)
+            imoveis = [dict(row._mapping) for row in result]
+        
+        # Renderiza os cards concatenados no servidor
+        html_content = ""
+        for imovel in imoveis:
+            html_content += render_template('partials/card_imovel.html', imovel=imovel)
+            
+        return html_content
+    except Exception as e:
+        print(f"[ERRO] Falha ao carregar destaques: {e}")
+        return "", 500
+
+
 # Lista ou cadastra imóvel
 @app.route('/api/imoveis', methods=['GET', 'POST'])
 def api_imoveis():
