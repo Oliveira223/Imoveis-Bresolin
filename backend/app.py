@@ -1648,44 +1648,53 @@ def api_marcar_atendido(interesse_id):
         return jsonify({'erro': 'Erro interno do servidor'}), 500
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # Se a requisição espera JSON (API), retorna erro JSON
+    if request.path.startswith('/api/'):
+        return jsonify(error='Endpoint não encontrado'), 404
+    # Caso contrário, renderiza o template HTML de 404
+    return render_template('404.html'), 404
+
+
 # ==============================
 # CONEXÃO COM O POSTGRES (Render)
 # ==============================
 def get_connection():
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    # Usa a pool do SQLAlchemy para obter uma conexão raw DBAPI
+    # Isso evita criar múltiplas conexões psycopg2 soltas que estouram o limite
+    connection = engine.raw_connection()
+    return connection
 
 # ==============================
 # CRIA TABELA DE ACESSOS (se não existir)
 # ==============================
 def criar_tabela_acessos():
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS acessos (
-                    id SERIAL PRIMARY KEY,
-                    imovel_id INTEGER,
-                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            conn.commit()
+    # Usa engine.begin() para transação automática e thread-safety
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS acessos (
+                id SERIAL PRIMARY KEY,
+                imovel_id INTEGER,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
 
 # ==============================
 # CRIA TABELA DE INTERESSE (se não existir)
 # ==============================
 def criar_tabela_interesse():
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS interesse (
-                    id SERIAL PRIMARY KEY,
-                    nome VARCHAR(255) NOT NULL,
-                    email VARCHAR(255) NOT NULL,
-                    whatsapp VARCHAR(20) NOT NULL,
-                    atendido BOOLEAN DEFAULT FALSE,
-                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            conn.commit()
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS interesse (
+                id SERIAL PRIMARY KEY,
+                nome VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                whatsapp VARCHAR(20) NOT NULL,
+                atendido BOOLEAN DEFAULT FALSE,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
 
 
 def inicializar_banco(max_tentativas=20, atraso=3):
@@ -1705,13 +1714,14 @@ inicializar_banco()
 
 
 def registrar_acesso(imovel_id=None):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO acessos (imovel_id) VALUES (%s)",
-                (imovel_id,)
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text("INSERT INTO acessos (imovel_id) VALUES (:imovel_id)"),
+                {"imovel_id": imovel_id}
             )
-            conn.commit()
+    except Exception as e:
+        print(f"[ERROR] Falha ao registrar acesso: {e}")
 
 
             
