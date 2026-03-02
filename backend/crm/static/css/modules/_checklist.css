@@ -1,0 +1,137 @@
+/* Melhorias Checklist */
+.checklist-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.checklist-item {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 0;
+    cursor: pointer;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    display: grid;
+    place-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.checklist-item input[type="checkbox"]::before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+    color: #1a1a1a;
+    transform: scale(0);
+    transition: transform 0.2s;
+}
+
+.checklist-item input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checklist-item input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+.checklist-item span {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.checklist-item input[type="checkbox"]:checked + span {
+    color: var(--primary-color);
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+/* Checklist Inline Actions & Dividers */
+.checklist-divider {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 15px 0 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-weight: 600;
+}
+
+.checklist-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.btn-check-action {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-check-success {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.btn-check-success:hover {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.btn-check-fail {
+    background: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.btn-check-fail:hover {
+    background: #F44336;
+    color: #fff;
+}
+
+/* Estado Marcado */
+.checklist-item.completed .btn-check-action {
+    opacity: 0.4;
+    filter: grayscale(0.8);
+}
+
+.checklist-item.completed .btn-check-action:hover {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.1);
+}
+
+.checklist-item.completed .btn-check-success.active {
+    background: #4CAF50;
+    color: #fff;
+    opacity: 1;
+    filter: none;
+}
+
+.checklist-item.completed .btn-check-fail.active {
+    background: #F44336;
+    color: #fff;
+    opacity: 1;
+    filter: none;
+}

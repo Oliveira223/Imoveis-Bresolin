@@ -1,0 +1,115 @@
+/* ================= Kanban ================= */
+.kanban-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.kanban-board {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.kanban-column {
+    min-width: 260px;
+    flex: 1;
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+}
+
+.column-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.column-header.lead { color: var(--col-lead); border-top: 3px solid var(--col-lead); }
+.column-header.contato { color: var(--col-contato); border-top: 3px solid var(--col-contato); }
+.column-header.visita { color: var(--col-visita); border-top: 3px solid var(--col-visita); }
+.column-header.proposta { color: var(--col-proposta); border-top: 3px solid var(--col-proposta); }
+.column-header.venda { color: var(--col-venda); border-top: 3px solid var(--col-venda); }
+
+.column-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Card Kanban */
+.kanban-card {
+    background-color: var(--bg-lighter);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    user-select: none;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.card-info {
+    font-size: 0.85rem;
+}
+
+.card-info i {
+    width: 15px;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.card-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.tag {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tag-investimento { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+.tag-moradia { background: rgba(33, 150, 243, 0.15); color: #2196F3; }

@@ -1,0 +1,16 @@
+:root {
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --bg-lighter: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --primary-color: #d4af37; /* Dourado */
+    --border-color: #333;
+    
+    /* Cores do Kanban */
+    --col-lead: #FF9800;
+    --col-contato: #2196F3;
+    --col-visita: #9C27B0;
+    --col-proposta: #00BCD4;
+    --col-venda: #4CAF50;
+}

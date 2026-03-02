@@ -1,0 +1,236 @@
+/* ================= Topbar ================= */
+.topbar {
+    height: 60px;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 50;
+}
+
+/* Navegação Central */
+.central-nav {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* Ações Direita */
+.right-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: var(--primary-color);
+    color: #1a1a1a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* ================= Sidebar Off-canvas (Esquerda e Direita) ================= */
+.sidebar-offcanvas, .sidebar-agenda {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    background-color: var(--bg-card);
+    z-index: 100;
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-offcanvas {
+    left: 0;
+    transform: translateX(-100%);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-agenda {
+    right: 0;
+    transform: translateX(100%);
+    border-left: 1px solid var(--border-color);
+}
+
+.sidebar-offcanvas.open, .sidebar-agenda.open {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-family: 'Spectral', serif;
+    color: var(--primary-color);
+}
+
+.sidebar-content, .agenda-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: background 0.2s;
+}
+
+.sidebar-link:hover {
+    background-color: var(--bg-lighter);
+}
+
+.sidebar-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-link.logout {
+    color: #ff6b6b;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 15px 0;
+}
+
+/* Overlay Escuro */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(2px);
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ================= Conteúdo Principal ================= */
+.main-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.view-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    overflow: hidden;
+    display: none; /* Escondido por padrão */
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.view-section.active {
+    display: flex;
+}
+
+/* Minimal Home */
+.minimal-home {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.home-icons {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.home-btn {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: transform 0.2s;
+}
+
+.home-btn:hover {
+    transform: translateY(-5px);
+}
+
+.home-btn .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-lighter);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.home-btn:hover .icon-wrapper {
+    border-color: var(--primary-color);
+    background: rgba(212, 175, 55, 0.1);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+}
+
+.home-btn span {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Relógio Topbar */
+.topbar-clock {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', monospace;
+    opacity: 0.8;
+}
