@@ -18,7 +18,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-primary);
     display: flex;
@@ -334,11 +334,12 @@ body {
     gap: 15px;
     overflow-x: auto;
     padding-bottom: 10px;
+    width: 100%;
 }
 
 .kanban-column {
     min-width: 260px;
-    width: 260px;
+    flex: 1;
     background-color: var(--bg-card);
     border-radius: 12px;
     display: flex;
@@ -382,9 +383,10 @@ body {
     padding: 15px;
     border-radius: 8px;
     border: 1px solid transparent;
-    cursor: grab;
+    cursor: pointer;
     transition: transform 0.2s;
     position: relative;
+    user-select: none;
 }
 
 .kanban-card:active {
@@ -654,6 +656,52 @@ body {
     color: #ff6b6b;
 }
 
+/* Telefone Link no Painel */
+.phone-link-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.phone-link-btn:hover {
+    background: rgba(37, 211, 102, 0.1);
+    border-color: #25D366;
+}
+
+.phone-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.whatsapp-icon-minimal {
+    color: #25D366;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(37, 211, 102, 0.1);
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.phone-link-btn:hover .whatsapp-icon-minimal {
+    background: #25D366;
+    color: #fff;
+    transform: scale(1.1);
+}
+
 /* Painel Lateral de Detalhes (Drawer) */
 .details-panel {
     position: fixed;
@@ -791,37 +839,440 @@ body {
     transform: translateY(-1px);
 }
 
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-    .nav-label {
-        display: none;
-    }
-    
-    .nav-item i {
-        font-size: 1.4rem;
-    }
-    
-    .kanban-board {
-        scroll-snap-type: x mandatory;
-    }
-    
-    .kanban-column {
-        width: 85vw;
-        scroll-snap-align: center;
-    }
+/* Custom Modal */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(4px);
+}
 
-    .search-container {
-        width: 100%;
-        margin-top: 10px;
-    }
-    
-    .kanban-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .details-panel {
-        width: 100%;
-    }
+.custom-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-modal-content {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transform: scale(0.9);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-modal-overlay.active .custom-modal-content {
+    transform: scale(1);
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 1.8rem;
+}
+
+.modal-icon.warning { color: #FF9800; background: rgba(255, 152, 0, 0.1); }
+.modal-icon.success { color: #4CAF50; background: rgba(76, 175, 80, 0.1); }
+
+.custom-modal-content h3 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 1.4rem;
+}
+
+.custom-modal-content p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.modal-actions button {
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+    flex: 1;
+}
+
+.modal-actions button:active { transform: scale(0.95); }
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary);
+}
+
+.btn-cancel:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+
+.btn-confirm {
+    background: var(--primary-color);
+    color: #1a1a1a;
+}
+
+.btn-confirm:hover { filter: brightness(1.1); }
+
+/* Melhorias Checklist */
+.checklist-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.checklist-item {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 0;
+    cursor: pointer;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    display: grid;
+    place-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.checklist-item input[type="checkbox"]::before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+    color: #1a1a1a;
+    transform: scale(0);
+    transition: transform 0.2s;
+}
+
+.checklist-item input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checklist-item input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+.checklist-item span {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.checklist-item input[type="checkbox"]:checked + span {
+    color: var(--primary-color);
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+/* ==================================
+   MODAL NOVO LEAD - FORM DESIGN
+   ================================== */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.close-btn-modal {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn-modal:hover {
+    color: #ff6b6b;
+}
+
+.modal-body {
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group input[type="email"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.radio-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    margin: 0;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.radio-group label:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.radio-group input[type="radio"]:checked + label {
+    background: var(--primary-color);
+    color: #1a1a1a;
+    border-color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* ==================================
+   TABS DESIGN
+   ================================== */
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: var(--bg-card);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    width: fit-content;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+/* ==================================
+   CHECKLIST INLINE ACTIONS & DIVIDERS
+   ================================== */
+.checklist-divider {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 15px 0 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-weight: 600;
+}
+
+.checklist-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.btn-check-action {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-check-success {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.btn-check-success:hover {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.btn-check-fail {
+    background: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.btn-check-fail:hover {
+    background: #F44336;
+    color: #fff;
+}
+
+/* Estado Marcado */
+.checklist-item.completed .btn-check-action {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+.checklist-item.completed .btn-check-success.active {
+    background: #4CAF50;
+    color: #fff;
+    opacity: 1;
+    filter: none;
+}
+
+.checklist-item.completed .btn-check-fail.active {
+    background: #F44336;
+    color: #fff;
+    opacity: 1;
+    filter: none;
+}
+
+/* Agenda Tasks */
+.agenda-task {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.agenda-task:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.agenda-task.concluida {
+    opacity: 0.5;
+}
+
+.agenda-task.concluida .task-text {
+    text-decoration: line-through;
+}
+
+.task-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.agenda-task.concluida .task-check {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #1a1a1a;
+}
+
+.task-info {
+    flex: 1;
+}
+
+.task-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.task-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.task-meta i {
+    margin-right: 4px;
 }

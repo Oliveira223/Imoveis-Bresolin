@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRM Corretores - Bresolin Imóveis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -17,9 +17,9 @@
             <i class="fas fa-bars"></i>
         </button>
 
-        <!-- Centro: Título Dinâmico (JS) ou Vazio -->
+        <!-- Centro: Relógio -->
         <div class="central-nav">
-            <!-- Navegação removida, será apenas título ou vazio -->
+            <div id="topbar-clock" class="topbar-clock">--:--</div>
         </div>
 
         <!-- Direita: Agenda e Perfil -->
@@ -75,6 +75,10 @@
                     <div class="icon-wrapper"><i class="fas fa-columns"></i></div>
                     <span>Funil</span>
                 </button>
+                <button class="home-btn" onclick="SidebarModule.navigateTo('listas')">
+                    <div class="icon-wrapper"><i class="fas fa-list"></i></div>
+                    <span>Listas</span>
+                </button>
                 <button class="home-btn" onclick="SidebarModule.navigateTo('dados')">
                     <div class="icon-wrapper"><i class="fas fa-chart-pie"></i></div>
                     <span>Dados</span>
@@ -87,9 +91,14 @@
             <div class="kanban-header">
                 <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <h2>Novos Leads Disponíveis</h2>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="search-novos-leads" placeholder="Buscar por nome ou telefone..." onkeyup="NovosLeadsModule.filtrarLeads()">
+                <div style="display: flex; gap: 15px; align-items: center; flex: 1; justify-content: flex-end;">
+                    <div class="search-container" style="margin: 0; max-width: 300px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-novos-leads" placeholder="Buscar..." onkeyup="NovosLeadsModule.filtrarLeads()">
+                    </div>
+                    <button class="btn-primary-action" onclick="KanbanModule.abrirModalNovoLead()">
+                        <i class="fas fa-plus"></i> Novo Cliente
+                    </button>
                 </div>
             </div>
             
@@ -110,17 +119,6 @@
                     </tbody>
                 </table>
             </div>
-            
-            <!-- Modal/Painel de Detalhes (Overlay) -->
-            <div id="lead-details-panel" class="details-panel">
-                <div class="panel-header">
-                    <h3>Detalhes do Lead</h3>
-                    <button class="close-panel-btn" onclick="NovosLeadsModule.fecharDetalhes()"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="panel-content" id="lead-details-content">
-                    <!-- Conteúdo dinâmico -->
-                </div>
-            </div>
         </section>
 
         <!-- View: Kanban / Funil -->
@@ -128,7 +126,7 @@
             <div class="kanban-header">
                 <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <h2>Funil de Vendas</h2>
-                <button class="btn-new-lead"><i class="fas fa-plus"></i> Novo</button>
+                <button class="btn-new-lead" onclick="KanbanModule.abrirModalNovoLead()"><i class="fas fa-plus"></i> Novo</button>
             </div>
 
             <div class="kanban-board">
@@ -143,7 +141,7 @@
                 <!-- Coluna 2: CONTATO -->
                 <div class="kanban-column" data-status="2">
                     <div class="column-header contato">
-                        <h3>CONTATO <span class="count">0</span></h3>
+                        <h3>FALADO <span class="count">0</span></h3>
                     </div>
                     <div class="column-body" id="col-contato"></div>
                 </div>
@@ -174,6 +172,37 @@
             </div>
         </section>
 
+        <!-- View: Listas -->
+        <section id="view-listas" class="view-section" style="display:none;">
+            <div class="kanban-header">
+                <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <h2>Listas de Clientes</h2>
+            </div>
+
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="ListasModule.mudarAba('todos')">Clientes Ativos</button>
+                <button class="tab-btn" onclick="ListasModule.mudarAba('arquivados')">Arquivados</button>
+                <button class="tab-btn" onclick="ListasModule.mudarAba('vendidos')">Fechados</button>
+            </div>
+
+            <div class="table-container" style="margin-top: 20px;">
+                <table class="custom-table" id="tabela-listas">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Contato</th>
+                            <th>Status</th>
+                            <th>Corretor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-clientes-body">
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Outras Views -->
         <section id="view-clientes" class="view-section" style="display:none;">
             <div class="empty-state">
@@ -196,6 +225,81 @@
     </main>
 
     <div class="overlay" id="overlay"></div>
+
+    <!-- Modal/Painel de Detalhes (Overlay) - MOVIDO PARA FORA DAS SECTIONS -->
+    <div id="lead-details-panel" class="details-panel">
+        <div class="panel-header">
+            <h3>Detalhes do Lead</h3>
+            <button class="close-panel-btn" onclick="NovosLeadsModule.fecharDetalhes()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content" id="lead-details-content">
+            <!-- Conteúdo dinâmico -->
+        </div>
+    </div>
+
+    <!-- Modal Customizado de Confirmação -->
+    <div id="custom-modal" class="custom-modal-overlay">
+        <div class="custom-modal-content">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 id="modal-title">Confirmação</h3>
+            <p id="modal-message">Tem certeza?</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="ModalModule.close(false)">Cancelar</button>
+                <button class="btn-confirm" onclick="ModalModule.close(true)">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Lead Manual -->
+    <div id="modal-novo-lead" class="custom-modal-overlay">
+        <div class="custom-modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Novo Cliente</h3>
+                <button class="close-btn-modal" onclick="document.getElementById('modal-novo-lead').classList.remove('active')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-novo-lead" onsubmit="event.preventDefault(); KanbanModule.salvarNovoLead()">
+                    <div class="form-group">
+                        <label>Nome do Cliente *</label>
+                        <input type="text" id="novo-lead-nome" name="nome" required placeholder="Ex: João Silva">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Telefone / WhatsApp *</label>
+                        <input type="tel" id="novo-lead-telefone" name="telefone" required placeholder="(XX) XXXXX-XXXX" maxlength="15" oninput="UtilsModule.mascaraTelefoneInput(this)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Objetivo</label>
+                        <div class="radio-group">
+                            <input type="radio" name="objetivo" id="obj-moradia" value="Moradia" checked> 
+                            <label for="obj-moradia"><i class="fas fa-home"></i> Moradia</label>
+                            
+                            <input type="radio" name="objetivo" id="obj-investimento" value="Investimento">
+                            <label for="obj-investimento"><i class="fas fa-chart-line"></i> Investimento</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Interesse (Opcional)</label>
+                        <input type="text" id="novo-lead-interesse" placeholder="Ex: Apartamento 3 quartos, Centro...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observações Iniciais</label>
+                        <textarea id="novo-lead-obs" placeholder="Detalhes do primeiro contato..." rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('modal-novo-lead').classList.remove('active')">Cancelar</button>
+                        <button type="submit" class="btn-confirm">Salvar Lead</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="{{ url_for('crm.static', filename='js/dashboard.js') }}"></script>
 </body>

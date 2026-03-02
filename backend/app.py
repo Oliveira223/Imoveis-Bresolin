@@ -120,6 +120,13 @@ def requires_auth(f):
     decorated.__name__ = f.__name__
     return decorated
 
+def verify_admin():
+    """Verifica autenticação admin manualmente dentro de rotas"""
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
+    return None
+
 # ================================
 # ROTA PROTEGIDA: Painel Administrativo
 # ================================
@@ -337,6 +344,7 @@ def pagina_empreendimento(empreendimento_id):
 # Rota de Backup do Banco de Dados
 # ==============================
 @app.route('/api/admin/backup')
+@requires_auth
 def admin_backup():
     try:
         # Nome do arquivo com timestamp
@@ -387,6 +395,7 @@ def admin_backup():
 # Rota para Exportar Dados Completos (ZIP com CSVs)
 # ==============================
 @app.route('/api/admin/exportar-completo')
+@requires_auth
 def admin_exportar_completo():
     try:
         # Buffer para o arquivo ZIP
@@ -765,6 +774,11 @@ def api_imoveis():
             return jsonify(imoveis)
 
         if request.method == 'POST':
+            # Verificação de autenticação
+            auth_error = verify_admin()
+            if auth_error:
+                return auth_error
+
             data = request.json
             for campo in ['entrega', 'estagio', 'maps_iframe', 'campo_extra2']:
                 if campo not in data:
@@ -812,7 +826,12 @@ def api_imovel_id(imovel_id):
             imovel = result.mappings().first()
             return jsonify(imovel)
 
-        elif request.method == 'PUT':
+        # Verificação de autenticação para PUT e DELETE
+        auth_error = verify_admin()
+        if auth_error:
+            return auth_error
+
+        if request.method == 'PUT':
             data = request.json
             data['id'] = imovel_id 
             
@@ -880,6 +899,7 @@ def api_imovel_id(imovel_id):
 
 # Alterna o status ativo/inativo do imóvel
 @app.route('/api/imoveis/<int:imovel_id>/toggle', methods=['POST'])
+@requires_auth
 def toggle_ativo(imovel_id):
     with engine.begin() as con:
         con.execute(text('UPDATE imoveis SET ativo = NOT ativo WHERE id = :id'), {'id': imovel_id})
@@ -904,6 +924,7 @@ def definir_destaques():
 
 # Rota para reordenar imagens do imóvel
 @app.route('/api/imoveis/<int:imovel_id>/imagens/reordenar', methods=['POST'])
+@requires_auth
 def reordenar_imagens_imovel(imovel_id):
     data = request.json
     ordem_ids = data.get('ordem_ids', []) # Lista de IDs na nova ordem
@@ -925,6 +946,7 @@ def reordenar_imagens_imovel(imovel_id):
 
 # Rota para reordenar imagens do empreendimento
 @app.route('/api/empreendimentos/<int:emp_id>/imagens/reordenar', methods=['POST'])
+@requires_auth
 def reordenar_imagens_empreendimento(emp_id):
     data = request.json
     ordem_ids = data.get('ordem_ids', [])
@@ -1072,6 +1094,11 @@ def imagens_do_imovel(imovel_id):
             return jsonify(imagens)
 
         if request.method == 'POST':
+            # Verificação de autenticação
+            auth_error = verify_admin()
+            if auth_error:
+                return auth_error
+
             data = request.json
             
             # Busca a última ordem para inserir no final
@@ -1094,6 +1121,7 @@ def imagens_do_imovel(imovel_id):
 
 # Deleta uma imagem específica
 @app.route('/api/imagens/<int:imagem_id>', methods=['DELETE'])
+@requires_auth
 def deletar_imagem(imagem_id):
     with engine.begin() as con:
         con.execute(text('DELETE FROM imagens_imovel WHERE id = :id'), {'id': imagem_id})
@@ -1115,6 +1143,11 @@ def imagens_do_empreendimento(empreendimento_id):
             return jsonify(imagens)
 
         if request.method == 'POST':
+            # Verificação de autenticação
+            auth_error = verify_admin()
+            if auth_error:
+                return auth_error
+
             data = request.json
             
             # Busca a última ordem para inserir no final
@@ -1137,6 +1170,7 @@ def imagens_do_empreendimento(empreendimento_id):
 
 # Deleta uma imagem específica de empreendimento
 @app.route('/api/imagens_empreendimento/<int:imagem_id>', methods=['DELETE'])
+@requires_auth
 def deletar_imagem_empreendimento(imagem_id):
     with engine.begin() as con:
         con.execute(text('DELETE FROM imagens_empreendimento WHERE id = :id'), {'id': imagem_id})
@@ -1157,6 +1191,11 @@ def api_empreendimentos():
             return jsonify(empreendimentos)
 
         if request.method == 'POST':
+            # Verificação de autenticação
+            auth_error = verify_admin()
+            if auth_error:
+                return auth_error
+
             data = request.json
             
             # Gera o próximo código EMP
@@ -1251,7 +1290,12 @@ def api_empreendimento_id(empreendimento_id):
             empreendimento = result.mappings().first()
             return jsonify(empreendimento)
 
-        elif request.method == 'PUT':
+        # Verificação de autenticação para PUT e DELETE
+        auth_error = verify_admin()
+        if auth_error:
+            return auth_error
+
+        if request.method == 'PUT':
             data = request.json
             data['id'] = empreendimento_id
             

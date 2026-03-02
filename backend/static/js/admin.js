@@ -269,6 +269,19 @@ document.getElementById('form-imovel').onsubmit = async function (e) {
 };
 
 // ===========================
+// Helper XSS Protection
+// ===========================
+function escapeHtml(text) {
+  if (text == null) return '';
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ===========================
 // Listar imóveis
 // ===========================
 
@@ -282,13 +295,13 @@ function listarImoveis() {
         const imagemEhValida = imovel.imagem && imovel.imagem.trim() !== "";
 
         const imagemHtml = imagemEhValida
-          ? `<img src="${imovel.imagem}" alt="${imovel.titulo}" class="img-miniatura">`
+          ? `<img src="${escapeHtml(imovel.imagem)}" alt="${escapeHtml(imovel.titulo)}" class="img-miniatura">`
           : `<img src="/static/img/casa.png" alt="Imagem padrão" class="img-miniatura">`;
 
         lista.innerHTML += `
           <div class="imovel-admin">
             ${imagemHtml}
-            <b>${imovel.titulo}</b> (ID ${imovel.id})<br>
+            <b>${escapeHtml(imovel.titulo)}</b> (ID ${imovel.id})<br>
             ${imovel.ativo ? 'Ativo' : 'Inativo'}<br><br>
 
             <button class="btn-editar" onclick="editarImovel(${imovel.id})">Editar</button>
@@ -623,7 +636,7 @@ function listarCorretores() {
                 const dataCriacao = new Date(c.data_criacao).toLocaleDateString('pt-BR');
                 listaCorretores.innerHTML += `
                     <tr>
-                        <td style="padding: 10px;">${c.nome}</td>
+                        <td style="padding: 10px;">${escapeHtml(c.nome)}</td>
                         <td style="padding: 10px;">${c.ativo ? 'Ativo' : 'Inativo'}</td>
                         <td style="padding: 10px;">
                             <button onclick="editarSenhaCorretor(${c.id})" class="btn-editar" style="padding: 5px 10px; margin-right: 5px;">Senha</button>
@@ -669,7 +682,7 @@ if (selectImovelLink) {
             imoveis.forEach(imovel => {
                 const option = document.createElement('option');
                 option.value = imovel.id;
-                option.textContent = `ID ${imovel.id} - ${imovel.titulo}`;
+                option.textContent = `ID ${imovel.id} - ${imovel.titulo}`; // textContent is safe
                 selectImovelLink.appendChild(option);
             });
         });

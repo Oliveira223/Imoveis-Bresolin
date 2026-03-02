@@ -1,0 +1,61 @@
+/* Agenda Tasks */
+.agenda-task {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.agenda-task:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.agenda-task.concluida {
+    opacity: 0.5;
+}
+
+.agenda-task.concluida .task-text {
+    text-decoration: line-through;
+}
+
+.task-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.agenda-task.concluida .task-check {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #1a1a1a;
+}
+
+.task-info {
+    flex: 1;
+}
+
+.task-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.task-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.task-meta i {
+    margin-right: 4px;
+}

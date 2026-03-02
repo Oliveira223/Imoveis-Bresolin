@@ -1,20 +1,40 @@
-body {
-    background-color: #f4f4f4;
-    font-family: 'Roboto', sans-serif;
-    color: #333;
-}
+/* 
+   CRM Stylesheet - Modular Architecture
+   Import order matters!
+*/
 
-.crm-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background: white;
+@import url('modules/_variables.css');
+@import url('modules/_base.css');
+@import url('modules/_layout.css');
+@import url('modules/_components.css');
+@import url('modules/_kanban.css');
+@import url('modules/_modals.css');
+@import url('modules/_checklist.css');
+@import url('modules/_agenda.css');
+
+/* === ACTIONS === */
+.btn-primary-action {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #45a049 100%);
+    color: white;
+    border: none;
+    padding: 0 20px;
+    height: 40px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 50px;
-    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
-h1 {
-    color: #d4af37; /* Dourado Bresolin */
+.btn-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn-primary-action i {
+    font-size: 0.9rem;
 }
