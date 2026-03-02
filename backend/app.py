@@ -216,48 +216,57 @@ def slides_page():
 def pagina_imovel(imovel_id):
     registrar_acesso(imovel_id)  # registra acesso ao imóvel
 
-    with engine.connect() as con:
-        imovel_result = con.execute(
-            text('SELECT * FROM imoveis WHERE id = :id AND ativo = TRUE'),
-            {'id': imovel_id}
-        )
-        imovel = imovel_result.mappings().first()
+    try:
+        with engine.connect() as con:
+            imovel_result = con.execute(
+                text('SELECT * FROM imoveis WHERE id = :id AND ativo = TRUE'),
+                {'id': imovel_id}
+            )
+            imovel = imovel_result.mappings().first()
 
-        if not imovel:
-            return render_template('404.html', mensagem="Imóvel não encontrado ou inativo"), 404
+            if not imovel:
+                # Retorna 404 se imóvel não existe ou está inativo
+                return render_template('404.html', mensagem="Imóvel não encontrado ou inativo"), 404
 
-        imagens_result = con.execute(
-            text('SELECT id, url, tipo, ordem FROM imagens_imovel WHERE imovel_id = :id ORDER BY ordem ASC, id ASC'),
-            {'id': imovel_id}
-        )
-        imagens = [dict(row._mapping) for row in imagens_result]
-        
-        # Busca imóveis similares (mesmo tipo e bairro, excluindo o imóvel atual)
-        similares_result = con.execute(
-            text('''
-                SELECT * FROM imoveis 
-                WHERE ativo = TRUE 
-                AND id != :id 
-                AND (tipo = :tipo OR bairro = :bairro) 
-                ORDER BY 
-                    CASE 
-                        WHEN tipo = :tipo AND bairro = :bairro THEN 1
-                        WHEN tipo = :tipo THEN 2
-                        WHEN bairro = :bairro THEN 3
-                        ELSE 4
-                    END,
-                    id DESC
-                LIMIT 6
-            '''),
-            {
-                'id': imovel_id,
-                'tipo': imovel['tipo'],
-                'bairro': imovel['bairro']
-            }
-        )
-        imoveis_similares = [dict(row._mapping) for row in similares_result]
+            # Busca imagens do imóvel
+            imagens_result = con.execute(
+                text('SELECT id, url, tipo, ordem FROM imagens_imovel WHERE imovel_id = :id ORDER BY ordem ASC, id ASC'),
+                {'id': imovel_id}
+            )
+            imagens = [dict(row._mapping) for row in imagens_result]
+            
+            # Busca imóveis similares (mesmo tipo e bairro, excluindo o imóvel atual)
+            # Usa parâmetros nomeados para evitar SQL Injection e erros de binding
+            similares_result = con.execute(
+                text('''
+                    SELECT * FROM imoveis 
+                    WHERE ativo = TRUE 
+                    AND id != :id 
+                    AND (tipo = :tipo OR bairro = :bairro) 
+                    ORDER BY 
+                        CASE 
+                            WHEN tipo = :tipo AND bairro = :bairro THEN 1
+                            WHEN tipo = :tipo THEN 2
+                            WHEN bairro = :bairro THEN 3
+                            ELSE 4
+                        END,
+                        id DESC
+                    LIMIT 6
+                '''),
+                {
+                    'id': imovel_id,
+                    'tipo': imovel['tipo'],
+                    'bairro': imovel['bairro']
+                }
+            )
+            imoveis_similares = [dict(row._mapping) for row in similares_result]
 
-    return render_template('imovel.html', imovel=imovel, imagens=imagens, imoveis_similares=imoveis_similares)
+        return render_template('imovel.html', imovel=imovel, imagens=imagens, imoveis_similares=imoveis_similares)
+
+    except Exception as e:
+        print(f"[ERRO] Falha ao carregar imóvel {imovel_id}: {e}")
+        # Em caso de erro de banco ou outro, retorna 500 mas com página amigável (ou 404 se preferir ocultar erro)
+        return render_template('404.html', mensagem="Erro ao carregar imóvel. Tente novamente mais tarde."), 500
     
 # Página de detalhes do empreendimento
 @app.route('/empreendimento/<empreendimento_id>')
