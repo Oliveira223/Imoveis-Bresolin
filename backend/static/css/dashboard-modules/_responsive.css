@@ -1,0 +1,142 @@
+/* ===========================
+   MÓDULO: RESPONSIVIDADE
+   =========================== */
+
+/* Tablets e telas médias */
+@media (max-width: 980px) {
+  .sidebar { 
+    width: 200px; 
+  }
+  
+  .content { 
+    margin-left: 200px; 
+  }
+}
+
+/* Smartphones e telas pequenas */
+@media (max-width: 768px) {
+  /* Ajustes para mensagem automática */
+  .mensagem-automatica {
+    padding: 0.75rem;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  /* Responsividade para botões de ação */
+  .interesse-acoes {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .btn-acao {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  /* Responsividade para visualizações */
+  .visualizacoes-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-card h4 {
+    font-size: 12px;
+  }
+  
+  .stat-card div {
+    font-size: 24px;
+  }
+  
+  #tabela-visualizacoes {
+    font-size: 12px;
+  }
+  
+  #tabela-visualizacoes th,
+  #tabela-visualizacoes td {
+    padding: 12px 8px;
+  }
+  
+  .imovel-titulo {
+    max-width: 150px;
+  }
+
+  /* Feedback message position */
+  .feedback-message {
+    right: 10px;
+    left: 10px;
+    top: 10px;
+  }
+}
+
+@media (max-width: 720px) {
+  /* Layout mobile */
+  .sidebar {
+    position: static;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .menu { 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+  }
+  
+  .content { 
+    margin: 0; 
+  }
+  
+  /* Formulários em mobile */
+  .form-grid { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .grupo-imagem-principal,
+  .grupo-galeria {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Filtros em mobile */
+  .filtros-dashboard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Botões dos cards em mobile */
+  .card .card-actions {
+    flex-direction: column;
+    gap: 0.3em;
+  }
+  
+  .card .card-actions button,
+  .card .card-actions .button,
+  .card .card-actions input[type="button"],
+  .card .card-actions input[type="submit"] {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Seleção de imóveis em mobile */
+  .imoveis-selection-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .imoveis-controls {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 0;
+  }
+  
+  .imoveis-list select {
+    min-height: 100px;
+  }
+}

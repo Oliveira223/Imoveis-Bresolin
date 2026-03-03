@@ -63,7 +63,7 @@
                     <div class="row-2">
                          <div class="form-group">
                             <label for="preco">Preço (R$)</label>
-                            <input type="number" id="preco" name="preco" step="0.01" value="{{ imovel.preco or '' }}">
+                            <input type="text" id="preco" name="preco" value="{{ imovel.preco or '' }}" placeholder="0,00">
                         </div>
                         <div class="form-group">
                             <label for="area">Área (m²)</label>

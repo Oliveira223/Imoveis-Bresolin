@@ -1,0 +1,32 @@
+/* ===========================
+   MÓDULO: MODAL DESTAQUES
+   =========================== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2em;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.item-destaque { 
+  margin-bottom: 8px; 
+}

@@ -1,0 +1,104 @@
+/* ===========================
+   MÓDULO: SISTEMA E BACKUPS
+   =========================== */
+
+.acoes-sistema {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+}
+
+.acoes-sistema p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.sistema-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Botões específicos do sistema */
+.btn-sistema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.btn-sistema:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-sistema img,
+.btn-sistema svg {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1); /* Garante ícone branco */
+}
+
+/* Variações de cor */
+.btn-backup {
+  background-color: var(--brand); /* Azul padrão */
+}
+.btn-backup:hover {
+  background-color: var(--brand-2);
+}
+
+.btn-exportar {
+  background-color: #10b981; /* Verde Emerald */
+}
+.btn-exportar:hover {
+  background-color: #059669;
+}
+
+.btn-relatorio {
+  background-color: #0ea5e9; /* Azul Sky */
+}
+.btn-relatorio:hover {
+  background-color: #0284c7;
+}
+
+/* Notas de rodapé */
+.sistema-notas {
+  background-color: #f8fafc;
+  border-left: 3px solid var(--line);
+  padding: 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.sistema-notas b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sistema-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-sistema {
+    width: 100%;
+  }
+}
