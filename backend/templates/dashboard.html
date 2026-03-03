@@ -390,25 +390,29 @@
           <small class="bloco-subtitle">Gerencie os dados e realize cópias de segurança</small>
         </div>
         <div class="acoes-sistema">
-          <p style="margin-bottom: 1rem; color: #666;">Use as opções abaixo para gerenciar a segurança e visualização dos dados.</p>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-            <button id="btn-backup" class="primary">
-              <img src="/static/img/icons/icon_link.svg" alt="" style="width: 16px; filter: invert(1); margin-right: 8px;">
+          <p>Use as opções abaixo para gerenciar a segurança e visualização dos dados.</p>
+          
+          <div class="sistema-buttons">
+            <button id="btn-backup" class="btn-sistema btn-backup">
+              <img src="/static/img/icons/icon_link.svg" alt="">
               Backup de Segurança (.sql)
             </button>
-            <button id="btn-exportar-completo" class="primary" style="background-color: #28a745;">
-              <img src="/static/img/icons/icon_link.svg" alt="" style="width: 16px; filter: invert(1); margin-right: 8px;">
-              Exportar Dados Completos (.zip)
+            
+            <button id="btn-exportar-completo" class="btn-sistema btn-exportar">
+              <img src="/static/img/icons/icon_link.svg" alt="">
+              Exportar Dados (.zip)
             </button>
-            <a href="/admin/relatorio" target="_blank" class="btn-primario" style="background-color: #17a2b8; text-decoration: none;">
-              <img src="/static/img/icons/icon_link.svg" alt="" style="width: 16px; filter: invert(1); margin-right: 8px;">
-              Ver Relatório Web (HTML)
+            
+            <a href="/admin/relatorio" target="_blank" class="btn-sistema btn-relatorio">
+              <img src="/static/img/icons/icon_link.svg" alt="">
+              Relatório Web (HTML)
             </a>
           </div>
-          <small style="display: block; margin-top: 10px; color: #888;">
-            * O arquivo <b>.sql</b> é para restauração completa em caso de perda total.<br>
-            * O arquivo <b>.zip</b> contém planilhas (CSVs) de imóveis, empreendimentos, leads e acessos.
-          </small>
+
+          <div class="sistema-notas">
+            <div>* O arquivo <b>.sql</b> é para restauração completa em caso de perda total.</div>
+            <div>* O arquivo <b>.zip</b> contém planilhas (CSVs) de imóveis, empreendimentos, leads e acessos.</div>
+          </div>
         </div>
       </div>
 

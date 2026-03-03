@@ -1738,20 +1738,38 @@ const MoneyFieldModule = {
     if (!editavel) return;
 
     editavel.addEventListener('input', (e) => {
-      // Remove caracteres não numéricos e ",00"
-      let texto = e.target.innerText.replace(',00', '').replace(/\D/g, '');
-
-      if (texto) {
-        const formatado = parseInt(texto).toLocaleString('pt-BR') + ',00';
-        e.target.innerText = formatado;
-        if (real) real.value = texto;
-
-        // Reposiciona o cursor corretamente
-        this.reposicionarCursorAntesDaVirgula(e.target);
-      } else {
+      // Remove tudo que não é dígito
+      let valor = e.target.innerText.replace(/\D/g, '');
+      
+      if (valor === '') {
         e.target.innerText = '';
         if (real) real.value = '';
+        return;
       }
+      
+      // Converte para número e divide por 100 para ter os centavos
+      const numero = parseInt(valor) / 100;
+      
+      // Formata em moeda BRL
+      const formatado = numero.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      
+      e.target.innerText = formatado;
+      
+      // Atualiza o input hidden com valor numérico para o banco (ex: 1234.56)
+      if (real) {
+        real.value = numero.toFixed(2);
+      }
+      
+      // Move o cursor para o final (solução simples e funcional para este caso)
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(e.target);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
     });
 
     // Impede quebra de linha com Enter

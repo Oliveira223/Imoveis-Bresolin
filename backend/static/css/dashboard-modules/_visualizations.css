@@ -1,0 +1,140 @@
+/* ===========================
+   MÓDULO: VISUALIZAÇÕES
+   =========================== */
+
+.bloco:has(.visualizacoes-container) {
+  margin-top: 48px;
+}
+
+.visualizacoes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.visualizacoes-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card div {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.visualizacoes-tabela {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+#tabela-visualizacoes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#tabela-visualizacoes thead {
+  background: #f8fafc;
+}
+
+#tabela-visualizacoes th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+#tabela-visualizacoes th:nth-child(2),
+#tabela-visualizacoes th:nth-child(3),
+#tabela-visualizacoes th:nth-child(4) {
+  text-align: center;
+}
+
+#tabela-visualizacoes td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+#tabela-visualizacoes tbody tr:hover {
+  background: #f8fafc;
+}
+
+#tabela-visualizacoes tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.imovel-titulo {
+  font-weight: 500;
+  color: #1e293b;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.numero {
+  text-align: center;
+  font-weight: 600;
+  color: #059669;
+}
+
+.loading, .empty, .error {
+  text-align: center;
+  padding: 32px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.error {
+  color: #dc2626;
+}
+
+#btn-atualizar-visualizacoes {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#btn-atualizar-visualizacoes:hover {
+  background: #0284c7;
+  transform: translateY(-1px);
+}
