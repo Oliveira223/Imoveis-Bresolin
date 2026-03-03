@@ -141,6 +141,14 @@ const ListasModule = {
                     ${lead.imovel_preco ? `<div style="font-size:0.9rem; color:var(--primary-color); margin-top:5px;">${parseFloat(lead.imovel_preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>` : ''}
                 </div>
             </div>
+            
+            ${(lead.status_geral === 'Ignorado' || lead.status_geral === 'Arquivado') ? `
+            <div class="panel-section" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+                <span class="panel-label">Ações</span>
+                <button class="btn-action-panel btn-action-success" onclick="ListasModule.restaurarLead(${lead.id})">
+                    <i class="fas fa-undo"></i> Restaurar para o Funil
+                </button>
+            </div>` : ''}
 
             <div class="panel-section">
                 <span class="panel-label">Notas</span>

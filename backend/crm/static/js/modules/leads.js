@@ -158,10 +158,10 @@ const NovosLeadsModule = {
             <div class="panel-section" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
                 <span class="panel-label">Ações</span>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn-small-add" style="flex: 1; background: #4CAF50; color: #fff; border: none;" onclick="NovosLeadsModule.moverLead(${lead.id}, 'Atendimento', event)">
+                    <button class="btn-action-panel btn-action-success" onclick="NovosLeadsModule.moverLead(${lead.id}, 'Atendimento', event)">
                         <i class="fas fa-check"></i> Iniciar Atendimento
                     </button>
-                    <button class="btn-small-add" style="flex: 1; background: #F44336; color: #fff; border: none;" onclick="NovosLeadsModule.moverLead(${lead.id}, 'Ignorado', event)">
+                    <button class="btn-action-panel btn-action-danger" onclick="NovosLeadsModule.moverLead(${lead.id}, 'Ignorado', event)">
                         <i class="fas fa-times"></i> Ignorar
                     </button>
                 </div>
@@ -204,29 +204,31 @@ const NovosLeadsModule = {
         if (event) event.stopPropagation();
 
         const confirmMsg = destino === 'Atendimento' 
-            ? 'Deseja iniciar o atendimento e mover para o Kanban?' 
+            ? 'Deseja assumir este lead e movê-lo para o seu funil de atendimento?' 
             : `Deseja mover este lead para ${destino}?`;
 
         const confirm = await ModalModule.confirm('Mover Lead', confirmMsg);
         if (!confirm) return;
 
         try {
-            // Se for para atendimento, define status=1 (Lead) e limpa status_geral
-            // Se for arquivado/ignorado, define status_geral
+            let response;
             
-            const body = { id: id };
             if (destino === 'Atendimento') {
-                body.status = 1;
-                body.status_geral = null; // Limpa flags
+                // Usa endpoint que atribui corretor e define nível 1 do funil
+                // Isso garante que o lead saia da lista "Novos" e vá para "Meus Leads"
+                response = await fetch('/corretores/api/leads/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, status: 1 })
+                });
             } else {
-                body.status_geral = destino;
+                // Usa endpoint para atualizar status geral (Arquivado, Ignorado)
+                response = await fetch('/corretores/api/leads/info', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, status_geral: destino })
+                });
             }
-
-            const response = await fetch('/corretores/api/leads/info', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
 
             if (response.ok) {
                 this.panel.classList.remove('active');
@@ -235,13 +237,25 @@ const NovosLeadsModule = {
                 }
                 this.carregarNovosLeads();
                 
-                // Se moveu para atendimento, atualiza o Kanban também se estiver visível
+                // Se moveu para atendimento, atualiza o Kanban e navega para lá
                 if (destino === 'Atendimento') {
-                    KanbanModule.carregarLeads();
-                    SidebarModule.navigateTo('kanban'); // Opcional: focar no kanban
+                    if(typeof KanbanModule !== 'undefined') KanbanModule.carregarLeads();
+                    if(typeof SidebarModule !== 'undefined') SidebarModule.navigateTo('kanban');
                 }
             } else {
-                alert('Erro ao mover lead.');
+                if (response.status === 401) {
+                    alert('Sessão expirada. Redirecionando para login...');
+                    window.location.href = '/corretores/login';
+                    return;
+                }
+                
+                // Tenta ler erro da resposta JSON
+                try {
+                    const data = await response.json();
+                    alert('Erro ao mover lead: ' + (data.erro || 'Erro desconhecido'));
+                } catch(e) {
+                    alert('Erro ao mover lead.');
+                }
             }
         } catch (error) {
             console.error(error);

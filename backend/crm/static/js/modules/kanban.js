@@ -316,6 +316,20 @@ const KanbanModule = {
         const telefoneFormatado = UtilsModule.formatarTelefone(lead.telefone);
         const whatsappLink = `https://wa.me/${lead.telefone.replace(/\D/g, '')}`;
 
+        // Determina se exibe botão de "Assumir Lead" (se não tiver corretor ou status < 1)
+        // Isso é útil se abrirmos detalhes de um lead que ainda não é meu
+        let actionButtons = '';
+        if (lead.status_geral === 'Ignorado' || lead.status_geral === 'Arquivado') {
+             actionButtons = `
+                <div class="panel-section" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+                    <span class="panel-label">Ações</span>
+                    <button class="btn-action-panel btn-action-success" onclick="ListasModule.restaurarLead(${lead.id})">
+                        <i class="fas fa-undo"></i> Restaurar para o Funil
+                    </button>
+                </div>
+             `;
+        }
+
         content.innerHTML = `
             ${checklistHtml}
             <div class="panel-section">
@@ -345,6 +359,9 @@ const KanbanModule = {
                     ${lead.imovel_preco ? `<div style="font-size:0.9rem; color:var(--primary-color); margin-top:5px;">${parseFloat(lead.imovel_preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>` : ''}
                 </div>
             </div>
+            
+            ${actionButtons}
+
             <div class="panel-section">
                 <span class="panel-label">Notas</span>
                 <div id="panel-comentarios-area-kanban">Loading...</div>
