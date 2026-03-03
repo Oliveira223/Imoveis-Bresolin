@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRM Corretores - Bresolin Imóveis</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('crm.static', filename='css/style.css') }}?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -96,8 +96,8 @@
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-novos-leads" placeholder="Buscar..." onkeyup="NovosLeadsModule.filtrarLeads()">
                     </div>
-                    <button class="btn-primary-action" onclick="KanbanModule.abrirModalNovoLead()">
-                        <i class="fas fa-plus"></i> Novo Cliente
+                    <button class="btn-new-lead" onclick="KanbanModule.abrirModalNovoLead()">
+                        <i class="fas fa-plus"></i> Novo Lead
                     </button>
                 </div>
             </div>
@@ -126,7 +126,9 @@
             <div class="kanban-header">
                 <button class="back-btn" onclick="SidebarModule.navigateTo('home')"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <h2>Funil de Vendas</h2>
-                <button class="btn-new-lead" onclick="KanbanModule.abrirModalNovoLead()"><i class="fas fa-plus"></i> Novo</button>
+                <button class="btn-new-lead" onclick="KanbanModule.abrirModalNovoLead()">
+                    <i class="fas fa-plus"></i> Novo Lead
+                </button>
             </div>
 
             <div class="kanban-board">

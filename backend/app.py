@@ -137,6 +137,47 @@ def admin():
 
 
 # ================================
+# ROTA PROTEGIDA: Relatório Completo (HTML com todos os dados)
+# ================================
+@app.route('/admin/relatorio')
+@requires_auth
+def admin_relatorio():
+    with engine.connect() as con:
+        # Imóveis
+        imoveis = [dict(row._mapping) for row in con.execute(text('SELECT * FROM imoveis ORDER BY id DESC'))]
+        
+        # Empreendimentos
+        empreendimentos = [dict(row._mapping) for row in con.execute(text('SELECT * FROM empreendimentos ORDER BY id DESC'))]
+        
+        # Clientes (Leads)
+        clientes = [dict(row._mapping) for row in con.execute(text('''
+            SELECT c.*, co.nome as corretor_nome 
+            FROM clientes c 
+            LEFT JOIN corretores co ON c.corretor_id = co.id 
+            ORDER BY c.data_cadastro DESC
+        '''))]
+        
+        # Corretores
+        corretores = [dict(row._mapping) for row in con.execute(text('SELECT * FROM corretores ORDER BY nome'))]
+
+    # Função auxiliar para serializar datas
+    def serialize_dates(data_list):
+        for item in data_list:
+            for key, value in item.items():
+                if isinstance(value, datetime):
+                    item[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+        return data_list
+
+    return render_template(
+        'relatorio_completo.html', 
+        imoveis=serialize_dates(imoveis), 
+        empreendimentos=serialize_dates(empreendimentos), 
+        clientes=serialize_dates(clientes), 
+        corretores=serialize_dates(corretores)
+    )
+
+
+# ================================
 # ROTA PROTEGIDA: Página de Edição de Imóvel
 # ================================
 @app.route('/admin/imovel/<int:imovel_id>/editar')
