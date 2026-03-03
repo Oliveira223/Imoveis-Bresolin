@@ -18,7 +18,30 @@ def verificar_autenticacao():
 
     # Se não estiver logado, redireciona para login
     if 'corretor_id' not in session:
+        if request.path.startswith('/corretores/api'):
+            return jsonify({'erro': 'Sessão expirada. Faça login novamente.'}), 401
         return redirect(url_for('crm.login'))
+        
+    # Verifica se o usuário da sessão ainda existe no banco
+    # Isso evita erros de FK (corretor_id não encontrado) se o banco foi resetado
+    try:
+        with engine.connect() as conn:
+            exists = conn.execute(
+                text("SELECT 1 FROM corretores WHERE id = :id"), 
+                {'id': session['corretor_id']}
+            ).scalar()
+            
+            if not exists:
+                session.clear()
+                if request.path.startswith('/corretores/api'):
+                    return jsonify({'erro': 'Usuário não encontrado. Faça login novamente.'}), 401
+                flash('Sua sessão expirou ou o usuário não existe mais.', 'warning')
+                return redirect(url_for('crm.login'))
+    except Exception as e:
+        print(f"Erro ao verificar sessão: {e}")
+        # Em caso de erro de conexão, pode ser melhor deixar passar ou falhar seguro
+        # Aqui, vamos logar e deixar o fluxo seguir, o erro aparecerá na rota
+        pass
 
 @crm_bp.route('/')
 def dashboard():
@@ -264,8 +287,21 @@ def update_lead_info():
             return jsonify({'erro': 'ID é obrigatório'}), 400
             
         with engine.begin() as conn:
+            # Verifica permissão antes
+            check = conn.execute(
+                text("SELECT corretor_id FROM clientes WHERE id = :id"),
+                {'id': lead_id}
+            ).mappings().first()
+            
+            if not check:
+                 return jsonify({'erro': 'Lead não encontrado'}), 404
+                 
+            # Permite se for dono ou se não tiver dono
+            if check['corretor_id'] is not None and check['corretor_id'] != corretor_id:
+                return jsonify({'erro': 'Você não tem permissão para alterar este lead'}), 403
+
             updates = []
-            params = {'id': lead_id, 'corretor_id': corretor_id}
+            params = {'id': lead_id}
             
             if observacoes is not None:
                 updates.append("observacoes = :observacoes")
@@ -278,11 +314,8 @@ def update_lead_info():
             if not updates:
                 return jsonify({'sucesso': True, 'mensagem': 'Nada a atualizar'})
                 
-            sql = f"UPDATE clientes SET {', '.join(updates)} WHERE id = :id AND corretor_id = :corretor_id"
+            sql = f"UPDATE clientes SET {', '.join(updates)} WHERE id = :id"
             result = conn.execute(text(sql), params)
-            
-            if result.rowcount == 0:
-                 return jsonify({'erro': 'Lead não encontrado ou sem permissão'}), 403
             
         return jsonify({'sucesso': True})
 
@@ -373,14 +406,18 @@ def delete_lead(lead_id):
         corretor_id = session.get('corretor_id')
 
         with engine.begin() as conn:
-            # Primeiro verifica se o lead pertence ao corretor
+            # Primeiro verifica a existência e propriedade do lead
             check = conn.execute(
-                text("SELECT id FROM clientes WHERE id = :id AND corretor_id = :corretor_id"),
-                {'id': lead_id, 'corretor_id': corretor_id}
-            ).fetchone()
+                text("SELECT id, corretor_id FROM clientes WHERE id = :id"),
+                {'id': lead_id}
+            ).mappings().first()
             
             if not check:
-                return jsonify({'erro': 'Lead não encontrado ou sem permissão'}), 403
+                return jsonify({'erro': 'Lead não encontrado'}), 404
+            
+            # Permite se for dono ou se não tiver dono (Novos Leads)
+            if check['corretor_id'] is not None and check['corretor_id'] != corretor_id:
+                 return jsonify({'erro': 'Você não tem permissão para excluir este lead'}), 403
 
             # Remove dependências (tarefas, comentários)
             conn.execute(text("DELETE FROM tarefas WHERE cliente_id = :id"), {'id': lead_id})
