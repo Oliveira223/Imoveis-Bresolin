@@ -1,0 +1,51 @@
+/* ===========================
+   MÓDULO: VIEWS E CABEÇALHOS
+   =========================== */
+
+/* Sistema de views */
+.view { 
+  display: none; 
+}
+
+.view.active { 
+  display: block; 
+}
+
+/* Cabeçalho das views */
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.view-header h1 { 
+  font-size: 1.4rem; 
+  margin: 0; 
+}
+
+.view-header .actions { 
+  display: flex; 
+  gap: .6rem; 
+}
+
+.view-header input[type=search] {
+  padding: .6rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: .6rem;
+  background: #fff;
+  min-width: 280px;
+}
+
+.view-header button {
+  padding: .6rem .9rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: .6rem;
+  cursor: pointer;
+}
+
+.view-header button:hover { 
+  border-color: #c8c6c3; 
+}

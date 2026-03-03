@@ -1,0 +1,28 @@
+/* ===========================
+   MÓDULO: CARDS INFORMATIVOS
+   =========================== */
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.info-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.info-card h3 { 
+  margin: .2rem 0 .6rem; 
+}
+
+.info-card #kpi-total,
+.info-card #kpi-ativos,
+.info-card #kpi-destaques {
+  font-size: 1.6rem;
+  font-weight: 700;
+}

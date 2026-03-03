@@ -1,0 +1,187 @@
+/* ===========================
+   MÓDULO: SISTEMA DE CARDS
+   =========================== */
+
+/* Grid de cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .9rem;
+}
+
+.cards-destaque {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Sobrescreve larguras fixas dos cards de destaque */
+.cards-destaque .card-link {
+  width: 100% !important;
+  flex-shrink: 1;
+}
+
+.cards-destaque .card-container {
+  width: 100% !important;
+  max-width: none;
+}
+
+/* Card individual */
+.card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: .7rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: transform .08s, box-shadow .08s;
+  overflow: hidden;
+  max-width: 320px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
+}
+
+/* Thumbnail do card */
+.card .thumb {
+  width: 100%;
+  height: 140px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #fff;
+  padding: 0;
+  position: relative;
+}
+
+.card .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0;
+}
+
+/* Badge de visualizações */
+.visualizacoes-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.visualizacoes-badge svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.visualizacoes-badge span {
+  line-height: 1;
+}
+
+/* Elementos do card */
+.card .title { 
+  font-weight: 600; 
+}
+
+.card .meta { 
+  font-size: .9rem; 
+  color: var(--muted); 
+}
+
+/* Card para adicionar novo item */
+.add-card {
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #8aa9d6;
+  background: linear-gradient(135deg, #f4f9ff, #f1f5ff);
+}
+
+.add-card span { 
+  line-height: 1; 
+}
+
+/* Miniatura de imagem */
+.img-miniatura {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+/* Conteúdo principal do card */
+.card .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botões específicos dos cards */
+.card .card-actions {
+  display: flex;
+  gap: 0.4em;
+  margin-top: auto;
+  flex-wrap: wrap;
+  padding-top: 0.7em;
+}
+
+.card .card-actions button,
+.card .card-actions .button,
+.card .card-actions input[type="button"],
+.card .card-actions input[type="submit"] {
+  flex: 1 1 60px;
+  min-width: 60px;
+  padding: 0.35em 0.7em;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 0.45em;
+  margin-bottom: 0.2em;
+  letter-spacing: 0.01em;
+}
+
+.card .card-actions button:hover,
+.card .card-actions .button:hover,
+.card .card-actions input[type="button"]:hover,
+.card .card-actions input[type="submit"]:hover {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.card .card-actions button:active,
+.card .card-actions .button:active,
+.card .card-actions input[type="button"]:active,
+.card .card-actions input[type="submit"]:active {
+  transform: scale(0.98);
+}
+
+/* Botão de exclusão */
+.card .card-actions button.excluir,
+.card .card-actions .button.excluir,
+.card .card-actions input[type="button"].excluir,
+.card .card-actions input[type="submit"].excluir {
+  background: #e53935;
+  color: #fff;
+}
+
+.card .card-actions button.excluir:hover,
+.card .card-actions .button.excluir:hover,
+.card .card-actions input[type="button"].excluir:hover,
+.card .card-actions input[type="submit"].excluir:hover {
+  background: #b71c1c;
+}

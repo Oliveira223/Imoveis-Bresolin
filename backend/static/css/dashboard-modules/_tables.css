@@ -1,0 +1,117 @@
+/* ===========================
+   MÓDULO: TABELA DE INTERESSE
+   =========================== */
+
+.interesse-table-container {
+  background: var(--panel);
+  border-radius: 0.8em;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-top: 1.5em;
+}
+
+.interesse-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.interesse-table th {
+  background: var(--brand);
+  color: white;
+  padding: 1em;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--brand-2);
+}
+
+.interesse-table td {
+  padding: 1em;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.interesse-table tbody tr:hover {
+  background: var(--card);
+  transition: background 0.2s;
+}
+
+.interesse-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 1em;
+  background: #25d366;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5em;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 0.9em;
+}
+
+.whatsapp-link:hover {
+  background: #1da851;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.email-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.btn-copy-email {
+  padding: 0.3em 0.6em;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
+  border-radius: 0.4em;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.btn-copy-email:hover {
+  background: var(--btn-secondary-hover-bg);
+  border-color: var(--btn-secondary-hover-border);
+  transform: translateY(-1px);
+}
+
+.btn-copy-email.copied {
+  background: #27ae60;
+  border-color: #27ae60;
+  color: white;
+}
+
+.copy-icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.interesse-timestamp {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.interesse-empty {
+  text-align: center;
+  padding: 3em;
+  color: var(--muted);
+  font-style: italic;
+}

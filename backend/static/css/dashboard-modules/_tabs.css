@@ -1,0 +1,45 @@
+/* ===========================
+   MÓDULO: SISTEMA DE ABAS
+   =========================== */
+
+.cadastro-tabs {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  background: #fff;
+  border: none;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+  font-weight: 600;
+  background: #fff;
+}
+
+.tab-button:hover:not(.active) {
+  color: var(--brand);
+  background-color: #f8f9fa;
+}
+
+.tab-button.active:hover {
+  background: #fff;
+  color: var(--brand);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}

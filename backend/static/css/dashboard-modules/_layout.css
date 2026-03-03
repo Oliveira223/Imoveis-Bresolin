@@ -1,0 +1,58 @@
+/* ===========================
+   MÓDULO: LAYOUT PRINCIPAL
+   =========================== */
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 240px;
+  background: #fff;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 1.2rem;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--brand);
+}
+
+/* Menu de navegação */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-top: .8rem;
+}
+
+.menu-item {
+  text-align: left;
+  padding: .8rem 1rem;
+  border-radius: .8rem;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.menu-item:hover { 
+  background: var(--card); 
+}
+
+.menu-item.active {
+  background: #e9f1fb;
+  border-color: #cfe2ff;
+  color: #0b4a86;
+}
+
+/* Área de conteúdo */
+.content {
+  margin-left: 240px;
+  padding: 1.4rem 2rem;
+  min-height: 100dvh;
+}

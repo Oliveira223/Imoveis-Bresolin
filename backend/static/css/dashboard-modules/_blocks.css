@@ -1,0 +1,55 @@
+/* ===========================
+   MÓDULO: BLOCOS E ESTRUTURAS
+   =========================== */
+
+/* Grid de blocos */
+.grid-blocos { 
+  display: grid; 
+  gap: 1.2rem; 
+}
+
+/* Blocos de conteúdo */
+.bloco {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem 1rem 1.2rem;
+}
+
+.bloco-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: .8rem;
+}
+
+.bloco-head h2 { 
+  margin: 0; 
+  font-size: 1.1rem; 
+}
+
+.bloco-head small,
+.bloco-subtitle { 
+  color: var(--muted); 
+  font-size: 0.98em;
+}
+
+/* Filtros do dashboard */
+.filtros-dashboard {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtro-select {
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+.filtro-switch {
+  margin: 0;
+}

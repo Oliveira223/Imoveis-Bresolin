@@ -1,0 +1,256 @@
+/* ===========================
+   MÓDULO: FORMULÁRIOS
+   =========================== */
+
+/* Grid base dos formulários */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+/* Campos de formulário */
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  padding: .7rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: .6rem;
+  background: #fff;
+  font: inherit;
+}
+
+textarea { 
+  min-height: 80px; 
+  resize: vertical; 
+}
+
+/* Grupos especiais de formulário */
+.grupo-imagem-principal,
+.grupo-galeria { 
+  grid-column: 1/-1; 
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.coluna-imagem { 
+  display: flex; 
+  flex-direction: column; 
+  gap: .5rem; 
+}
+
+.coluna-preview { 
+  display: flex; 
+  align-items: center; 
+}
+
+.coluna-galeria {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+/* Preview de imagens */
+.img-preview {
+  max-width: 320px;
+  max-height: 220px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.galeria-preview {
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  padding: .2rem;
+}
+
+.galeria-preview img {
+  width: 100px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+/* ===========================
+   MÓDULO: CAMPOS ESPECIAIS
+   =========================== */
+
+/* Campo de preço editável */
+.campo-preco-admin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: .6rem;
+  background: #fff;
+  padding: .7rem .7rem .7rem 2.2rem;
+}
+
+.prefixo-rs {
+  position: absolute;
+  left: .6rem;
+  color: #666;
+}
+
+.preco-digitavel-admin { 
+  outline: none; 
+  min-width: 8ch; 
+}
+
+.preco-digitavel-admin:empty::before {
+  content: attr(data-placeholder);
+  color: #9a9a9a;
+}
+
+/* Campo com ícone/sufixo */
+.input-icon { 
+  display: flex; 
+  align-items: center; 
+  gap: .5rem; 
+}
+
+.input-icon .suffix { 
+  color: #666; 
+}
+
+/* Mensagem informativa */
+.mensagem-automatica {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid var(--brand);
+}
+
+/* Ajustes para campos de preço */
+.info-divider ~ .campo-preco-admin.input-metade {
+  flex: 1 1 100% !important;
+  margin-bottom: 1rem;
+}
+
+.info-divider ~ .campo-preco-admin.input-metade:first-of-type {
+  margin-top: 1rem;
+}
+
+/* ===========================
+   MÓDULO: CONTROLES DE FORMULÁRIO
+   =========================== */
+
+/* Checkbox customizado */
+.checkbox-custom { 
+  display: flex; 
+  align-items: center; 
+  gap: .6rem; 
+}
+
+.checkbox-custom .checkmark {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: #eee;
+  border: 1px solid #aaa;
+  position: relative;
+}
+
+.checkbox-custom input { 
+  display: none; 
+}
+
+.checkbox-custom input:checked+.checkmark {
+  background: var(--brand);
+  border-color: var(--brand-2);
+}
+
+.checkbox-custom .checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-custom input:checked+.checkmark::after { 
+  display: block; 
+}
+
+/* Switch toggle */
+.switch { 
+  display: flex; 
+  align-items: center; 
+  gap: .5rem; 
+}
+
+.switch input { 
+  display: none; 
+}
+
+.switch .slider {
+  --h: 22px;
+  position: relative;
+  width: 44px;
+  height: var(--h);
+  background: #ddd;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.switch .slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left .15s;
+}
+
+.switch input:checked+.slider::after { 
+  left: 24px; 
+}
+
+.switch small { 
+  color: #666; 
+}
+
+/* ===========================
+   MÓDULO: AÇÕES DE FORMULÁRIO
+   =========================== */
+
+.form-actions {
+  grid-column: 1/-1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primary {
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: .7rem 1rem;
+  border-radius: .6rem;
+  cursor: pointer;
+}
+
+.primary:hover { 
+  background: var(--brand-2); 
+}

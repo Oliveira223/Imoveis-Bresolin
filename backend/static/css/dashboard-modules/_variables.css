@@ -1,0 +1,31 @@
+/* ===========================
+   MÓDULO: VARIÁVEIS CSS CUSTOMIZADAS
+   =========================== */
+:root {
+  /* Cores principais */
+  --bg: #efebe9;
+  --panel: #ffffff;
+  --ink: #1b1b1b;
+  --muted: #6b6b6b;
+  --brand: #2a5e9a;
+  --brand-2: #0d4d8f;
+  --line: #e6e3e0;
+  --card: #f8f7f6;
+
+  /* Cores dos botões */
+  --btn-bg: #2a5e9a;
+  --btn-bg-hover: #0d4d8f;
+  --btn-bg-active: #174a7c;
+  --btn-bg-disabled: #e6e3e0;
+  --btn-text: #fff;
+  --btn-secondary-bg: #fff;
+  --btn-secondary-border: #2a5e9a;
+  --btn-secondary-text: #2a5e9a;
+  --btn-secondary-hover-bg: #e9f1fb;
+  --btn-secondary-hover-border: #0d4d8f;
+  
+  
+  /* Sombras */
+  --btn-shadow: 0 2px 8px rgba(42, 94, 154, 0.08);
+  --card-shadow: 0 2px 8px rgba(42, 94, 154, 0.08);
+}

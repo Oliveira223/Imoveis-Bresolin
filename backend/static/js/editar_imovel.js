@@ -23,6 +23,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const plantasNovas = [];
 
   // ===========================
+  // Formatação Monetária (Auto-format)
+  // ===========================
+  const formatarMoedaInput = (input) => {
+    if (!input) return;
+    
+    // Função para aplicar a máscara
+    const aplicarMascara = (el) => {
+      let valor = el.value.replace(/\D/g, '');
+      if (valor === '') {
+        el.value = '';
+        return;
+      }
+      
+      const numero = parseInt(valor) / 100;
+      el.value = numero.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    };
+
+    // Formata valor inicial se houver
+    if (input.value) {
+        // Se vier do banco como 120000.00, converte para string "12000000" (centavos)
+        // Se vier vazio, ignora
+        let val = parseFloat(input.value).toFixed(2).replace('.', '');
+        input.value = val;
+        aplicarMascara(input);
+    }
+
+    input.addEventListener('input', (e) => {
+      aplicarMascara(e.target);
+    });
+  };
+
+  // Aplica aos campos de preço
+  formatarMoedaInput(document.getElementById('preco'));
+  // Adicione outros campos se necessário (iptu, condominio) se existirem no form de edição
+
+  // ===========================
   // Configuração de Reordenação (SortableJS)
   // ===========================
 
@@ -159,7 +198,16 @@ document.addEventListener("DOMContentLoaded", () => {
     data.ativo = form.ativo.checked;
     data.piscina = document.getElementById("piscina").checked;
     data.churrasqueira = document.getElementById("churrasqueira").checked;
-    data.preco = parseFloat(data.preco) || null;
+    
+    // Limpa formatação monetária antes de enviar
+    const limparMoeda = (val) => {
+        if (!val) return null;
+        // Remove pontos de milhar e troca vírgula por ponto
+        return parseFloat(val.replace(/\./g, '').replace(',', '.'));
+    };
+
+    data.preco = limparMoeda(data.preco);
+    
     data.area = parseFloat(data.area) || null;
     data.quartos = parseInt(data.quartos) || null;
     data.vagas = parseInt(data.vagas) || null;
@@ -200,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Envia novas plantas (se houver)
       await Promise.all(plantasNovas.map(url =>
-        fetch(`/api/imoveis/${id}/imagens`, {
+        fetch(`/api/imoveis/${id}/plantas`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url, tipo: 'planta' })
@@ -208,71 +256,12 @@ document.addEventListener("DOMContentLoaded", () => {
       ));
 
       alert("Imóvel atualizado com sucesso!");
-      window.location.href = "/admin";
+      // Opcional: recarregar a página ou voltar para o dashboard
+      window.location.href = '/admin';
+
     } catch (err) {
       console.error(err);
-      alert("Erro ao atualizar o imóvel.");
+      alert("Erro ao atualizar imóvel.");
     }
   };
 });
-
-// ===========================
-// Seleção ao clicar na imagem + destaque visual
-// ===========================
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("thumb-secundaria")) {
-    const container = e.target.closest(".imagem-container");
-    const checkbox = container.querySelector(".imagem-checkbox");
-
-    // Alterna estado do checkbox
-    checkbox.checked = !checkbox.checked;
-
-    // Adiciona ou remove classe de destaque
-    container.classList.toggle("selecionada", checkbox.checked);
-  }
-});
-
-
-// ===========================
-// Excluir imagens secundárias selecionadas
-// ===========================
-
-document.getElementById("btn-excluir-secundarias").onclick = async () => {
-  const selecionadas = document.querySelectorAll("#galeria-secundarias .imagem-checkbox:checked");
-  if (selecionadas.length === 0) return alert("Nenhuma imagem selecionada.");
-
-  if (!confirm("Deseja excluir as imagens selecionadas?")) return;
-
-  for (const checkbox of selecionadas) {
-    const id = checkbox.value;
-    try {
-      await fetch(`/api/imagens/${id}`, { method: "DELETE" });
-      checkbox.closest(".imagem-container").remove();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-};
-
-// ===========================
-// Excluir plantas selecionadas
-// ===========================
-
-document.getElementById("btn-excluir-plantas").onclick = async () => {
-  const selecionadas = document.querySelectorAll("#galeria-plantas .imagem-checkbox:checked");
-  if (selecionadas.length === 0) return alert("Nenhuma planta selecionada.");
-
-  if (!confirm("Deseja excluir as plantas selecionadas?")) return;
-
-  for (const checkbox of selecionadas) {
-    const id = checkbox.value;
-    try {
-      await fetch(`/api/imagens/${id}`, { method: "DELETE" });
-      checkbox.closest(".imagem-container").remove();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-};
-
-
