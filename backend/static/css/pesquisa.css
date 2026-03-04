@@ -555,7 +555,7 @@ a:hover {
   /* Painel de filtros */
   .filtros {
     top: 2rem;
-    width: 15vw;
+    width: 250px;
     flex-shrink: 0;
     padding: 1.5rem;
     border-radius: 12px;
@@ -564,22 +564,22 @@ a:hover {
   }
 
   .filtros h3 {
-    font-size: 1.2vw;
+    font-size: 1.2rem;
     font-weight: 700;
   }
 
   .filtros-conteudo {
-    gap: 1vw;
+    gap: 1rem;
   }
 
   /* Campos de filtro */
   .campo {
-    margin-bottom: 0.5vw;
+    margin-bottom: 0.8rem;
   }
 
   .campo label {
     font-weight: 500;
-    font-size: 0.95vw;
+    font-size: 0.9rem;
     margin-bottom: 0.25rem;
   }
 
@@ -588,7 +588,7 @@ a:hover {
     padding: 0.6rem;
     border: 1px solid #ccc;
     border-radius: 6px;
-    font-size: 0.95vw;
+    font-size: 0.9rem;
   }
 
   /* Contador de imóveis */
