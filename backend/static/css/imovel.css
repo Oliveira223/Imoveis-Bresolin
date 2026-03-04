@@ -622,8 +622,8 @@ body.modo-escuro .sobre-imovel .descricao {
   }
   
   .coluna-direita {
-    width: 80vw;
-    max-width: 80vw;
+    flex: 1; /* Ocupa o restante do espaço */
+    max-width: 50%; /* Limita a largura para evitar overflow */
     height: 80vh;
     overflow-y: auto;
     padding-right: 1vw;
