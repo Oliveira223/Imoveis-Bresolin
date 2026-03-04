@@ -128,7 +128,8 @@ body.no-scroll {
   /* alinha horizontalmente */
 
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  padding-bottom: 2rem;
   background: radial-gradient(circle, #303030 0%, #1d1d1d 70%);
   color: white;
 }
