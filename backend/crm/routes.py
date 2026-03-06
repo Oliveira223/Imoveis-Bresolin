@@ -88,6 +88,71 @@ def logout():
     session.pop('corretor_nome', None)
     return redirect(url_for('crm.login'))
 
+@crm_bp.route('/api/imoveis/busca_simples', methods=['GET'])
+def busca_simples_imoveis():
+    try:
+        termo = request.args.get('q', '').lower()
+        if not termo or len(termo) < 2:
+            return jsonify([])
+
+        with engine.connect() as conn:
+            # Busca Imóveis
+            # Busca por ID (exato) ou Título (parcial) ou Código (se tivesse)
+            query_imoveis = text("""
+                SELECT id, titulo, 'imovel' as tipo, preco 
+                FROM imoveis 
+                WHERE ativo = TRUE 
+                AND (LOWER(titulo) LIKE :termo OR CAST(id AS TEXT) LIKE :termo)
+                LIMIT 5
+            """)
+            
+            # Busca Empreendimentos
+            query_empreendimentos = text("""
+                SELECT id, nome as titulo, 'empreendimento' as tipo, codigo, preco_minimo as preco
+                FROM empreendimentos 
+                WHERE ativo = TRUE 
+                AND (LOWER(nome) LIKE :termo OR LOWER(codigo) LIKE :termo)
+                LIMIT 5
+            """)
+            
+            imoveis = conn.execute(query_imoveis, {'termo': f'%{termo}%'}).mappings().all()
+            empreendimentos = conn.execute(query_empreendimentos, {'termo': f'%{termo}%'}).mappings().all()
+            
+            resultados = []
+            
+            # Prioriza empreendimentos se o termo começar com EMP
+            if termo.upper().startswith('EMP'):
+                for e in empreendimentos:
+                    resultados.append({
+                        'id': e.id, # id do empreendimento
+                        'titulo': f"[EMP] {e.titulo} ({e.codigo})",
+                        'tipo': 'empreendimento',
+                        'valor': e.preco # pode ser null
+                    })
+            
+            for i in imoveis:
+                resultados.append({
+                    'id': i.id,
+                    'titulo': f"[Imóvel #{i.id}] {i.titulo}",
+                    'tipo': 'imovel',
+                    'valor': i.preco
+                })
+                
+            if not termo.upper().startswith('EMP'):
+                for e in empreendimentos:
+                    resultados.append({
+                        'id': e.id,
+                        'titulo': f"[EMP] {e.titulo}",
+                        'tipo': 'empreendimento',
+                        'valor': e.preco
+                    })
+            
+            return jsonify(resultados[:10]) # Limita total
+            
+    except Exception as e:
+        print(f"Erro na busca simples: {e}")
+        return jsonify([])
+
 # ==============================
 # API - LEADS DO KANBAN
 # ==============================
@@ -101,26 +166,33 @@ def create_lead():
         interesse = data.get('interesse')
         observacoes = data.get('observacoes', '')
         corretor_id = session.get('corretor_id')
+        
+        imovel_id = data.get('imovel_id')
+        empreendimento_id = data.get('empreendimento_id')
 
         if not nome or not telefone:
             return jsonify({'erro': 'Nome e Telefone são obrigatórios'}), 400
 
-        # Formata observações se houver interesse específico
+        # Formata observações se houver interesse específico (texto livre) E não tiver selecionado um imóvel
+        # Se selecionou imóvel, o título já vai aparecer no card, não precisa duplicar na obs, 
+        # mas se tiver texto livre extra, mantém.
         obs_final = observacoes
-        if interesse:
+        if interesse and not imovel_id and not empreendimento_id:
             obs_final = f"Interesse em: {interesse}\n{observacoes}"
 
         with engine.begin() as conn:
             conn.execute(text("""
                 INSERT INTO clientes 
-                (nome, telefone, objetivo, corretor_id, nivel_funil, status, observacoes, data_cadastro)
-                VALUES (:nome, :telefone, :objetivo, :corretor_id, 1, 'Em Atendimento', :observacoes, CURRENT_TIMESTAMP)
+                (nome, telefone, objetivo, corretor_id, nivel_funil, status, observacoes, data_cadastro, imovel_interesse_id, empreendimento_interesse_id)
+                VALUES (:nome, :telefone, :objetivo, :corretor_id, 1, 'Em Atendimento', :observacoes, CURRENT_TIMESTAMP, :imovel_id, :empreendimento_id)
             """), {
                 'nome': nome,
                 'telefone': telefone,
                 'objetivo': objetivo,
                 'corretor_id': corretor_id,
-                'observacoes': obs_final
+                'observacoes': obs_final,
+                'imovel_id': imovel_id,
+                'empreendimento_id': empreendimento_id
             })
             
         return jsonify({'sucesso': True}), 201
@@ -147,11 +219,12 @@ def get_leads():
                 c.observacoes,
                 c.checklist,
                 to_char(c.data_cadastro - INTERVAL '3 hours', 'DD/MM/YYYY HH24:MI') as data_formatada,
-                i.titulo as imovel_titulo,
-                i.preco as imovel_preco,
+                COALESCE(i.titulo, e.nome) as imovel_titulo,
+                COALESCE(i.preco, e.preco_minimo) as imovel_preco,
                 co.nome as corretor_nome
             FROM clientes c
             LEFT JOIN imoveis i ON c.imovel_interesse_id = i.id
+            LEFT JOIN empreendimentos e ON c.empreendimento_interesse_id = e.id
             LEFT JOIN corretores co ON c.corretor_id = co.id
             WHERE 1=1
         """
