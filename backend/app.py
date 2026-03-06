@@ -1523,6 +1523,26 @@ def pagina_cadastro_imovel(imovel_id):
             
     return render_template('cadastro.html', imovel_id=imovel_id, imovel=imovel)
 
+@app.route('/cadastro/<string:identificador>')
+def pagina_cadastro_identificador(identificador):
+    # Verifica se é um código de empreendimento (ex: EMP123)
+    if identificador and identificador.upper().startswith('EMP'):
+        codigo_emp = identificador.upper()
+        with engine.connect() as con:
+            result = con.execute(
+                text("SELECT id, nome as titulo, bairro, imagem, preco_minimo as preco FROM empreendimentos WHERE codigo = :codigo"),
+                {'codigo': codigo_emp}
+            )
+            row = result.mappings().first()
+            if row:
+                empreendimento = dict(row)
+                # Passa o ID do empreendimento (que é o próprio código string 'EMP...') como imovel_id para o template
+                # O backend saberá distinguir pelo prefixo EMP na hora de salvar o interesse
+                return render_template('cadastro.html', imovel_id=codigo_emp, imovel=empreendimento)
+    
+    # Se não for EMP ou não encontrado, retorna página de cadastro genérica
+    return render_template('cadastro.html', imovel_id=None, imovel=None)
+
 # ==============================
 # API - CADASTRO DE INTERESSE (CLIENTES)
 # ==============================
@@ -1545,20 +1565,36 @@ def api_interesse():
         # Validação de email (opcional no novo CRM, mas bom ter)
         email = data.get('email')
         
-        imovel_id = data.get('imovel_interesse_id')
-        if imovel_id == '':
-            imovel_id = None
-            
+        imovel_id_raw = data.get('imovel_interesse_id')
+        imovel_id = None
+        empreendimento_id = None
+        
+        if imovel_id_raw:
+            imovel_id_str = str(imovel_id_raw)
+            if imovel_id_str.upper().startswith('EMP'):
+                # É um empreendimento
+                # Precisamos buscar o ID interno do empreendimento usando o código?
+                # Não, o ID do empreendimento É o código (EMP...) conforme verificado no schema (id varchar).
+                # Então podemos salvar diretamente.
+                empreendimento_id = imovel_id_str.upper()
+            else:
+                # É um imóvel comum
+                try:
+                    imovel_id = int(imovel_id_raw)
+                except ValueError:
+                    imovel_id = None
+
         with engine.begin() as conn:
             conn.execute(text("""
-                INSERT INTO clientes (nome, email, telefone, objetivo, imovel_interesse_id, status, nivel_funil)
-                VALUES (:nome, :email, :whatsapp, :objetivo, :imovel_id, 'Novo', 1)
+                INSERT INTO clientes (nome, email, telefone, objetivo, imovel_interesse_id, empreendimento_interesse_id, status, nivel_funil)
+                VALUES (:nome, :email, :whatsapp, :objetivo, :imovel_id, :empreendimento_id, 'Novo', 1)
             """), {
                 'nome': data['nome'],
                 'email': email,
                 'whatsapp': whatsapp_formatted,
                 'objetivo': data.get('objetivo'),
-                'imovel_id': imovel_id
+                'imovel_id': imovel_id,
+                'empreendimento_id': empreendimento_id
             })
         
         return jsonify({'sucesso': True, 'mensagem': 'Interesse cadastrado com sucesso!'}), 201

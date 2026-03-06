@@ -53,14 +53,103 @@ const KanbanModule = {
     abrirModalNovoLead() {
         document.getElementById('form-novo-lead').reset();
         document.getElementById('modal-novo-lead').classList.add('active');
+        this.limparSelecaoImovel(); // Reseta estado visual
+    },
+
+    // Busca de Imóveis para Novo Lead
+    async buscarImoveis(input) {
+        const termo = input.value.trim();
+        const resultsDiv = document.getElementById('novo-lead-resultados');
+        
+        if (termo.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/corretores/api/imoveis/busca_simples?q=${encodeURIComponent(termo)}`);
+            const resultados = await response.json();
+            
+            if (resultados.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding: 10px; color: #888;">Nenhum imóvel encontrado.</div>';
+                resultsDiv.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            resultados.forEach(item => {
+                const tipoBadge = item.tipo === 'empreendimento' 
+                    ? '<span style="background:#2196F3; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:5px;">EMP</span>' 
+                    : '<span style="background:#4CAF50; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:5px;">IMOVEL</span>';
+                
+                html += `
+                    <div class="search-result-item" 
+                         style="padding: 10px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s;"
+                         onmouseover="this.style.background='#333'"
+                         onmouseout="this.style.background='transparent'"
+                         onclick="KanbanModule.selecionarImovel('${item.id}', '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')">
+                        ${tipoBadge} ${item.titulo}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+            
+        } catch (error) {
+            console.error(error);
+        }
+    },
+
+    selecionarImovel(id, titulo, tipo) {
+        const inputBusca = document.getElementById('novo-lead-interesse');
+        const resultsDiv = document.getElementById('novo-lead-resultados');
+        const displaySelected = document.getElementById('novo-lead-selecionado');
+        const textSelected = document.getElementById('novo-lead-selecionado-texto');
+        
+        // Esconde busca e mostra seleção
+        inputBusca.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        
+        displaySelected.style.display = 'flex';
+        textSelected.textContent = titulo;
+        
+        // Seta hidden fields
+        if (tipo === 'empreendimento') {
+            document.getElementById('novo-lead-emp-id').value = id;
+            document.getElementById('novo-lead-imovel-id').value = '';
+        } else {
+            document.getElementById('novo-lead-imovel-id').value = id;
+            document.getElementById('novo-lead-emp-id').value = '';
+        }
+        
+        // Limpa input de texto para não enviar duplicado como string
+        inputBusca.value = ''; 
+    },
+
+    limparSelecaoImovel() {
+        const inputBusca = document.getElementById('novo-lead-interesse');
+        const displaySelected = document.getElementById('novo-lead-selecionado');
+        
+        inputBusca.style.display = 'block';
+        inputBusca.value = '';
+        displaySelected.style.display = 'none';
+        
+        document.getElementById('novo-lead-imovel-id').value = '';
+        document.getElementById('novo-lead-emp-id').value = '';
+        
+        inputBusca.focus();
     },
 
     async salvarNovoLead() {
         const nome = document.getElementById('novo-lead-nome').value;
         const telefone = document.getElementById('novo-lead-telefone').value;
         const objetivo = document.querySelector('input[name="objetivo"]:checked').value;
-        const interesse = document.getElementById('novo-lead-interesse').value;
+        const interesse = document.getElementById('novo-lead-interesse').value; // Texto livre se não selecionou
         const obs = document.getElementById('novo-lead-obs').value;
+        
+        const imovelId = document.getElementById('novo-lead-imovel-id').value;
+        const empId = document.getElementById('novo-lead-emp-id').value;
 
         if (!nome || !telefone) {
             alert('Nome e Telefone são obrigatórios.');
@@ -73,16 +162,20 @@ const KanbanModule = {
         btnSubmit.disabled = true;
 
         try {
+            const payload = {
+                nome,
+                telefone,
+                objetivo,
+                interesse,
+                observacoes: obs,
+                imovel_id: imovelId || null,
+                empreendimento_id: empId || null
+            };
+
             const response = await fetch('/corretores/api/leads', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome,
-                    telefone,
-                    objetivo,
-                    interesse,
-                    observacoes: obs
-                })
+                body: JSON.stringify(payload)
             });
 
             const result = await response.json();
