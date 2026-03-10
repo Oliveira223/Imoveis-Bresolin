@@ -2383,6 +2383,7 @@ const CorretoresModule = {
     const containerLinkGerado = document.getElementById('container-link-gerado');
     const inputLinkGerado = document.getElementById('link-gerado');
     const btnCopiarLink = document.getElementById('btn-copiar-link');
+    const toggleMostrarPreco = document.getElementById('toggle-link-mostrar-preco');
 
     if (selectImovelLink) {
       // Carregar imóveis para o select
@@ -2407,7 +2408,9 @@ const CorretoresModule = {
           return;
         }
         
-        const link = `${window.location.origin}/cadastro/${id}`;
+        const mostrarPreco = toggleMostrarPreco ? toggleMostrarPreco.checked : true;
+        const flag = mostrarPreco ? 'true' : 'false';
+        const link = `${window.location.origin}/cadastro/${id}/${flag}`;
         inputLinkGerado.value = link;
         containerLinkGerado.style.display = 'block';
       };

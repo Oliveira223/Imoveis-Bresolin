@@ -58,7 +58,7 @@
                 <span>Você está vendo:</span>
                 <h3>{{ imovel.titulo }}</h3>
                 <p>{{ imovel.bairro }}</p>
-                {% if imovel.preco %}
+                {% if imovel.preco and show_price %}
                 <p class="preco">R$ {{ '{:,.2f}'.format(imovel.preco).replace(',', 'X').replace('.', ',').replace('X', '.') }}</p>
                 {% endif %}
             </div>
