@@ -1,7 +1,7 @@
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
-from flask import Flask, render_template, request, jsonify, Response, send_file
+from flask import Flask, render_template, request, jsonify, Response, send_file, redirect, url_for, session
 from sqlalchemy import create_engine, text
 from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4
@@ -1504,9 +1504,24 @@ def api_sugestoes():
 # ==============================
 # PÁGINA DE CADASTRO DE INTERESSE
 # ==============================
+def _parse_bool_param(value: str):
+    if value is None:
+        return None
+    normalized = str(value).strip().lower()
+    truthy = {'1', 'true', 't', 'sim', 's', 'yes', 'y', 'on'}
+    falsy = {'0', 'false', 'f', 'nao', 'não', 'n', 'no', 'off'}
+    if normalized in truthy:
+        return True
+    if normalized in falsy:
+        return False
+    return None
+
+def _cadastro_show_price_key(identificador):
+    return f"cadastro:show_price:{identificador}"
+
 @app.route('/cadastro')
 def pagina_cadastro():
-    return render_template('cadastro.html', imovel_id=None, imovel=None)
+    return render_template('cadastro.html', imovel_id=None, imovel=None, show_price=True)
 
 @app.route('/cadastro/<int:imovel_id>')
 def pagina_cadastro_imovel(imovel_id):
@@ -1521,7 +1536,22 @@ def pagina_cadastro_imovel(imovel_id):
         if row:
             imovel = dict(row)
             
-    return render_template('cadastro.html', imovel_id=imovel_id, imovel=imovel)
+    show_price = session.get(_cadastro_show_price_key(imovel_id), True)
+    return render_template('cadastro.html', imovel_id=imovel_id, imovel=imovel, show_price=show_price)
+
+@app.route('/cadastro/<int:imovel_id>/<string:mostrar_preco>')
+def pagina_cadastro_imovel_com_flag(imovel_id, mostrar_preco):
+    parsed = _parse_bool_param(mostrar_preco)
+    if parsed is not None:
+        session[_cadastro_show_price_key(imovel_id)] = parsed
+    return redirect(url_for('pagina_cadastro_imovel', imovel_id=imovel_id))
+
+@app.route('/cadastro/<string:identificador>/<string:mostrar_preco>')
+def pagina_cadastro_identificador_com_flag(identificador, mostrar_preco):
+    parsed = _parse_bool_param(mostrar_preco)
+    if parsed is not None:
+        session[_cadastro_show_price_key(identificador)] = parsed
+    return redirect(url_for('pagina_cadastro_identificador', identificador=identificador))
 
 @app.route('/cadastro/<string:identificador>')
 def pagina_cadastro_identificador(identificador):
@@ -1536,12 +1566,13 @@ def pagina_cadastro_identificador(identificador):
             row = result.mappings().first()
             if row:
                 empreendimento = dict(row)
+                show_price = session.get(_cadastro_show_price_key(identificador), True)
                 # Passa o ID do empreendimento (que é o próprio código string 'EMP...') como imovel_id para o template
                 # O backend saberá distinguir pelo prefixo EMP na hora de salvar o interesse
-                return render_template('cadastro.html', imovel_id=codigo_emp, imovel=empreendimento)
+                return render_template('cadastro.html', imovel_id=codigo_emp, imovel=empreendimento, show_price=show_price)
     
     # Se não for EMP ou não encontrado, retorna página de cadastro genérica
-    return render_template('cadastro.html', imovel_id=None, imovel=None)
+    return render_template('cadastro.html', imovel_id=None, imovel=None, show_price=True)
 
 # ==============================
 # API - CADASTRO DE INTERESSE (CLIENTES)

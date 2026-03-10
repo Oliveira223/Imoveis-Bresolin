@@ -523,6 +523,7 @@
             <h4 style="margin: 0 0 10px 0; color: #0d47a1;">💡 Como usar</h4>
             <ol style="margin: 0; padding-left: 20px; color: #333; line-height: 1.6;">
               <li>Selecione um imóvel na lista abaixo.</li>
+              <li>Marque se o link deve <b>mostrar</b> ou <b>ocultar</b> o preço.</li>
               <li>Clique em <b>"Gerar Link"</b>.</li>
               <li>Copie o link gerado e use em seus anúncios.</li>
               <li>O cliente cairá no sistema já vinculado a este imóvel!</li>
@@ -533,6 +534,10 @@
             <select id="select-imovel-link" style="flex: 1; padding: 10px; min-width: 200px;">
               <option value="">Carregando imóveis...</option>
             </select>
+            <label style="display: flex; gap: 8px; align-items: center; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; background: #f4f4f4;">
+              <input type="checkbox" id="toggle-link-mostrar-preco" checked>
+              Mostrar preço
+            </label>
             <button id="btn-gerar-link" class="primary">Gerar Link</button>
           </div>
           
