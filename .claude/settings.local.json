@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"function fechar\\\\|function anterior\\\\|function adicionarImovel\" backend/static/js/*.js backend/crm/static/js/modules/*.js)",
+      "Bash(wc -l backend/templates/*.html backend/templates/partials/*.html)",
+      "Bash(wc -l backend/static/css/*.css backend/static/css/components/*.css backend/static/css/dashboard-modules/*.css)",
+      "Bash(grep -h \"^\\\\\\\\.\" backend/static/css/imovel.css backend/static/css/empreendimento.css)",
+      "Bash(wc -l backend/static/css/components/*.css)",
+      "Bash(sed -n '521,560p' backend/app.py)",
+      "Bash(sed -n '535,575p' backend/app.py)",
+      "Bash(grep -n \"fetch.*\\\\.then.*\\\\.then\\\\|fetch.*\\\\.then.*\\\\.catch\" backend/static/js/*.js)",
+      "Bash(grep -c \"onclick\\\\|onchange\\\\|oninput\" backend/templates/*.html backend/templates/partials/*.html)",
+      "Bash(grep -n \"onclick\\\\|onchange\\\\|oninput\" backend/templates/*.html backend/templates/partials/*.html)",
+      "Bash(wc -l backend/crm/static/css/*.css backend/crm/static/css/modules/*.css)",
+      "Bash(grep -h \"^:root {\" backend/static/css/*.css backend/crm/static/css/*.css backend/crm/static/css/modules/*.css)",
+      "Bash(grep -l \":root {\" backend/static/css/*.css backend/crm/static/css/*.css backend/crm/static/css/modules/*.css)"
+    ]
+  }
+}

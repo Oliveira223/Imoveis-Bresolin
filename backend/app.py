@@ -2,10 +2,9 @@
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
 from flask import Flask, render_template, request, jsonify, Response, send_file, redirect, url_for, session
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from uuid import uuid4
-from dotenv import load_dotenv
 import os
 import json
 import time
@@ -14,30 +13,8 @@ import csv
 import io
 import zipfile
 from datetime import datetime
-from database import engine
+from database import engine, DATABASE_URL
 
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
-# ==============================
-# Carrega variáveis de ambiente do .env
-# ==============================
-# Lógica automática para banco de dados: 
-# Localmente (Windows), priorizamos DATABASE_URL_LOCAL.
-# Em outros ambientes (Linux/Docker/VPS), usamos DATABASE_URL.
-
-if os.name == 'nt': # Windows
-    DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
-else: # Linux/VPS/Docker
-    DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL_LOCAL")
-
-if not DATABASE_URL:
-    raise Exception("A variável de ambiente DATABASE_URL não está definida.")
-
-# ==============================
-# Cria engine de conexão com o PostgreSQL
-# ==============================
-engine = create_engine(DATABASE_URL)
 # ==============================
 # Configurações de diretórios e uploads
 # ==============================
@@ -60,7 +37,13 @@ SLIDES_CONFIG_PATH = os.path.join(BASE_DIR, 'slides_config.json')
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-print("[INFO] DATABASE_URL:", DATABASE_URL)
+
+def serialize_dates(data_list):
+    for item in data_list:
+        for key, value in item.items():
+            if isinstance(value, datetime):
+                item[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+    return data_list
 
 
 # ================================
@@ -159,14 +142,6 @@ def admin_relatorio():
         
         # Corretores
         corretores = [dict(row._mapping) for row in con.execute(text('SELECT * FROM corretores ORDER BY nome'))]
-
-    # Função auxiliar para serializar datas
-    def serialize_dates(data_list):
-        for item in data_list:
-            for key, value in item.items():
-                if isinstance(value, datetime):
-                    item[key] = value.strftime('%Y-%m-%d %H:%M:%S')
-        return data_list
 
     return render_template(
         'relatorio_completo.html', 
@@ -875,8 +850,6 @@ def api_imoveis():
                 if data.get(campo) in ('', None):
                     data[campo] = None
 
-            print("[DEBUG] Dados recebidos para cadastro:", data)
-
             data['ativo'] = bool(int(data.get('ativo', 1)))
             data['empreendimento_id'] = data.get('empreendimento_id') or None
 
@@ -893,7 +866,6 @@ def api_imoveis():
                     :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro, :iptu, :valor_condominio, :piscina, :churrasqueira
                 )
             '''), data)
-            print("[DEBUG] Imóvel inserido com sucesso!")
             return '', 201
 
 # Detalha, edita ou remove imóvel específico
@@ -1390,7 +1362,6 @@ def api_empreendimento_id(empreendimento_id):
             
             # Extrai lista de imóveis selecionados
             imoveis_selecionados = data.pop('imoveis_selecionados', [])
-            print(f"[DEBUG] Imóveis selecionados para empreendimento {empreendimento_id}: {imoveis_selecionados}")
             
             # Tratamento para campos opcionais vazios
             for campo in ['descricao', 'imagem', 'estagio', 'ri', 'iptu', 'endereco_completo']:
@@ -1445,20 +1416,18 @@ def api_empreendimento_id(empreendimento_id):
                 SET empreendimento_id = NULL 
                 WHERE empreendimento_id = :empreendimento_id
             '''), {'empreendimento_id': empreendimento_id})
-            print(f"[DEBUG] Desvinculados todos os imóveis do empreendimento {empreendimento_id}")
-            
+
             # Depois, vincula apenas os imóveis selecionados
             if imoveis_selecionados:
                 for imovel_id in imoveis_selecionados:
                     con.execute(text('''
-                        UPDATE imoveis 
-                        SET empreendimento_id = :empreendimento_id 
+                        UPDATE imoveis
+                        SET empreendimento_id = :empreendimento_id
                         WHERE id = :imovel_id
                     '''), {
                         'empreendimento_id': empreendimento_id,
                         'imovel_id': imovel_id
                     })
-                print(f"[DEBUG] Vinculados {len(imoveis_selecionados)} imóveis ao empreendimento {empreendimento_id}")
             
             return '', 200
 
@@ -1469,8 +1438,7 @@ def api_empreendimento_id(empreendimento_id):
                 SET empreendimento_id = NULL 
                 WHERE empreendimento_id = :empreendimento_id
             '''), {'empreendimento_id': empreendimento_id})
-            print(f"[DEBUG] Desvinculados todos os imóveis do empreendimento {empreendimento_id} antes da exclusão")
-            
+
             # Depois, exclui o empreendimento
             con.execute(text('DELETE FROM empreendimentos WHERE id = :id'), {'id': empreendimento_id})
             return '', 204
