@@ -12,14 +12,9 @@ from dotenv import load_dotenv
 # ======================
 load_dotenv() 
 
-EMAIL_REMETENTE = "imoveisbresolinsite@gmail.com"
-SENHA_APP_GMAIL = "yaax cfbu qfml kutj"
-DESTINATARIOS = [
-    "oliveira.phno@gmail.com"
-    #"pedrohenrique@gmail.com",
-    #"imoveisbresolinsite@gmail.com"
-    # "otavio.bresolin@creci.org.br"
-]
+EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")
+SENHA_APP_GMAIL = os.getenv("SENHA_APP_GMAIL")
+DESTINATARIOS = [e.strip() for e in os.getenv("EMAIL_DESTINATARIOS", "").split(",") if e.strip()]
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -38,7 +33,7 @@ BACKUP_PATH = os.path.join(
 def gerar_backup():
     print("[INFO] Gerando backup do banco...")
 
-    os.environ["PGPASSWORD"] = "0p7QgP2uBSV8i4WlbFoxIef0IuUpHNAJ"  # senha do banco
+    os.environ["PGPASSWORD"] = os.getenv("DB_PASSWORD", "")
 
     subprocess.run([
         "pg_dump",
