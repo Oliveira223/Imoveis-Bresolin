@@ -119,17 +119,17 @@ def busca_simples_imoveis():
             empreendimentos = conn.execute(query_empreendimentos, {'termo': f'%{termo}%'}).mappings().all()
             
             resultados = []
-            
-            # Prioriza empreendimentos se o termo começar com EMP
-            if termo.upper().startswith('EMP'):
+            is_emp_search = termo.upper().startswith('EMP')
+
+            if is_emp_search:
                 for e in empreendimentos:
                     resultados.append({
-                        'id': e.id, # id do empreendimento
+                        'id': e.id,
                         'titulo': f"[EMP] {e.titulo} ({e.codigo})",
                         'tipo': 'empreendimento',
-                        'valor': e.preco # pode ser null
+                        'valor': e.preco
                     })
-            
+
             for i in imoveis:
                 resultados.append({
                     'id': i.id,
@@ -137,8 +137,8 @@ def busca_simples_imoveis():
                     'tipo': 'imovel',
                     'valor': i.preco
                 })
-                
-            if not termo.upper().startswith('EMP'):
+
+            if not is_emp_search:
                 for e in empreendimentos:
                     resultados.append({
                         'id': e.id,
