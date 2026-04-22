@@ -13,7 +13,7 @@
  */
 const NavigationModule = {
   init() {
-    const menuItems = document.querySelectorAll('.menu-item');
+    const menuItems = document.querySelectorAll('.menu-item[data-target]');
     const views = document.querySelectorAll('.view');
 
     menuItems.forEach(btn => {
