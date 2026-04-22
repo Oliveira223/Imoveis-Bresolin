@@ -7,14 +7,18 @@ import os
 # ==============================
 load_dotenv()
 
-# Lógica automática para banco de dados: 
-# Localmente (Windows), priorizamos DATABASE_URL_LOCAL.
-# Em outros ambientes (Linux/Docker/VPS), usamos DATABASE_URL.
 
-if os.name == 'nt': # Windows
-    DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
-else: # Linux/VPS/Docker
+def is_running_in_docker():
+    return os.path.exists('/.dockerenv')
+
+
+# Regra de prioridade:
+# - Fora do Docker: prioriza DATABASE_URL_LOCAL (útil para túnel SSH local)
+# - No Docker: prioriza DATABASE_URL (host do serviço interno, ex.: bresolin_db)
+if is_running_in_docker():
     DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL_LOCAL")
+else:
+    DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise Exception("A variável de ambiente DATABASE_URL não está definida.")
