@@ -60,7 +60,8 @@ input[type="submit"]:disabled {
 
 /* Botões secundários */
 .button.secondary,
-button.secondary {
+button.secondary,
+.btn-secundario {
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-text);
   border: 1.5px solid var(--btn-secondary-border);
@@ -70,7 +71,9 @@ button.secondary {
 .button.secondary:hover,
 button.secondary:hover,
 .button.secondary:focus,
-button.secondary:focus {
+button.secondary:focus,
+.btn-secundario:hover,
+.btn-secundario:focus {
   background: var(--btn-secondary-hover-bg);
   border-color: var(--btn-secondary-hover-border);
   color: var(--btn-secondary-hover-border);
@@ -96,33 +99,33 @@ button.icon:hover {
 }
 
 /* Ícones em botões */
-.button .icon-left, 
-button .icon-left { 
-  margin-right: 0.5em; 
-  font-size: 1.1em; 
+.button .icon-left,
+button .icon-left {
+  margin-right: 0.5em;
+  font-size: 1.1em;
 }
 
-.button .icon-right, 
-button .icon-right { 
-  margin-left: 0.5em; 
-  font-size: 1.1em; 
+.button .icon-right,
+button .icon-right {
+  margin-left: 0.5em;
+  font-size: 1.1em;
 }
 
 /* Variações de tamanho */
-.button.large, 
-button.large { 
-  font-size: 1.15rem; 
-  padding: 1em 2em; 
+.button.large,
+button.large {
+  font-size: 1.15rem;
+  padding: 1em 2em;
 }
 
-.button.small, 
-button.small { 
-  font-size: 0.92rem; 
-  padding: 0.5em 1em; 
+.button.small,
+button.small {
+  font-size: 0.92rem;
+  padding: 0.5em 1em;
 }
 
 /* Botão flutuante (FAB) */
-.button.fab, 
+.button.fab,
 button.fab {
   position: fixed;
   right: 2em;
@@ -134,7 +137,11 @@ button.fab {
   box-shadow: 0 8px 24px rgba(42, 94, 154, 0.18);
 }
 
-/* Botão específico */
-#btn-atualizar { 
-  color: #222 !important; 
+/* Suporte a anchor tags como botões */
+a.primary,
+a.secondary,
+a.btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
