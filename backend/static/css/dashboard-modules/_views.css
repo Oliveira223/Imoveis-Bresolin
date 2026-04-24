@@ -3,49 +3,76 @@
    =========================== */
 
 /* Sistema de views */
-.view { 
-  display: none; 
+.view {
+  display: none;
 }
 
-.view.active { 
-  display: block; 
+.view.active {
+  display: block;
 }
 
-/* Cabeçalho das views */
+/* Cabeçalho das views — reseta estilos de global.css */
 .view-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+
+  /* Reset do seletor "header" do global.css */
+  background: transparent;
+  color: var(--ink);
+  width: auto;
+  position: static;
 }
 
-.view-header h1 { 
-  font-size: 1.4rem; 
-  margin: 0; 
+.view-header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
 }
 
-.view-header .actions { 
-  display: flex; 
-  gap: .6rem; 
+.view-header .actions {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
 }
 
 .view-header input[type=search] {
-  padding: .6rem .8rem;
+  padding: .55rem .8rem;
   border: 1px solid var(--line);
   border-radius: .6rem;
   background: #fff;
-  min-width: 280px;
+  min-width: 260px;
+  font-size: 0.92rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.view-header button {
-  padding: .6rem .9rem;
+.view-header input[type=search]:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(42, 94, 154, 0.1);
+}
+
+/* Botões utilitários no header — não afeta .primary/.secondary */
+.view-header button:not(.primary):not(.secondary) {
+  padding: .55rem .9rem;
   border: 1px solid var(--line);
   background: #fff;
   border-radius: .6rem;
   cursor: pointer;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.view-header button:hover { 
-  border-color: #c8c6c3; 
+.view-header button:not(.primary):not(.secondary):hover {
+  border-color: #c8c6c3;
+  background: var(--card);
+  transform: none;
+  box-shadow: none;
 }

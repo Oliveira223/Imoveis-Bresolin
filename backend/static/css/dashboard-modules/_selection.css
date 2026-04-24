@@ -101,3 +101,70 @@
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+/* ===========================
+   MÓDULO: CONFIGURAÇÃO DE SLIDES
+   =========================== */
+
+.slides-config {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.slides-config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.slides-intervalo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.slides-intervalo label {
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.slides-intervalo input {
+  width: 130px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.slides-config-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-ver-slides {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.1rem;
+  background: transparent;
+  color: var(--brand);
+  border: 1.5px solid var(--brand);
+  border-radius: 0.6rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+
+.btn-ver-slides:hover {
+  background: #e9f1fb;
+  border-color: var(--brand-2);
+  color: var(--brand-2);
+}

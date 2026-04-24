@@ -4,12 +4,13 @@
 
 /* Tablets e telas médias */
 @media (max-width: 980px) {
-  .sidebar { 
-    width: 200px; 
+  .sidebar {
+    width: 190px;
   }
-  
-  .content { 
-    margin-left: 200px; 
+
+  .content {
+    margin-left: 190px;
+    padding: 1.2rem 1.5rem;
   }
 }
 
@@ -80,15 +81,34 @@
     border-bottom: 1px solid var(--line);
     flex-direction: row;
     align-items: center;
+    overflow-y: visible;
+    overflow-x: auto;
   }
-  
-  .menu { 
-    flex-direction: row; 
-    flex-wrap: wrap; 
+
+  .brand {
+    border-bottom: none;
+    border-right: 1px solid var(--line);
+    padding: 0.8rem 1rem;
+    white-space: nowrap;
   }
-  
-  .content { 
-    margin: 0; 
+
+  .menu {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding: 0.4rem;
+    gap: 0.1rem;
+  }
+
+  a.menu-item {
+    margin-top: 0;
+    border-top: none;
+    border-left: 1px solid var(--line);
+    padding: 0.6rem 0.9rem;
+  }
+
+  .content {
+    margin: 0;
+    padding: 1rem;
   }
   
   /* Formulários em mobile */
@@ -110,6 +130,23 @@
 }
 
 @media (max-width: 600px) {
+  /* Slides config em mobile */
+  .slides-config-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .slides-config-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-ver-slides,
+  #btn-slides-salvar {
+    width: 100%;
+    justify-content: center;
+  }
+
   /* Botões dos cards em mobile */
   .card .card-actions {
     flex-direction: column;

@@ -4,7 +4,7 @@
 
 .info-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 1.75rem;
 }
@@ -13,16 +13,22 @@
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 1rem;
+  padding: 1.1rem 1.2rem;
 }
 
-.info-card h3 { 
-  margin: .2rem 0 .6rem; 
+.info-card h3 {
+  margin: 0 0 .5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
 }
 
-.info-card #kpi-total,
-.info-card #kpi-ativos,
-.info-card #kpi-destaques {
-  font-size: 1.6rem;
+/* KPIs — qualquer elemento com id começando por "kpi-" */
+.info-card [id^="kpi-"] {
+  font-size: 2rem;
   font-weight: 700;
+  color: var(--brand);
+  line-height: 1;
 }
