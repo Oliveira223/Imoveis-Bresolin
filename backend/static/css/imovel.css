@@ -1,958 +1,500 @@
-/* ========================
-   RESET E CONFIGURAÇÕES GLOBAIS
-=========================== */
-
-* {
+/* =============================================
+   BASE — reset mínimo sem quebrar global.css
+============================================= */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-:root {
-  color-scheme: light only;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
+html { scroll-behavior: smooth; }
 body {
-  background-color: white;
+  background: #fff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
+  color: #1a1a1a;
 }
 
-body.modal-aberto {
-  overflow: hidden;
-}
-
-/* ========================
-   LINKS E ÂNCORAS
-=========================== */
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-a:visited {
-  color: inherit;
-}
-
-a:active,
-a:hover {
-  color: inherit;
-}
-
-/* Permite Seleção de Texto */
-.descricao,
-.campos-adicionais p,
-.titulo-imovel,
-.preco,
-.bloco-detalhe {
+/* Seleção de texto nas áreas de conteúdo */
+.titulo-imovel, .preco, .descricao, .detalhe-val, .bairro-imovel {
   user-select: text;
   -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
 }
 
-/* ========================
-   LAYOUT PRINCIPAL - MOBILE FIRST
-=========================== */
-
-.conteudo-imovel {
-  padding: 5vw 7vw;
-  text-align: center;
-  max-width: 900px;
+/* =============================================
+   OVERRIDES DO global.css — HEADER
+   (imovel.css carrega DEPOIS de global.css,
+    então mesma especificidade já sobrescreve)
+============================================= */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  width: 100%;              /* global usa 100vw — causa scroll horizontal */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-
-/* Esconde layout-desktop no mobile */
-main.desktop {
-  display: none;
+.header-content {
+  padding: 0 1.25rem;       /* global usa 3vw 5vw */
+  height: 56px;
 }
+.header-left  { flex: 0 0 auto; }          /* global usa flex:1 */
+.header-center { flex: 1; margin-top: 0; } /* global usa margin-top:2vw */
+.header-right  { flex: 0 0 44px; }         /* global usa flex:1 */
 
-/* ========================
-   IMAGEM PRINCIPAL
-=========================== */
-
-.imagem-principal {
-  width: 100%;
-  max-width: 800px;
-  border-radius: 1vw;
-}
-
-/* ========================
-   TÍTULO E INFORMAÇÕES BÁSICAS
-=========================== */
-
-.titulo-imovel {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #333;
-  margin: 15px 0 5px 0;
-  text-align: left;
-}
-
-.bairro-imovel {
-  font-size: 1.4rem;
-  color: #666;
-  margin: -10px 0 25px 0;
-  text-align: left;
-}
-
-.preco {
-  font-size: 2rem;
-  color: green;
-  font-weight: bold;
-  margin-top: 0.5rem;
-}
-
-/* ========================
-   SEÇÃO SOBRE O IMÓVEL
-=========================== */
-
-.sobre-imovel {
-  margin-bottom: 2rem;
-  text-align: left;
-}
-
-.sobre-imovel h3 {
-  font-size: 6vw;
-  font-weight: bold;
-  margin-bottom: 0;
-  color: #333;
-  text-align: left;
-}
-
-.sobre-imovel .descricao {
-  text-align: justify;
-  word-break: normal;
-  hyphens: auto;
-  font-size: 4vw;
-  line-height: 1.6;
-  color: #333;
-  padding: 0;
-}
-
-.descricao {
-  text-align: justify;
-  word-break: normal;
-  hyphens: auto;
-  padding: 4vw 0vw;
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
-
-/* ========================
-   CAMPOS ADICIONAIS E DETALHES
-=========================== */
-
-.campos-adicionais {
-  text-align: left;
-  margin: 2rem auto;
-  font-size: 1.2rem;
-  line-height: 1.8;
-  padding: 0 1rem;
-}
-
-.campos-adicionais a {
-  color: #f1f1f1;
-}
-
-.banheiro_detalhes {
-  display: flex;
-  font-size: 0.8rem;
-  margin-left: 1rem;
-  color: #808080;
-}
-
-.banheiro_detalhes img {
-  margin-top: 0.25rem;
-  height: 1rem;
-  width: auto;
-}
-
-/* ========================
-   BOTÕES E INTERAÇÕES
-=========================== */
-
-.botao-maps {
-  display: inline-block;
-  font-size: 1rem;
-  margin-bottom: 1vw;
-  padding: 0.5rem 1rem;
-  background-color: #007BFF;
-  color: white !important;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.botao-maps:hover {
-  background-color: #0056b3;
-}
-
-.btn-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 1.2rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #25d366;
-  color: white !important;
-  text-decoration: none;
-  font-weight: bold;
+.btn-voltar {
+  min-height: 36px;
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.5rem;
   border-radius: 8px;
-  transition: background-color 0.3s, transform 0.2s;
-  max-width: 90%;
-  width: fit-content;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-voltar:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+.btn-voltar img {
+  width: 16px;              /* global usa 5vw */
+  filter: invert(1);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+.btn-voltar span {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.85);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.01em;
 }
 
-.btn-whatsapp:hover {
-  background-color: #1ebe5d;
-  transform: scale(1.03);
+.title_container {
+  line-height: 1;           /* global usa 6vw */
+  gap: 2px;
+}
+.title_container h1 {
+  font-size: clamp(1rem, 4.5vw, 1.4rem);       /* global usa 6vw */
+  letter-spacing: clamp(0.3rem, 1.8vw, 0.7rem);
+  text-indent: clamp(0.3rem, 1.8vw, 0.7rem);
+  margin-left: 0;           /* global usa 1vw */
+}
+.title_container h2 {
+  font-size: clamp(0.45rem, 1.8vw, 0.65rem);   /* global usa 2vw */
+  letter-spacing: clamp(0.12rem, 0.8vw, 0.25rem);
+  opacity: 0.6;
 }
 
-.btn-whatsapp img {
-  width: 24px;
-  height: 24px;
+/* Corrige link visitado que fica roxo no header */
+.header-center a,
+.header-center a:link,
+.header-center a:visited,
+.header-center a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+/* Link do Instagram no footer — mantém cor branca, sublinha só o texto */
+.footer a,
+.footer a:link,
+.footer a:visited,
+.footer a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.footer a .info_item p {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .btn-tema {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
+  background: none; border: none; cursor: pointer;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; transition: background 0.2s;
+}
+.btn-tema:hover { background: rgba(255,255,255,0.08); }
+.btn-tema img { width: 22px; height: 22px; filter: invert(0.8); }
+
+/* =============================================
+   LOADER
+============================================= */
+.loading-container {
+  position: fixed; inset: 0;
+  background: #1d1d1d;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+.loading-container.oculto { opacity: 0; visibility: hidden; pointer-events: none; }
+.logo-animate { width: 70px; height: auto; }
+.logo-animate path { stroke-dasharray: 300; stroke-dashoffset: 300; }
+
+/* =============================================
+   GALERIA MOBILE
+============================================= */
+.galeria-mobile { width: 100%; position: relative; background: #111; }
+.galeria-principal-img {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; cursor: pointer;
+}
+.galeria-contador {
+  position: absolute; bottom: 0.65rem; right: 0.75rem;
+  background: rgba(0,0,0,0.6); color: #fff;
+  font-size: 0.72rem; font-weight: 600;
+  padding: 0.2rem 0.6rem; border-radius: 20px; backdrop-filter: blur(4px);
+}
+.galeria-scroll-mobile {
+  display: flex; gap: 0.35rem;
+  overflow-x: auto; padding: 0.5rem 0.75rem;
+  background: #f5f5f5; scrollbar-width: none;
+}
+.galeria-scroll-mobile::-webkit-scrollbar { display: none; }
+.galeria-scroll-mobile img {
+  height: 60px; width: auto; min-width: 80px;
+  object-fit: cover; border-radius: 5px; cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, opacity 0.2s; flex-shrink: 0;
+}
+.galeria-scroll-mobile img.ativa { border-color: #0077bb; }
+.galeria-scroll-mobile img:hover { opacity: 0.85; }
+
+/* GALERIA DESKTOP — oculta no mobile */
+.galeria-desktop { display: none; }
+
+/* =============================================
+   LAYOUT DO CONTEÚDO
+============================================= */
+.conteudo-imovel {
+  padding: 1.25rem 1.1rem 2.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left; /* sobrescreve text-align:center do CSS anterior */
+}
+.col-lateral { display: none; }
+
+/* =============================================
+   CABEÇALHO DO IMÓVEL
+============================================= */
+.imovel-header { margin-bottom: 1rem; }
+.imovel-tags {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.4rem; flex-wrap: wrap;
+}
+.tag {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 4px;
+}
+.tag-tipo    { background: #f0f0f0; color: #444; }
+.tag-venda   { background: #e8f4ec; color: #1a7d36; }
+.tag-aluguel { background: #fff8e1; color: #9a6800; }
+.tag-id      { background: none; color: #aaa; font-weight: 400; padding: 0; }
+
+.titulo-imovel {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 700; color: #111; line-height: 1.2; margin-bottom: 0.3rem;
+}
+.bairro-imovel { font-size: 0.95rem; color: #666; }
+
+/* =============================================
+   FEATURES STRIP
+============================================= */
+.features-strip {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin: 1rem 0; padding: 0.85rem 1rem;
+  background: #f8f8f8; border: 1px solid #eee; border-radius: 10px;
+}
+.feat-item {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-size: 0.82rem; color: #333; font-weight: 600;
+}
+.feat-item img { width: 16px; height: 16px; }
+.feat-sep { width: 1px; height: 18px; background: #ddd; margin: 0 0.15rem; }
+
+/* =============================================
+   PREÇO E BOTÃO WHATSAPP
+============================================= */
+.preco-area { margin: 1rem 0; }
+.preco {
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 700; color: #1a7d36; line-height: 1;
+}
+.preco-extras {
+  font-size: 0.78rem; color: #888;
+  margin-top: 0.2rem; display: flex; gap: 1rem; flex-wrap: wrap;
 }
 
-.btn-tema img {
-  width: 24px;
-  height: 24px;
-  filter: invert(0.8);
-  transition: transform 0.2s ease;
+.btn-whatsapp {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.6rem; width: 100%; padding: 1rem 1.5rem;
+  background: #25d366; color: #fff !important;
+  font-size: 1rem; font-weight: 700;
+  border-radius: 10px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.3);
+  transition: background 0.2s, transform 0.15s;
+  min-height: 52px; margin: 1rem 0; text-decoration: none;
 }
+.btn-whatsapp:hover { background: #1ebe5d; color: #fff !important; }
+.btn-whatsapp:active { transform: scale(0.98); }
+.btn-whatsapp img { width: 22px; height: 22px; }
 
-.btn-tema:hover img {
-  transform: scale(1.1);
+/* =============================================
+   SEÇÕES
+============================================= */
+.secao {
+  margin: 1.5rem 0; padding-bottom: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
 }
+.secao:last-child { border-bottom: none; }
+.secao-titulo {
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #888; margin-bottom: 0.75rem;
+}
+.descricao { font-size: 0.92rem; color: #444; line-height: 1.75; hyphens: auto; }
 
-/* ========================
-   MAPA INCORPORADO
-=========================== */
+/* =============================================
+   GRADE DE DETALHES
+============================================= */
+.detalhes-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; border: 1px solid #eee;
+  border-radius: 10px; overflow: hidden; background: #eee;
+}
+.detalhe-item {
+  background: #fff; padding: 0.7rem 0.9rem;
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.detalhe-full { grid-column: 1 / -1; }
+.detalhe-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #aaa;
+}
+.detalhe-val { font-size: 0.88rem; color: #111; font-weight: 500; overflow-wrap: break-word; min-width: 0; }
+.detalhe-val a { color: #0077bb; text-decoration: underline; }
 
+/* =============================================
+   GALERIA HORIZONTAL (dentro das seções)
+============================================= */
+.galeria-section .galeria-scroll {
+  display: flex; gap: 0.5rem;
+  overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: none;
+}
+.galeria-section .galeria-scroll::-webkit-scrollbar { display: none; }
+.galeria-section .galeria-scroll img {
+  height: 100px; width: auto; min-width: 130px;
+  object-fit: cover; border-radius: 7px; cursor: pointer;
+  flex-shrink: 0; border: 1.5px solid #eee; transition: opacity 0.2s;
+}
+.galeria-section .galeria-scroll img:hover { opacity: 0.85; }
+
+/* =============================================
+   LOCALIZAÇÃO
+============================================= */
+.localizacao-texto { font-size: 0.85rem; color: #888; margin-bottom: 0.75rem; }
 .mapa-container {
-  margin-top: 1rem;
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 800px;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(230, 0, 0, 0.1);
+  width: 100%; aspect-ratio: 4/3;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid #eee; margin-bottom: 0.75rem;
 }
+.mapa-container iframe { width: 100%; height: 100%; border: 0; display: block; }
+.btn-maps {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1.1rem; background: #0077bb; color: #fff !important;
+  border-radius: 7px; font-size: 0.85rem; font-weight: 600;
+  border: none; cursor: pointer; text-decoration: none; transition: background 0.2s;
+}
+.btn-maps:hover { background: #005f99; }
 
-.mapa-container iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
+/* =============================================
+   IMÓVEIS SIMILARES
+============================================= */
+.similares-lista {
+  display: grid; grid-template-columns: 1fr; gap: 0.75rem;
+}
+/* No mobile, força os cards a respeitar a grade (card_imovel.css usa width fixo) */
+.similares-lista .card-link    { width: 100% !important; }
+.similares-lista .card-container { width: 100% !important; height: 350px !important; }
+
+/* =============================================
+   VIEWER FULLSCREEN
+============================================= */
+#imagem-viewer {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  z-index: 1000;
+  overflow: hidden;
+}
+#imagem-viewer.aberto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.viewer-img {
+  max-width: 92vw; max-height: 88vh;
+  width: auto; height: auto;
+  object-fit: contain; border-radius: 8px; user-select: none;
   display: block;
 }
-
-/* ========================
-   GALERIA DE IMAGENS
-=========================== */
-
-.galeria {
-  margin-top: 2.5vw;
+.viewer-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.12); border: none; border-radius: 50%;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #fff; font-size: 1.4rem;
+  transition: background 0.2s; backdrop-filter: blur(4px);
+}
+.viewer-nav:hover { background: rgba(255,255,255,0.22); }
+.viewer-prev { left: 1rem; }
+.viewer-next { right: 1rem; }
+.viewer-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: rgba(255,255,255,0.12); border: none; border-radius: 50%;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #fff; font-size: 1.2rem; transition: background 0.2s;
+}
+.viewer-close:hover { background: rgba(255,255,255,0.22); }
+.viewer-counter {
+  position: absolute; bottom: 1.25rem; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); color: #fff;
+  padding: 0.25rem 0.85rem; border-radius: 20px;
+  font-size: 0.78rem; backdrop-filter: blur(4px);
 }
 
-.galeria h3 {
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-.galeria-imagens {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.galeria-imagens img {
-  width: 200px;
-  border-radius: 6px;
-  transition: transform 0.2s;
-  object-fit: cover;
-}
-
-.galeria-imagens img:hover {
-  transform: scale(1.05);
-}
-
-/* ========================
-   CARROSSEL DE IMAGENS
-=========================== */
-
-.galeria-imagens-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 1rem;
-  padding: 1rem 0;
-  scroll-snap-type: x proximity;
-  scrollbar-width: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-
-.galeria-imagens-scroll img {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  width: 180px;
-  height: 130px;
-  object-fit: cover;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.galeria-imagens-scroll img:hover {
-  transform: scale(1.05);
-}
-
-/* ========================
-   VISUALIZADOR FULLSCREEN
-=========================== */
-
-#imagem-viewer {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-#imagem-viewer img {
-  max-width: 90vw;
-  max-height: 90vh;
-  border-radius: 12px;
-}
-
-#imagem-viewer .navegacao {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
-  cursor: pointer;
-  user-select: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, transform 0.2s;
-  z-index: 999;
-}
-
-#imagem-viewer .navegacao:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-#imagem-viewer .navegacao img {
-  width: 30px;
-  height: 30px;
-}
-
-#imagem-viewer .prev {
-  left: 20px;
-}
-
-#imagem-viewer .next {
-  right: 20px;
-}
-
-#imagem-viewer .fechar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
-  color: white;
-  cursor: pointer;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-  transition: background 0.2s;
-}
-
-#imagem-viewer .fechar:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-#imagem-viewer .fechar img {
-  width: 25px;
-  height: 25px;
-  pointer-events: none;
-}
-
-#imagem-viewer .navegacao img {
-  width: 10vw;
-  height: auto;
-  pointer-events: none;
-}
-
-.imagem-scroll-container {
-  margin-left: 2vw;
-  margin-right: 2vw;
-  gap: 2vw;
-  display: flex;
-  overflow-x: scroll;
-  width: 100%;
-  height: 100%;
-  scroll-snap-type: x mandatory;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.imagem-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-.imagem-fullscreen {
-  flex: 0 0 100%;
-  height: auto;
-  max-height: 90vh;
-  scroll-snap-align: center;
-  object-fit: contain;
-  border-radius: 12px;
-}
-
-/* ========================
-   IMÓVEIS SIMILARES
-=========================== */
-
-.imoveis-similares,
-.imoveis-similares-desktop {
-  margin-top: 2rem;
-  width: 100%;
-  padding: 1.5rem 0.5rem;
-  border-radius: 8px;
-}
-
-.titulo-similares {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: left;
-  border-bottom: 1px solid #000000;
-  padding-bottom: 0.5rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  color: #333;
-}
-
-.lista-similares {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 0 0.5rem;
-}
-
-.imoveis-similares-desktop {
-  display: none;
-}
-
-/* ========================
+/* =============================================
    MODO ESCURO
-=========================== */
+============================================= */
+body.modo-escuro { background: #121212; color: #e0e0e0; }
+body.modo-escuro .titulo-imovel  { color: #f0f0f0; }
+body.modo-escuro .bairro-imovel  { color: #aaa; }
+body.modo-escuro .descricao      { color: #ccc; }
+body.modo-escuro .localizacao-texto { color: #777; }
+body.modo-escuro .features-strip { background: #1e1e1e; border-color: #333; }
+body.modo-escuro .feat-item      { color: #ccc; }
+body.modo-escuro .feat-sep       { background: #444; }
+body.modo-escuro .preco          { color: #81c784; }
+body.modo-escuro .preco-extras   { color: #777; }
+body.modo-escuro .secao          { border-bottom-color: #2a2a2a; }
+body.modo-escuro .secao-titulo   { color: #666; }
+body.modo-escuro .tag-tipo       { background: #2a2a2a; color: #888; }
+body.modo-escuro .tag-venda      { background: #1a3320; color: #4caf50; }
+body.modo-escuro .tag-aluguel    { background: #2e2200; color: #ffc107; }
+body.modo-escuro .tag-id         { color: #666; }
+body.modo-escuro .detalhes-grid  { background: #2a2a2a; border-color: #333; }
+body.modo-escuro .detalhe-item   { background: #1a1a1a; }
+body.modo-escuro .detalhe-val    { color: #e0e0e0; }
+body.modo-escuro .detalhe-label  { color: #666; }
+body.modo-escuro .detalhe-val a  { color: #64b5f6; }
+body.modo-escuro .galeria-scroll-mobile { background: #1e1e1e; }
+body.modo-escuro .galeria-scroll-mobile img.ativa { border-color: #1976d2; }
+body.modo-escuro .galeria-section .galeria-scroll img { border-color: #333; }
+body.modo-escuro .mapa-container { border-color: #333; }
+body.modo-escuro .btn-maps       { background: #1565c0; }
+body.modo-escuro .btn-maps:hover { background: #0d47a1; }
+body.modo-escuro .painel-lateral  { background: #1a1a1a; border-color: #333; }
+body.modo-escuro .pf-item         { background: #222; }
+body.modo-escuro .pf-val          { color: #e0e0e0; }
+body.modo-escuro .pf-label        { color: #666; }
+body.modo-escuro .painel-divider  { background: #2a2a2a; }
+body.modo-escuro .painel-ref      { color: #666; }
+body.modo-escuro .titulo-similares { color: rgba(255,255,255,0.8); }
 
-body.modo-escuro {
-  background-color: #121212;
-  color: #e0e0e0;
+/* =============================================
+   DESKTOP (768px+)
+============================================= */
+/* =============================================
+   MOBILE — resets de segurança
+============================================= */
+@media (max-width: 767px) {
+  .galeria-desktop  { display: none; }
+  .col-lateral      { display: none; }
+  .conteudo-imovel  { display: block; }
 }
-
-body.modo-escuro .titulo-imovel,
-body.modo-escuro .descricao,
-body.modo-escuro .campos-adicionais,
-body.modo-escuro .galeria h3,
-body.modo-escuro .footer_info p {
-  color: #e0e0e0;
-}
-
-body.modo-escuro .preco {
-  color: #81c784;
-}
-
-body.modo-escuro .botao-maps {
-  background-color: #2196f3;
-}
-
-body.modo-escuro .botao-maps:hover {
-  background-color: #1976d2;
-}
-
-body.modo-escuro .btn-whatsapp {
-  background-color: #25d366;
-}
-
-body.modo-escuro .btn-whatsapp:hover {
-  background-color: #1ebe5d;
-}
-
-body.modo-escuro .footer {
-  background-color: #1c1c1c;
-  color: #e0e0e0;
-}
-
-body.modo-escuro .footer_logo img,
-body.modo-escuro .footer_info img {
-  filter: brightness(0.8);
-}
-
-body.modo-escuro .footer_copyright {
-  color: #aaaaaa;
-}
-
-body.modo-escuro #imagem-viewer {
-  background-color: rgba(0, 0, 0, 0.95);
-}
-
-body.modo-escuro .bloco-detalhe a {
-  color: white;
-}
-
-body.modo-escuro .titulo-similares {
-  color: rgba(255, 255, 255, 0.808);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.808);
-}
-
-/* Seletores mais específicos para garantir que a descrição fique branca no modo escuro */
-body.modo-escuro .coluna-direita .sobre-imovel .descricao {
-  color: #e0e0e0 !important;
-}
-
-body.modo-escuro .sobre-imovel .descricao {
-  color: #e0e0e0 !important;
-}
-
-/* ========================
-   MEDIA QUERIES - DESKTOP
-=========================== */
 
 @media (min-width: 768px) {
-  
-  /* ========================
-     ESTRUTURA GERAL DESKTOP
-  ========================= */
-  
-  main.mobile {
-    display: none;
-  }
-  
-  main.desktop {
-    display: block;
-  }
-  
-  .conteudo-imovel {
-    padding: 1vw 4vw;
-    max-width: 100vw;
-  }
-  
-  /* ========================
-     LAYOUT PRINCIPAL (3 COLUNAS)
-  ========================= */
-  
-  .layout-desktop {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 2vw;
-    margin-top: 2vw;
-    width: 100%;
-  }
-  
-  .coluna-esquerda {
-    flex: 0 0 15%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    overflow-y: auto;
-    height: 80vh;
-  }
-  
-  .coluna-esquerda img {
-    width: 100%;
-    border-radius: 6px;
-    cursor: pointer;
-    object-fit: cover;
-  }
-  
-  .coluna-central {
-    flex: 0 0 35%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-  }
-  
-  .coluna-central img {
-    max-width: 100%;
-    height: 100%;
-    border-radius: 8px;
-  }
-  
-  .coluna-direita {
-    flex: 1; /* Ocupa o restante do espaço */
-    max-width: 50%; /* Limita a largura para evitar overflow */
-    height: 80vh;
-    overflow-y: auto;
-    padding-right: 1vw;
-    display: flex;
-    text-align: left;
-    flex-direction: column;
-    gap: 0;
-  }
-  
-  /* ========================
-     IMAGEM PRINCIPAL / MAPA DESKTOP
-  ========================= */
-  
-  .imagem-principal-container {
-    position: relative;
-    width: 100%;
-    height: 80vh;
-  }
-  
-  .imagem-principal-click {
-    height: 100%;
-  }
-  
-  .imagem-principal,
-  .mapa-principal iframe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0.5vw;
-    display: block;
-    border: 0;
-  }
-  
-  .mapa-principal {
-    display: none;
-    height: 100%;
-  }
-  
-  .botao-mapa-toggle {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10;
-  }
-  
-  .botao-mapa-toggle:hover {
-    background-color: #0056b3;
-  }
-  
-  /* ========================
-     TÍTULO E PREÇO DESKTOP
-  ========================= */
-  
-  .titulo-imovel {
-    font-size: 2.5vw;
-  }
-  
-  .coluna-direita .titulo-imovel {
-    font-size: 2.5vw;
-    margin-top: -0.6vw;
-    font-weight: bold;
-  }
-  
-  .coluna-direita .bairro-imovel {
-    font-size: 1.8vw;
-    font-weight: 400;
-    margin-top: -0.5vw;
-    margin-bottom: 2vw;
-    color: #686868;
-    text-align: left;
-  }
-  
-  .preco {
-    font-size: 2vw;
-    color: green;
-    font-weight: bold;
-    margin-top: 0vw;
-    margin-bottom: 0.5vw;
-  }
-  
-  .coluna-direita .preco {
-    font-size: 2vw;
-    color: green;
-    font-weight: bold;
-    margin-top: 0vw;
-    margin-bottom: 0.5vw;
-  }
-  
-  /* ========================
-     SEÇÃO SOBRE O IMÓVEL DESKTOP
-  ========================= */
-  
-  .coluna-direita .sobre-imovel {
-    margin-bottom: 2rem;
-    text-align: left;
-  }
-  
-  .coluna-direita .sobre-imovel h3 {
-    font-size: 1.5vw;
-    font-weight: bold;
-    margin-bottom: 0;
-    color: #333;
-    text-align: left;
-  }
-  
-  .coluna-direita .sobre-imovel .descricao {
-    font-size: 1vw;
-    line-height: 1.6;
-    color: #151515;
-    text-align: justify;
-    padding: 0;
-  }
-  
-  /* ========================
-     DESCRIÇÃO DESKTOP
-  ========================= */
-  
-  .descricao {
-    white-space: pre-line;
-    padding: 0;
-    font-size: 1vw;
-    line-height: 1.6;
-  }
-  
-  /* ========================
-     CAMPOS EM GRADE DESKTOP
-  ========================= */
-  
-  .bloco-direita {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    justify-content: flex-start;
-  }
-  
-  .campos-grid {
-    display: flex;
-    justify-content: left;
-    text-align: left;
-    align-items: left;
-    flex-wrap: wrap;
-  }
-  
-  .bloco-detalhe {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 0.4vw;
-  }
-  
-  .bloco-detalhe a {
-    color: black;
-  }
-  
-  .linha-detalhe {
-    display: flex;
-    margin-left: 0.5vw;
-    font-size: 0.8vw;
-    color: #666;
-    line-height: 1.6em;
-  }
-  
-  .campos-adicionais {
-    text-align: left;
-    margin: 0 0;
-    font-size: 1.2rem;
-    line-height: 1.8;
-    padding: 0 0;
-  }
-  
-  .campos-adicionais.campos-grid {
-    display: flex;
-    flex-wrap: wrap;
-    line-height: 1vw;
-    gap: 1vw 3vw;
-  }
-  
-  .campos-adicionais.campos-grid > * {
-    flex: 1 1 45%;
-  }
-  
-  .campos-adicionais .detalhe {
-    font-size: 1vw;
-    color: #666;
-    margin-left: 0.5rem;
-  }
-  
-  /* ========================
-     BOTÕES DESKTOP
-  ========================= */
-  
-  .btn-whatsapp {
-    margin-top: 1vw;
-    gap: 1vw;
-    font-size: 1.2rem;
-    padding: 0.75rem 1vw;
-    border-radius: 8px;
-  }
-  
-  .btn-whatsapp img {
-    width: 2vw;
-    height: auto;
-  }
-  
-  /* ========================
-     GALERIA DESKTOP
-  ========================= */
-  
-  .galeria h3 {
-    font-size: 1.2vw;
-    margin-bottom: 1rem;
-  }
-  
-  .galeria-imagens-scroll img,
-  .galeria-imagens img {
-    border-radius: 6px;
-  }
-  
-  .thumb-secundaria {
-    aspect-ratio: 3 / 4;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  /* ========================
-     VISUALIZADOR FULLSCREEN DESKTOP
-  ========================= */
-  
-  #imagem-viewer img {
-    max-width: 90vw;
-    max-height: 90vh;
-  }
-  
-  #imagem-viewer .navegacao img,
-  #imagem-viewer .fechar img {
-    width: 5vw;
-  }
-  
-  /* ========================
-     IMÓVEIS SIMILARES DESKTOP
-  ========================= */
-  
-  .imoveis-similares {
-    display: none;
-  }
-  
-  .imoveis-similares-desktop {
-    display: block;
-    margin: 2rem auto;
-    max-width: 1200px;
-    padding: 1.5rem;
-  }
-  
-  .lista-similares-desktop {
+  /* Troca de galeria */
+  .galeria-mobile  { display: none; }
+  .features-strip  { display: none; }   /* painel lateral já exibe as mesmas infos */
+  .galeria-desktop {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 0.5rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 340px 180px;
+    gap: 4px; background: #111;
   }
-  
-  /* ========================
-     SCROLLBARS DESKTOP
-  ========================= */
-  
-  /* Scrollbar Modo Claro */
-  .coluna-esquerda {
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f3f3f3;
+  .galeria-desktop .foto-principal {
+    grid-row: 1 / 3;
+    overflow: hidden; cursor: pointer; position: relative;
   }
-  
-  .coluna-esquerda::-webkit-scrollbar {
-    width: 8px;
-    background: #f3f3f3;
+  .galeria-desktop .foto-thumb {
+    overflow: hidden; cursor: pointer; position: relative; background: #222;
   }
-  
-  .coluna-esquerda::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 6px;
+  .galeria-desktop .foto-vazia {
+    display: flex; align-items: center; justify-content: center; cursor: default;
+  }
+  .galeria-desktop img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.35s ease;
+  }
+  .galeria-desktop .foto-principal:hover img,
+  .galeria-desktop .foto-thumb:not(.foto-vazia):hover img { transform: scale(1.04); }
+  .galeria-desktop .badge-pretensao {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    background: rgba(0,0,0,0.7); color: #fff;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.25rem 0.7rem;
+    border-radius: 20px; backdrop-filter: blur(4px);
+  }
+  .galeria-desktop .btn-ver-fotos {
+    position: absolute; bottom: 0.75rem; right: 0.75rem;
+    background: rgba(0,0,0,0.7); color: #fff; border: none;
+    font-size: 0.72rem; font-weight: 600; padding: 0.3rem 0.75rem;
+    border-radius: 6px; cursor: pointer; backdrop-filter: blur(4px);
     transition: background 0.2s;
   }
-  
-  .coluna-esquerda::-webkit-scrollbar-thumb:hover {
-    background: #888;
+  .galeria-desktop .btn-ver-fotos:hover { background: rgba(0,0,0,0.9); }
+
+  /* Layout 2 colunas */
+  .conteudo-imovel {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+    max-width: 1100px;
+    padding: 2rem 2rem 3rem;
+    align-items: start;
   }
-  
-  /* Scrollbar Modo Escuro */
-  body.modo-escuro .coluna-esquerda {
-    scrollbar-color: #222 #151515;
+  .col-principal { min-width: 0; }    /* evita que coluna 1fr expanda além do disponível */
+  .col-lateral { display: block; position: sticky; top: 72px; }
+  .mobile-preco-cta { display: none !important; }
+
+  /* Painel lateral */
+  .painel-lateral {
+    background: #fff; border: 1px solid #e8e8e8;
+    border-radius: 14px; padding: 1.4rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
   }
-  
-  body.modo-escuro .coluna-esquerda::-webkit-scrollbar {
-    background: #151515;
+  .painel-lateral .preco { font-size: 1.9rem; margin-bottom: 0.2rem; }
+  .painel-lateral .preco-extras { font-size: 0.75rem; }
+  .painel-divider { height: 1px; background: #f0f0f0; margin: 1rem 0; }
+  .painel-features { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .pf-item {
+    background: #f8f8f8; border-radius: 8px; padding: 0.6rem 0.75rem;
+    display: flex; flex-direction: column; gap: 0.1rem;
   }
-  
-  body.modo-escuro .coluna-esquerda::-webkit-scrollbar-thumb {
-    background: #222;
-  }
-  
-  body.modo-escuro .coluna-esquerda::-webkit-scrollbar-thumb:hover {
-    background: #444;
-  }
+  .pf-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #aaa; }
+  .pf-val   { font-size: 0.9rem; font-weight: 700; color: #111; }
+  .painel-ref { font-size: 0.68rem; color: #bbb; text-align: center; margin-top: 0.75rem; }
+
+  /* Similares desktop */
+  .similares-lista { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.1rem; }
+  .similares-lista .card-container { height: 350px !important; }
+
+  /* Header overrides para desktop (global.css tem media queries próprias) */
+  .header-content { padding: 0 2rem; height: 56px; }
+  .title_container h1 { font-size: 1.3rem; letter-spacing: 0.6rem; text-indent: 0.6rem; }
+  .title_container h2 { font-size: 0.6rem; letter-spacing: 0.22rem; }
 }
 
-/* ========================
-   AJUSTES PARA MOBILE - GALERIA
-========================= */
-
-@media (max-width: 768px) {
-  .galeria-imagens-scroll {
-    scroll-snap-type: none;
-    scroll-padding: 0;
-    overscroll-behavior-x: contain;
-  }
-  
-  .galeria-imagens-scroll img {
-    scroll-snap-align: none;
-    width: 160px;
-    height: 120px;
-  }
+@media (min-width: 1024px) {
+  .conteudo-imovel { padding: 2rem 3rem 3rem; max-width: 1200px; }
+  .galeria-desktop { grid-template-rows: 420px 200px; }
 }

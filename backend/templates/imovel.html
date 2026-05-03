@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <title>{{ imovel.titulo }} | Imóveis Bresolin</title>
   <link rel="icon" href="/static/img/icons/favicon_bresolin_rounded.png" type="image/png">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1c1c1c" />
-  <meta name="color-scheme" content="light" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-capable" content="yes">
-
-  <link rel="stylesheet" href="/static/css/imovel.css">
+  <!-- global.css PRIMEIRO para que imovel.css possa sobrescrever -->
   <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/imovel.css">
   <link rel="stylesheet" href="/static/css/components/card_imovel.css">
-
-
 </head>
-
 <body>
+
+  {# Prepara listas de imagens uma vez só #}
+  {% if imagens %}
+    {% set secundarias = imagens | selectattr("tipo", "equalto", "secundaria") | list %}
+    {% set plantas     = imagens | selectattr("tipo", "equalto", "planta")     | list %}
+  {% else %}
+    {% set secundarias = [] %}
+    {% set plantas     = [] %}
+  {% endif %}
+  {% set img_principal = imovel.imagem if imovel.imagem else '/static/img/no-photo.jpg' %}
+
+  <!-- LOADER -->
+  <div class="loading-container" id="loader">
+    <svg class="logo-animate" viewBox="-0.8 -10.8 21.6 21.6">
+      <path d="M 0 0 L 10 -10 L 20 0" stroke="#FFFFFF" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 2 0 V 10 H 18 V 0"   stroke="#FFFFFF" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- VIEWER FULLSCREEN -->
+  <div id="imagem-viewer">
+    <button class="viewer-close" id="viewer-close" aria-label="Fechar">✕</button>
+    <button class="viewer-nav viewer-prev" id="viewer-prev" aria-label="Anterior">‹</button>
+    <img class="viewer-img" id="viewer-img" src="" alt="">
+    <button class="viewer-nav viewer-next" id="viewer-next" aria-label="Próxima">›</button>
+    <div class="viewer-counter" id="viewer-counter">1 / 1</div>
+  </div>
+
+  <!-- HEADER -->
   <header>
     <div class="header-content">
-
-      <!-- Botão Voltar -->
       <div class="header-left">
-        <button class="btn-voltar" onclick="history.back()">
-          <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+        <button class="btn-voltar" onclick="history.back()" aria-label="Voltar">
+          <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="">
+          <span>Voltar</span>
         </button>
       </div>
-
-      <!-- Título centralizado -->
       <div class="header-center">
         <a href="/">
           <div class="title_container">
@@ -39,317 +59,280 @@
           </div>
         </a>
       </div>
-
-      <!-- Botão de alternância de tema -->
       <div class="header-right">
-        <button id="toggle-tema" class="btn-tema" onclick="alternarTema()">
-          <img id="icone-tema" src="/static/img/icons/icon_moon.svg" alt="Modo Escuro">
+        <button class="btn-tema" onclick="alternarTema()" aria-label="Alternar tema">
+          <img id="icone-tema" src="/static/img/icons/icon_moon.svg" alt="Tema">
         </button>
       </div>
-
     </div>
   </header>
 
-
-
-  <!-- 
-      ==============================
-       VERSÃO MOBILE 
-       ==============================
-  -->
-  <main class="conteudo-imovel mobile">
-    <!-- Título -->
-    <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
-    
-    <!-- Bairro -->
-    {% if imovel.bairro %}
-    <p class="bairro-imovel">{{ imovel.bairro }}</p>
-    {% endif %}
-    
-    <!-- Seção Sobre o Imóvel -->
-    {% if imovel.descricao %}
-    <div class="sobre-imovel">
-      <h3>Sobre o Imóvel</h3>
-      <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+  <!-- GALERIA MOBILE -->
+  <div class="galeria-mobile">
+    <div style="position:relative">
+      <img class="galeria-principal-img" id="galeria-principal"
+           src="{{ img_principal }}" alt="{{ imovel.titulo }}"
+           onclick="abrirViewer(0)">
+      {% set total_fotos = (1 if imovel.imagem else 0) + secundarias|length %}
+      {% if total_fotos > 1 %}
+      <span class="galeria-contador" id="galeria-contador">1 / {{ total_fotos }}</span>
+      {% endif %}
     </div>
-    {% endif %}
-
-    <!-- Imagem principal -->
-    {% if imovel.imagem %}
-    {% if imagens %}
-    {% set secundarias = imagens | selectattr("tipo", "equalto", "secundaria") | list %}
-    {% set plantas = imagens | selectattr("tipo", "equalto", "planta") | list %}
-    {% endif %}
-    <img class="imagem-principal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
-    {% endif %}
-
-    <!-- Galeria de imagens secundárias -->
     {% if secundarias %}
-    <div class="galeria">
-      <!-- <h3>Mais imagens</h3> -->
-      <div class="galeria-imagens-scroll">
-        {% for img in secundarias %}
-        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
-        {% endfor %}
-      </div>
+    <div class="galeria-scroll-mobile" id="galeria-thumbs">
+      {% if imovel.imagem %}
+      <img src="{{ imovel.imagem }}" alt="Foto 1" class="ativa" onclick="trocarFoto(0, this)">
+      {% endif %}
+      {% for img in secundarias %}
+        {% set idx = loop.index0 + (1 if imovel.imagem else 0) %}
+      <img src="{{ img.url }}" alt="Foto {{ idx + 1 }}" onclick="trocarFoto({{ idx }}, this)">
+      {% endfor %}
     </div>
     {% endif %}
+  </div>
 
-
-
-    <!-- Preço -->
-    {% if imovel.preco %}
-    <p class="preco">R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}</p>
-    {% endif %}
-
-
-    <!-- Campos adicionais -->
-    <div class="campos-adicionais">
-      {% if imovel.pretensao %}<p> <strong>Pretensão:</strong> {{ imovel.pretensao|capitalize }}</p>{% endif %}
-      {% if imovel.tipo %}<p> <strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</p>{% endif %}
-      {% if imovel.area %}<p> <strong>Área:</strong> {{ imovel.area }} m²</p>{% endif %}
-      {% if imovel.quartos %}<p> <strong>Quartos:</strong> {{ imovel.quartos }}</p>{% endif %}
-
-      {% if imovel.suites %}
-      <div class="banheiro_detalhes">
-        <img src="/static/img/icons/curved_arrow.svg" alt="">
-        <p> <strong>Suítes:</strong> {{ imovel.suites }}</p>
-      </div>
-      {% endif %}
-
-      {% if imovel.banheiros %}<p> <strong>Banheiros:</strong> {{ imovel.banheiros }}</p>{% endif %}
-
-      {% if imovel.banheiros_com_chuveiro %}
-      <div class="banheiro_detalhes">
-        <img src="/static/img/icons/curved_arrow.svg" alt="">
-        <p> <strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }}</p>
-      </div>
-      {% endif %}
-
-      {% if imovel.vagas %}<p> <strong>Vagas:</strong> {{ imovel.vagas }}</p>{% endif %}
-      {% if imovel.andar %}<p> <strong>Andar:</strong> {{ imovel.andar }}</p>{% endif %}
-      {% if imovel.endereco %}<p> <strong>Endereço:</strong> {{ imovel.endereco }}</p>{% endif %}
-      {% if imovel.bairro %}<p> <strong>Bairro:</strong> {{ imovel.bairro }}</p>{% endif %}
-      {% if imovel.cidade %}<p> <strong>Cidade:</strong> {{ imovel.cidade }}</p>{% endif %}
-      {% if imovel.uf %}<p> <strong>UF:</strong> {{ imovel.uf }}</p>{% endif %}
-      {% if imovel.entrega and imovel.estagio == 'EM CONSTRUÇÃO' %}
-      <p><strong>Previsão de Entrega:</strong> {{ imovel.entrega }}</p>
-      {% endif %}
-
-      {% if imovel.estagio %}<p> <strong>Estágio:</strong> {{ imovel.estagio }}</p>{% endif %}
-      {% if imovel.campo_extra2 %}<p> <strong>Campo Extra 2:</strong> {{ imovel.campo_extra2 }}</p>{% endif %}
-
-      <!-- Botão para abrir o Google Maps em outra aba -->
-      {% if imovel.link %}
-      <p style="margin-top: 1rem;">
-        <a href="{{ imovel.link }}" target="_blank" class="botao-maps">Abrir no Google Maps</a>
-      </p>
-      {% endif %}
-
-      <!-- Mapa incorporado -->
-      {% if imovel.maps_iframe %}
-      <div class="mapa-container">
-        <iframe src="{{ imovel.maps_iframe }}" width="100%" height="300" style="border:0;" allowfullscreen=""
-          loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-      </div>
+  <!-- GALERIA DESKTOP -->
+  <div class="galeria-desktop">
+    <div class="foto-principal" onclick="abrirViewer(0)">
+      <img src="{{ img_principal }}" alt="Foto principal">
+      {% if imovel.pretensao %}
+      <span class="badge-pretensao">{{ imovel.pretensao | capitalize }}</span>
       {% endif %}
     </div>
-
-    <!-- Plantas -->
-    {% if plantas %}
-    <div class="galeria">
-      <h3>Plantas</h3>
-      <div class="galeria-imagens-scroll">
-        {% for img in plantas %}
-        <img src="{{ img.url }}" alt="Planta do imóvel">
-        {% endfor %}
-      </div>
+    {% if secundarias|length >= 1 %}
+    <div class="foto-thumb" onclick="abrirViewer(1)">
+      <img src="{{ secundarias[0].url }}" alt="Foto 2">
+      <button class="btn-ver-fotos" onclick="event.stopPropagation(); abrirViewer(0)">Ver todas as fotos</button>
+    </div>
+    {% else %}
+    <div class="foto-thumb foto-vazia" onclick="abrirViewer(0)">
+      <button class="btn-ver-fotos">Ver todas as fotos</button>
     </div>
     {% endif %}
-
-
-    <a class="btn-whatsapp"
-      href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
-      target="_blank">
-      Tenho interesse
-      <img src="/static/img/icons/icon_whatsapp.svg" alt="">
-    </a>
-
-    <!-- Imóveis Similares -->
-    {% if imoveis_similares %}
-    <div class="imoveis-similares">
-      <h3 class="titulo-similares">Imóveis Similares</h3>
-      <div class="lista-similares">
-        {% for similar in imoveis_similares %}
-          {% with imovel=similar %}
-            {% include 'partials/card_imovel.html' %}
-          {% endwith %}
-        {% endfor %}
-      </div>
+    {% if secundarias|length >= 2 %}
+    <div class="foto-thumb" onclick="abrirViewer(2)">
+      <img src="{{ secundarias[1].url }}" alt="Foto 3">
     </div>
+    {% else %}
+    <div class="foto-thumb foto-vazia"></div>
     {% endif %}
+  </div>
 
-  </main>
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="conteudo-imovel">
 
-  <!-- ========================
-  Layout para desktop
-  ======================== -->
-  <main class="conteudo-imovel desktop">
-    <div class="layout-desktop">
+    <!-- COLUNA PRINCIPAL -->
+    <div class="col-principal">
 
-      {% if secundarias %}
-      <div class="coluna-esquerda">
-        {% for img in secundarias %}
-        <img src="{{ img.url }}" alt="Imagem do imóvel" class="thumb-secundaria">
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <div class="coluna-central">
-        {% if imovel.imagem %}
-
-        <div class="imagem-principal-container">
-          <img class="imagem-principal" id="imagemPrincipal" src="{{ imovel.imagem }}" alt="{{ imovel.titulo }}">
-
-          {% if imovel.maps_iframe %}
-          <div class="mapa-principal" id="mapaPrincipal">
-            <iframe src="{{ imovel.maps_iframe }}" allowfullscreen=""
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>
-          <button class="botao-mapa-toggle" onclick="alternarMapa()">Ver no mapa</button>
+      <!-- Cabeçalho do imóvel -->
+      <div class="imovel-header">
+        <div class="imovel-tags">
+          {% if imovel.tipo %}
+          <span class="tag tag-tipo">{{ imovel.tipo | capitalize }}</span>
           {% endif %}
+          {% if imovel.pretensao %}
+          <span class="tag {% if imovel.pretensao|lower == 'venda' %}tag-venda{% elif imovel.pretensao|lower == 'aluguel' %}tag-aluguel{% else %}tag-tipo{% endif %}">{{ imovel.pretensao | capitalize }}</span>
+          {% endif %}
+          <span class="tag tag-id">ID: {{ imovel.id }}</span>
         </div>
-
-        {% endif %}
-      </div>
-
-      <div class="coluna-direita">
-        <h1 class="titulo-imovel">{{ imovel.titulo }}</h1>
-        
-        <!-- Bairro -->
-        {% if imovel.bairro %}
-        <p class="bairro-imovel">{{ imovel.bairro }}</p>
-        {% endif %}
-        
-        <!-- Seção Sobre o Imóvel -->
-        {% if imovel.descricao %}
-        <div class="sobre-imovel">
-          <h3>Sobre o Imóvel</h3>
-          <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
-        </div>
-        {% endif %}
-
-        {% if imovel.preco %}
-        <p class="preco">R$ {{ "{:,.2f}".format(imovel.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}
+        <h2 class="titulo-imovel">{{ imovel.titulo }}</h2>
+        {% if imovel.bairro or imovel.cidade %}
+        <p class="bairro-imovel">
+          {% if imovel.bairro %}{{ imovel.bairro }}{% endif %}
+          {% if imovel.bairro and imovel.cidade %} · {% endif %}
+          {% if imovel.cidade %}{{ imovel.cidade }}{% if imovel.uf %}, {{ imovel.uf }}{% endif %}{% endif %}
         </p>
         {% endif %}
+      </div>
 
-        <div class="campos-adicionais campos-grid">
-          {% if imovel.pretensao %}<div class="bloco-detalhe"><strong>Pretensão:</strong> {{ imovel.pretensao|capitalize
-            }}</div>{% endif %}
-          {% if imovel.tipo %}<div class="bloco-detalhe"><strong>Tipo:</strong> {{ imovel.tipo|capitalize }}</div>{%
-          endif %}
-          {% if imovel.area %}<div class="bloco-detalhe"><strong>Área:</strong> {{ imovel.area }} m²</div>{% endif %}
-          {% if imovel.quartos %}
-          <div class="bloco-detalhe">
-            <div><strong>Quartos:</strong> {{ imovel.quartos }}</div>
-            {% if imovel.suites %}
-            <div class="linha-detalhe"><span>(<strong>Suítes:</strong> {{ imovel.suites }})</span></div>
-            {% endif %}
-          </div>{% endif %}
+      <!-- Features rápidas -->
+      {% if imovel.quartos or imovel.banheiros or imovel.vagas or imovel.area %}
+      <div class="features-strip">
+        {% set shown = [] %}
+        {% if imovel.quartos %}
+          {% if shown %}<span class="feat-sep"></span>{% endif %}
+          <span class="feat-item"><img src="/static/img/icons/icons8-bed-100.svg" alt=""> {{ imovel.quartos }} quarto{{ 's' if imovel.quartos > 1 else '' }}</span>
+          {% set _ = shown.append(1) %}
+        {% endif %}
+        {% if imovel.banheiros %}
+          {% if shown %}<span class="feat-sep"></span>{% endif %}
+          <span class="feat-item"><img src="/static/img/icons/icon_bathroom.svg" alt=""> {{ imovel.banheiros }} banheiro{{ 's' if imovel.banheiros > 1 else '' }}</span>
+          {% set _ = shown.append(1) %}
+        {% endif %}
+        {% if imovel.vagas %}
+          {% if shown %}<span class="feat-sep"></span>{% endif %}
+          <span class="feat-item"><img src="/static/img/icons/icons8-car-90.svg" alt=""> {{ imovel.vagas }} vaga{{ 's' if imovel.vagas > 1 else '' }}</span>
+          {% set _ = shown.append(1) %}
+        {% endif %}
+        {% if imovel.area %}
+          {% if shown %}<span class="feat-sep"></span>{% endif %}
+          <span class="feat-item"><img src="/static/img/icons/icons8-ruler-96.svg" alt=""> {{ imovel.area }} m²</span>
+        {% endif %}
+      </div>
+      {% endif %}
 
-          {% if imovel.banheiros %}
-          <div class="bloco-detalhe">
-            <div class="linha-principal"><strong>Banheiros:</strong> {{ imovel.banheiros }}</div>
-            {% if imovel.banheiros_com_chuveiro %}
-            <div class="linha-detalhe"><span>(<strong>Com Chuveiro:</strong> {{ imovel.banheiros_com_chuveiro }})</span>
-            </div>
-            {% endif %}
-          </div>{% endif %}
+      <!-- Preço + CTA (mobile — substituído pelo painel no desktop) -->
+      <div class="mobile-preco-cta">
+        {% if imovel.preco %}
+        <div class="preco-area">
+          <p class="preco">R$ {{ "{:,.0f}".format(imovel.preco).replace(",", ".") }}</p>
+          <div class="preco-extras">
+            {% if imovel.iptu %}<span>IPTU: R$ {{ "{:,.0f}".format(imovel.iptu).replace(",", ".") }}/ano</span>{% endif %}
+            {% if imovel.valor_condominio %}<span>Cond.: R$ {{ "{:,.0f}".format(imovel.valor_condominio).replace(",", ".") }}/mês</span>{% endif %}
+          </div>
+        </div>
+        {% endif %}
+        <a class="btn-whatsapp"
+           href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+           target="_blank">
+          <img src="/static/img/icons/icon_whatsapp.svg" alt=""> Tenho interesse
+        </a>
+      </div>
 
-          {% if imovel.vagas %}<div class="bloco-detalhe"><strong>Vagas:</strong> {{ imovel.vagas }}</div>{% endif %}
-          {% if imovel.andar %}<div class="bloco-detalhe"><strong>Andar:</strong> {{ imovel.andar }}</div>{% endif %}
-          {% if imovel.bairro %}<div class="bloco-detalhe"><strong>Bairro:</strong> {{ imovel.bairro }}</div>{% endif %}
-          {% if imovel.cidade %}<div class="bloco-detalhe"><strong>Cidade:</strong> {{ imovel.cidade }}</div>{% endif %}
-          {% if imovel.uf %}<div class="bloco-detalhe"><strong>UF:</strong> {{ imovel.uf }}</div>{% endif %}
-          {% if imovel.entrega and imovel.estagio == 'EM CONSTRUÇÃO' %}
-          <div class="bloco-detalhe"><strong>Previsão de Entrega:</strong> {{ imovel.entrega }}</div>{% endif %}
-          {% if imovel.estagio %}<div class="bloco-detalhe"><strong>Estágio:</strong> {{ imovel.estagio }}</div>{% endif
-          %}
-          {% if imovel.campo_extra2 %}<div class="bloco-detalhe"><strong>Campo Extra 2:</strong> {{ imovel.campo_extra2
-            }}</div>{% endif %}
+      <!-- Sobre o imóvel -->
+      {% if imovel.descricao %}
+      <div class="secao">
+        <p class="secao-titulo">Sobre o imóvel</p>
+        <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+      </div>
+      {% endif %}
 
-          {% if imovel.iptu %}
-          <p><strong>IPTU:</strong> R$ {{ "{:,.2f}".format(imovel.iptu).replace(",", "X").replace(".", ",").replace("X",
-            ".") }}</p>
-          {% endif %}
-
-          {% if imovel.valor_condominio %}
-          <p><strong>Condomínio:</strong> R$ {{ "{:,.2f}".format(imovel.valor_condominio).replace(",", "X").replace(".",
-            ",").replace("X", ".") }}</p>
-          {% endif %}
-
-          {% if imovel.piscina %}
-          <p><strong>Piscina:</strong> Sim</p>
-          {% endif %}
-
-          {% if imovel.churrasqueira %}
-          <p><strong>Churrasqueira:</strong> Sim</p>
-          {% endif %}
-
-
+      <!-- Detalhes -->
+      <div class="secao">
+        <p class="secao-titulo">Detalhes</p>
+        <div class="detalhes-grid">
+          {% if imovel.tipo %}<div class="detalhe-item"><span class="detalhe-label">Tipo</span><span class="detalhe-val">{{ imovel.tipo | capitalize }}</span></div>{% endif %}
+          {% if imovel.pretensao %}<div class="detalhe-item"><span class="detalhe-label">Pretensão</span><span class="detalhe-val">{{ imovel.pretensao | capitalize }}</span></div>{% endif %}
+          {% if imovel.area %}<div class="detalhe-item"><span class="detalhe-label">Área total</span><span class="detalhe-val">{{ imovel.area }} m²</span></div>{% endif %}
+          {% if imovel.quartos %}<div class="detalhe-item"><span class="detalhe-label">Quartos</span><span class="detalhe-val">{{ imovel.quartos }}{% if imovel.suites %} ({{ imovel.suites }} suíte{{ 's' if imovel.suites > 1 else '' }}){% endif %}</span></div>{% endif %}
+          {% if imovel.banheiros %}<div class="detalhe-item"><span class="detalhe-label">Banheiros</span><span class="detalhe-val">{{ imovel.banheiros }}{% if imovel.banheiros_com_chuveiro %} ({{ imovel.banheiros_com_chuveiro }} c/ chuveiro){% endif %}</span></div>{% endif %}
+          {% if imovel.vagas %}<div class="detalhe-item"><span class="detalhe-label">Vagas</span><span class="detalhe-val">{{ imovel.vagas }}</span></div>{% endif %}
+          {% if imovel.andar %}<div class="detalhe-item"><span class="detalhe-label">Andar</span><span class="detalhe-val">{{ imovel.andar }}</span></div>{% endif %}
+          {% if imovel.estagio %}<div class="detalhe-item"><span class="detalhe-label">Estágio</span><span class="detalhe-val">{{ imovel.estagio }}</span></div>{% endif %}
+          {% if imovel.entrega and imovel.estagio == 'EM CONSTRUÇÃO' %}<div class="detalhe-item"><span class="detalhe-label">Entrega prev.</span><span class="detalhe-val">{{ imovel.entrega }}</span></div>{% endif %}
+          {% if imovel.piscina %}<div class="detalhe-item"><span class="detalhe-label">Piscina</span><span class="detalhe-val">Sim</span></div>{% endif %}
+          {% if imovel.churrasqueira %}<div class="detalhe-item"><span class="detalhe-label">Churrasqueira</span><span class="detalhe-val">Sim</span></div>{% endif %}
+          {% if imovel.iptu %}<div class="detalhe-item"><span class="detalhe-label">IPTU/ano</span><span class="detalhe-val">R$ {{ "{:,.0f}".format(imovel.iptu).replace(",", ".") }}</span></div>{% endif %}
+          {% if imovel.valor_condominio %}<div class="detalhe-item"><span class="detalhe-label">Condomínio</span><span class="detalhe-val">R$ {{ "{:,.0f}".format(imovel.valor_condominio).replace(",", ".") }}/mês</span></div>{% endif %}
+          {% if imovel.campo_extra2 %}<div class="detalhe-item"><span class="detalhe-label">Informação</span><span class="detalhe-val">{{ imovel.campo_extra2 }}</span></div>{% endif %}
           {% if imovel.endereco %}
-          <div class="bloco-detalhe">
-            <strong>Endereço:</strong>
-
-            <a href="{{ imovel.link }}" target="_blank">
-            <span class="valor-multilinha" style="text-decoration: underline;">{{imovel.endereco}}</span>
-            </a>
-            
+          <div class="detalhe-item detalhe-full">
+            <span class="detalhe-label">Endereço</span>
+            <span class="detalhe-val">{% if imovel.link %}<a href="{{ imovel.link }}" target="_blank">{{ imovel.endereco }}</a>{% else %}{{ imovel.endereco }}{% endif %}</span>
           </div>
           {% endif %}
         </div>
+      </div>
 
-        <a class="btn-whatsapp"
-          href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
-          target="_blank">
-          Tenho interesse
-          <img src="/static/img/icons/icon_whatsapp.svg" alt="">
+      <!-- Galeria de fotos secundárias -->
+      {% if secundarias %}
+      <div class="secao galeria-section">
+        <p class="secao-titulo">Fotos</p>
+        <div class="galeria-scroll">
+          {% if imovel.imagem %}
+          <img src="{{ imovel.imagem }}" alt="Foto principal" onclick="abrirViewer(0)">
+          {% endif %}
+          {% for img in secundarias %}
+          {% set idx = loop.index0 + (1 if imovel.imagem else 0) %}
+          <img src="{{ img.url }}" alt="Foto {{ loop.index }}" onclick="abrirViewer({{ idx }})">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Plantas -->
+      {% if plantas %}
+      <div class="secao galeria-section">
+        <p class="secao-titulo">Plantas</p>
+        <div class="galeria-scroll">
+          {% for img in plantas %}
+          <img src="{{ img.url }}" alt="Planta {{ loop.index }}">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Localização -->
+      {% if imovel.maps_iframe or imovel.link or imovel.bairro or imovel.cidade %}
+      <div class="secao">
+        <p class="secao-titulo">Localização</p>
+        {% if imovel.bairro or imovel.cidade %}
+        <p class="localizacao-texto">{{ imovel.bairro }}{% if imovel.bairro and imovel.cidade %}, {% endif %}{{ imovel.cidade }}{% if imovel.uf %} — {{ imovel.uf }}{% endif %}</p>
+        {% endif %}
+        {% if imovel.maps_iframe %}
+        <div class="mapa-container">
+          <iframe src="{{ imovel.maps_iframe }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        {% endif %}
+        {% if imovel.link %}
+        <a class="btn-maps" href="{{ imovel.link }}" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          Ver no Google Maps
         </a>
+        {% endif %}
+      </div>
+      {% endif %}
 
+      <!-- Imóveis similares -->
+      {% if imoveis_similares %}
+      <div class="secao">
+        <p class="secao-titulo">Imóveis similares</p>
+        <div class="similares-lista">
+          {% for similar in imoveis_similares %}
+            {% with imovel=similar %}
+              {% include 'partials/card_imovel.html' %}
+            {% endwith %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div><!-- /col-principal -->
+
+    <!-- COLUNA LATERAL (desktop) -->
+    <div class="col-lateral">
+      <div class="painel-lateral">
+        {% if imovel.preco %}
+        <p class="preco">R$ {{ "{:,.0f}".format(imovel.preco).replace(",", ".") }}</p>
+        <div class="preco-extras">
+          {% if imovel.iptu %}<span>IPTU: R$ {{ "{:,.0f}".format(imovel.iptu).replace(",", ".") }}/ano</span>{% endif %}
+          {% if imovel.valor_condominio %}<span>Cond.: R$ {{ "{:,.0f}".format(imovel.valor_condominio).replace(",", ".") }}/mês</span>{% endif %}
+        </div>
+        <div class="painel-divider"></div>
+        {% endif %}
+        {% if imovel.quartos or imovel.banheiros or imovel.vagas or imovel.area %}
+        <div class="painel-features">
+          {% if imovel.quartos %}<div class="pf-item"><span class="pf-label">Quartos</span><span class="pf-val">{{ imovel.quartos }}</span></div>{% endif %}
+          {% if imovel.banheiros %}<div class="pf-item"><span class="pf-label">Banheiros</span><span class="pf-val">{{ imovel.banheiros }}</span></div>{% endif %}
+          {% if imovel.vagas %}<div class="pf-item"><span class="pf-label">Vagas</span><span class="pf-val">{{ imovel.vagas }}</span></div>{% endif %}
+          {% if imovel.area %}<div class="pf-item"><span class="pf-label">Área</span><span class="pf-val">{{ imovel.area }} m²</span></div>{% endif %}
+        </div>
+        <div class="painel-divider"></div>
+        {% endif %}
+        <a class="btn-whatsapp"
+           href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse no imóvel \'' ~ imovel.titulo ~ '\' (ID: ' ~ imovel.id ~ '). Poderia me enviar mais informações?' | urlencode }}"
+           target="_blank">
+          <img src="/static/img/icons/icon_whatsapp.svg" alt=""> Tenho interesse
+        </a>
+        <p class="painel-ref">Ref. #{{ imovel.id }} · Bresolin Imóveis</p>
       </div>
     </div>
 
-    <!-- Imóveis Similares (Desktop) -->
-    {% if imoveis_similares %}
-    <div class="imoveis-similares-desktop">
-      <h3 class="titulo-similares">Imóveis Similares</h3>
-      <div class="lista-similares-desktop">
-        {% for similar in imoveis_similares %}
-          {% with imovel=similar %}
-            {% include 'partials/card_imovel.html' %}
-          {% endwith %}
-        {% endfor %}
-      </div>
-    </div>
-    {% endif %}
-  </main>
+  </div><!-- /conteudo-imovel -->
 
-
-
-
-
-
-
-
-  <!----------------------  Rodapé  ----------------->
   {% include 'partials/footer.html' %}
 
+  <a href="https://wa.me/5551981702045?text={{ 'Olá! Tenho interesse nos imóveis da Bresolin. Poderia me ajudar?' | urlencode }}"
+     class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp">
+  </a>
+
+  <script>
+    const fotos = {{ (([imovel.imagem] if imovel.imagem else []) + (secundarias | map(attribute='url') | list)) | tojson }};
+  </script>
   <script src="/static/js/imovel.js"></script>
 
-  <a href="https://wa.me/5551981702045" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
-    <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
 </body>
-
 </html>
