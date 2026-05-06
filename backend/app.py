@@ -855,20 +855,32 @@ def api_imoveis():
             data['ativo'] = bool(int(data.get('ativo', 1)))
             data['empreendimento_id'] = data.get('empreendimento_id') or None
 
-            con.execute(text('''
+            result = con.execute(text('''
                 INSERT INTO imoveis (
                     empreendimento_id, titulo, descricao, preco, imagem,
                     tipo, pretensao, quartos, suites, banheiros, vagas,
-                    area, endereco, bairro, cidade, uf, ativo, link, 
+                    area, endereco, bairro, cidade, uf, ativo, link,
                     estagio, maps_iframe, campo_extra2, entrega, banheiros_com_chuveiro, iptu, valor_condominio, piscina, churrasqueira
                 ) VALUES (
                     :empreendimento_id, :titulo, :descricao, :preco, :imagem,
                     :tipo, :pretensao, :quartos, :suites, :banheiros, :vagas,
                     :area, :endereco, :bairro, :cidade, :uf, :ativo, :link,
                     :estagio, :maps_iframe, :campo_extra2, :entrega, :banheiros_com_chuveiro, :iptu, :valor_condominio, :piscina, :churrasqueira
-                )
+                ) RETURNING id
             '''), data)
-            return '', 201
+            novo_id = result.fetchone()[0]
+
+            # Move foto principal de tmp/ para pasta definitiva do imóvel
+            imagem_url = data.get('imagem') or ''
+            if '/tmp/' in imagem_url:
+                destino_dir = os.path.join(UPLOAD_FOLDER, 'imoveis', str(novo_id))
+                prefixo = f"/static/img/uploads/imoveis/{novo_id}"
+                nova_url = mover_tmp_para_destino(imagem_url, destino_dir, prefixo)
+                if nova_url != imagem_url:
+                    con.execute(text('UPDATE imoveis SET imagem = :url WHERE id = :id'),
+                                {'url': nova_url, 'id': novo_id})
+
+            return jsonify({'id': novo_id}), 201
 
 # Detalha, edita ou remove imóvel específico
 @app.route('/api/imoveis/<int:imovel_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -1386,17 +1398,27 @@ def api_empreendimentos():
                     :quartos_minimo, :quartos_maximo, :vagas_minimo, :vagas_maximo, :endereco_completo, :ativo
                 )
             '''), data_completa)
-            
+
+            # Move foto principal de tmp/ para pasta definitiva do empreendimento
+            imagem_url = data_completa.get('imagem') or ''
+            if '/tmp/' in imagem_url:
+                destino_dir = os.path.join(UPLOAD_FOLDER, 'empreendimentos', str(codigo_empreendimento))
+                prefixo = f"/static/img/uploads/empreendimentos/{codigo_empreendimento}"
+                nova_url = mover_tmp_para_destino(imagem_url, destino_dir, prefixo)
+                if nova_url != imagem_url:
+                    con.execute(text('UPDATE empreendimentos SET imagem = :url WHERE codigo = :codigo'),
+                                {'url': nova_url, 'codigo': codigo_empreendimento})
+
             # Vincula imóveis selecionados (se houver)
             if imoveis_selecionados:
                 for imovel_id in imoveis_selecionados:
                     con.execute(text('''
-                        UPDATE imoveis 
+                        UPDATE imoveis
                         SET empreendimento_id = (SELECT id FROM empreendimentos WHERE codigo = :codigo)
                         WHERE id = :imovel_id
                     '''), {'codigo': codigo_empreendimento, 'imovel_id': imovel_id})
-            
-            return '', 201
+
+            return jsonify({'id': codigo_empreendimento}), 201
 
 # Detalha, edita ou remove empreendimento específico
 @app.route('/api/empreendimentos/<empreendimento_id>', methods=['GET', 'PUT', 'DELETE'])

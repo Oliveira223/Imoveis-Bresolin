@@ -778,10 +778,8 @@ const FormModule = {
         });
         
         if (!response.ok) throw new Error('Erro ao cadastrar empreendimento');
-        
-        // Obter o último empreendimento cadastrado
-        const lista = await fetch('/api/empreendimentos').then(r => r.json());
-        const novoEmpreendimento = lista.sort((a, b) => b.id - a.id)[0];
+
+        const novoEmpreendimento = await response.json();
         
         // Enviar imagens secundárias (se houver)
         if (ImageUploadModule.imagensSecundariasEmpTemp.length > 0) {
@@ -863,9 +861,7 @@ const FormModule = {
 
         if (!res.ok) throw new Error('Erro ao cadastrar imóvel');
 
-        // Obter o último imóvel cadastrado
-        const lista = await fetch('/api/imoveis').then(r => r.json());
-        const novoImovel = lista.sort((a, b) => b.id - a.id)[0];
+        const novoImovel = await res.json();
 
         // Enviar imagens secundárias
         if (typeof imagensSecundariasTemp !== 'undefined' && imagensSecundariasTemp.length > 0) {
