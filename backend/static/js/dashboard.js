@@ -1237,19 +1237,13 @@ const EmpreendimentoModule = {
 };
 
 // ========================================
-// MÓDULO 9: UPLOAD DE IMAGENS (CLOUDINARY)
-// ========================================
+// MÓDULO 9: UPLOAD DE IMAGENS (LOCAL)
+// =====================================
 
-/**
- * Gerencia uploads de imagens para Cloudinary
- */
 const ImageUploadModule = {
-  // Arrays temporários para armazenar URLs das imagens
   imagensSecundariasTemp: [],
   plantasTemp: [],
-  imagensSecundariasEmpTemp: [], // Novo array para empreendimentos
-  cloudName: 'dexpbb2dd',
-  uploadPreset: 'bresolin',
+  imagensSecundariasEmpTemp: [],
 
   init() {
     this.setupMainImageUpload();
@@ -1514,24 +1508,25 @@ const ImageUploadModule = {
   },
 
   /**
-   * Função auxiliar para upload no Cloudinary
+   * Função auxiliar para upload local
    */
-  async uploadToCloudinary(file) {
+  async uploadToCloudinary(file, imovelId = null, empreendimentoId = null) {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', this.uploadPreset);
+    if (imovelId) formData.append('imovel_id', imovelId);
+    if (empreendimentoId) formData.append('empreendimento_id', empreendimentoId);
 
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`, {
+    const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData
     });
 
     if (!response.ok) {
-      throw new Error('Erro no upload para Cloudinary');
+      throw new Error('Erro no upload da imagem');
     }
 
     const data = await response.json();
-    return data.secure_url;
+    return data.url;
   },
 
   /**

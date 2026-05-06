@@ -6,9 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("form-editar-imovel");
   const id = form.elements["id"].value;
 
-  const cloudName = 'dexpbb2dd';
-  const uploadPreset = 'bresolin';
-
   const inputImagemPrincipal = document.getElementById("file-imagem-principal");
   const previewImagemPrincipal = document.getElementById("preview-imagem-principal");
   const hiddenImagemPrincipal = document.getElementById("input-imagem-principal");
@@ -109,16 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
+    formData.append('imovel_id', id);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
-
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
     const data = await res.json();
-    hiddenImagemPrincipal.value = data.secure_url;
-    previewImagemPrincipal.src = data.secure_url;
+    hiddenImagemPrincipal.value = data.url;
+    previewImagemPrincipal.src = data.url;
     previewImagemPrincipal.style.display = 'block';
   };
 
@@ -134,23 +127,18 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
+      formData.append('imovel_id', id);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
-      imagensSecundariasNovas.push(data.secure_url);
+      imagensSecundariasNovas.push(data.url);
 
       const img = document.createElement('img');
-      img.src = data.secure_url;
+      img.src = data.url;
       img.className = 'thumb-secundaria';
       galeriaSecundarias.appendChild(img);
     }
 
-    // Limpa input para permitir reenvio dos mesmos arquivos se necessário
     this.value = '';
   };
 
@@ -166,18 +154,14 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
+      formData.append('imovel_id', id);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
-      plantasNovas.push(data.secure_url);
+      plantasNovas.push(data.url);
 
       const img = document.createElement('img');
-      img.src = data.secure_url;
+      img.src = data.url;
       img.className = 'thumb-secundaria';
       galeriaPlantas.appendChild(img);
     }
