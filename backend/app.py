@@ -2,6 +2,8 @@
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
 from flask import Flask, render_template, request, jsonify, Response, send_file, redirect, url_for, session
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -29,8 +31,15 @@ app = Flask(
     static_folder='static',
     template_folder='templates'
 )
-app.secret_key = os.getenv('SECRET_KEY', 'chave_secreta_padrao_bresolin_2025')
+app.secret_key = os.getenv('SECRET_KEY')
 app.register_blueprint(crm_bp)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://"
+)
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -97,6 +106,7 @@ def authenticate():
     )
 
 def requires_auth(f):
+    @limiter.limit("10 per minute")
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
@@ -1904,4 +1914,4 @@ def registrar_acesso(imovel_id=None):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     print(f"[INFO] Servidor iniciado em http://localhost:{port}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
