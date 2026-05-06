@@ -4,8 +4,10 @@
 from flask import Flask, render_template, request, jsonify, Response, send_file, redirect, url_for, session
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from uuid import uuid4
 import os
+import shutil
 import json
 import time
 import subprocess
@@ -1130,6 +1132,58 @@ def slides_data():
 
     
 # ==============================
+# API - Upload de arquivo local
+# ==============================
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/api/upload', methods=['POST'])
+@requires_auth
+def upload_local():
+    if 'file' not in request.files:
+        return jsonify({'erro': 'Nenhum arquivo enviado'}), 400
+
+    file = request.files['file']
+    if not file or not allowed_file(file.filename):
+        return jsonify({'erro': 'Tipo de arquivo não permitido'}), 400
+
+    imovel_id = request.form.get('imovel_id')
+    empreendimento_id = request.form.get('empreendimento_id')
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    nome_arquivo = f"{uuid4().hex}.{ext}"
+
+    if imovel_id:
+        pasta = os.path.join(UPLOAD_FOLDER, 'imoveis', str(imovel_id))
+        url = f"/static/img/uploads/imoveis/{imovel_id}/{nome_arquivo}"
+    elif empreendimento_id:
+        pasta = os.path.join(UPLOAD_FOLDER, 'empreendimentos', str(empreendimento_id))
+        url = f"/static/img/uploads/empreendimentos/{empreendimento_id}/{nome_arquivo}"
+    else:
+        pasta = os.path.join(UPLOAD_FOLDER, 'tmp')
+        url = f"/static/img/uploads/tmp/{nome_arquivo}"
+
+    os.makedirs(pasta, exist_ok=True)
+    file.save(os.path.join(pasta, nome_arquivo))
+    return jsonify({'url': url}), 201
+
+
+def mover_tmp_para_destino(url_atual, destino_dir, prefixo_url):
+    """Se a URL for de tmp, move o arquivo para a pasta definitiva e retorna a nova URL."""
+    if not url_atual or '/tmp/' not in url_atual:
+        return url_atual
+    nome = url_atual.split('/')[-1]
+    origem = os.path.join(UPLOAD_FOLDER, 'tmp', nome)
+    if not os.path.exists(origem):
+        return url_atual
+    os.makedirs(destino_dir, exist_ok=True)
+    destino = os.path.join(destino_dir, nome)
+    shutil.move(origem, destino)
+    return f"{prefixo_url}/{nome}"
+
+
+# ==============================
 # API - Imagens do Imóvel
 # ==============================
 # Lista ou adiciona imagens ao imóvel
@@ -1151,7 +1205,13 @@ def imagens_do_imovel(imovel_id):
                 return auth_error
 
             data = request.json
-            
+            url = data.get('url')
+
+            # Move arquivo de tmp para pasta definitiva do imóvel
+            destino_dir = os.path.join(UPLOAD_FOLDER, 'imoveis', str(imovel_id))
+            prefixo = f"/static/img/uploads/imoveis/{imovel_id}"
+            url = mover_tmp_para_destino(url, destino_dir, prefixo)
+
             # Busca a última ordem para inserir no final
             result_ordem = con.execute(
                 text('SELECT COALESCE(MAX(ordem), -1) + 1 as prox_ordem FROM imagens_imovel WHERE imovel_id = :id'),
@@ -1164,7 +1224,7 @@ def imagens_do_imovel(imovel_id):
                 VALUES (:imovel_id, :url, :tipo, :ordem)
             '''), {
                 'imovel_id': imovel_id,
-                'url': data.get('url'),
+                'url': url,
                 'tipo': data.get('tipo'),
                 'ordem': ordem
             })
@@ -1200,7 +1260,13 @@ def imagens_do_empreendimento(empreendimento_id):
                 return auth_error
 
             data = request.json
-            
+            url = data.get('url')
+
+            # Move arquivo de tmp para pasta definitiva do empreendimento
+            destino_dir = os.path.join(UPLOAD_FOLDER, 'empreendimentos', str(empreendimento_id))
+            prefixo = f"/static/img/uploads/empreendimentos/{empreendimento_id}"
+            url = mover_tmp_para_destino(url, destino_dir, prefixo)
+
             # Busca a última ordem para inserir no final
             result_ordem = con.execute(
                 text('SELECT COALESCE(MAX(ordem), -1) + 1 as prox_ordem FROM imagens_empreendimento WHERE empreendimento_id = :id'),
@@ -1213,7 +1279,7 @@ def imagens_do_empreendimento(empreendimento_id):
                 VALUES (:empreendimento_id, :url, :tipo, :ordem)
             '''), {
                 'empreendimento_id': empreendimento_id,
-                'url': data.get('url'),
+                'url': url,
                 'tipo': data.get('tipo'),
                 'ordem': ordem
             })
