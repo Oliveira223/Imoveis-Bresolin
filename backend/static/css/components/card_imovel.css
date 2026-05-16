@@ -118,7 +118,7 @@
 }
 
 .card-preco p {
-  color: #00b000;
+  color: #318a31;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 1.1rem;
   font-weight: bold;
@@ -192,13 +192,13 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       will-change: transform, box-shadow;
     }
-    
+
     .card-container:hover {
       transform: translateY(-0.3vw);
       box-shadow: 0 0.6vw 1.8vw rgba(0, 0, 0, 0.12);
     }
   }
-  
+
   .card-info_principal h1 {
     color: #333;
     font-size: 0.8vw;
@@ -240,7 +240,7 @@
   }
 
   .card-preco p {
-    color: #00b000;
+    color: #318a31;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1.1vw;
     font-weight: bold;
@@ -338,7 +338,7 @@
   }
 
   .card-preco p {
-    color: #00b000;
+    color: #318a31;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1.1vw;
     font-weight: bold;
