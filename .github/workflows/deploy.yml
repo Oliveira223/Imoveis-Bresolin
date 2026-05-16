@@ -30,6 +30,7 @@ jobs:
 
             echo "[INFO] Atualizando aplicação..."
             cd ~/Imoveis-Bresolin
+            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
             git fetch origin
             git reset --hard origin/main
 

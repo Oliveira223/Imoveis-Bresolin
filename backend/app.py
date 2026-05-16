@@ -123,6 +123,22 @@ def verify_admin():
     return None
 
 # ================================
+# HEALTH CHECKS
+# ================================
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
+
+@app.route('/health/db')
+def health_db():
+    try:
+        with engine.connect() as con:
+            con.execute(text("SELECT 1"))
+        return jsonify({'status': 'ok'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'detail': str(e)}), 503
+
+# ================================
 # ROTA PROTEGIDA: Painel Administrativo
 # ================================
 @app.route("/admin")
