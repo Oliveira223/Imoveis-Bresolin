@@ -33,7 +33,8 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            echo "[INFO] Reiniciando aplicação..."
+            echo "[INFO] Aplicando configurações e reiniciando..."
+            docker compose up -d
             docker compose restart bresolin_app
 
             echo "[INFO] Verificando saúde da aplicação..."
