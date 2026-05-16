@@ -23,36 +23,24 @@
 
 <body>
 
-    <!-- Tela de carregamento com animação traçada -->
-    <!-- Loader com SVG dividido em duas partes -->
+    <!-- Loader animado -->
     <div class="loading-container">
         <svg class="logo-animate" viewBox="-0.8 -10.8 21.6 21.6">
-
-            <!-- Telhado -->
             <path id="path-1" d="M 0 0 L 10 -10 L 20 0" stroke="#FFFFFF" stroke-width="0.8" fill="none"
                 stroke-linecap="round" stroke-linejoin="round" />
-
-            <!-- Corpo da casa -->
             <path id="path-2" d="M 2 0 V 10 H 18 V 0" stroke="#FFFFFF" stroke-width="0.8" fill="none"
                 stroke-linecap="round" stroke-linejoin="round" />
-
         </svg>
     </div>
 
-    <!-- ===========================
-       Cabeçalho com logo e voltar
-  ============================ -->
+    <!-- Cabeçalho -->
     <header>
         <div class="header-content">
-
-            <!-- Botão Voltar -->
             <div class="header-left">
                 <button class="btn-voltar" onclick="history.back()">
                     <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
                 </button>
             </div>
-
-            <!-- Título centralizado -->
             <div class="header-center">
                 <a href="/">
                     <div class="title_container">
@@ -61,255 +49,176 @@
                     </div>
                 </a>
             </div>
-
-            <!-- Menu direito futuramente -->
-            <div class="header-right">
-                <!-- vazio por enquanto -->
-            </div>
-
+            <div class="header-right"></div>
         </div>
     </header>
 
 
-    <!-- ===========================
-       Corpo principal
-  ============================ -->
+    <!-- Barra de controles: tabs + buscador + botão filtros -->
+    <div class="barra-controles">
+
+        <div class="tabs-pretensao">
+            <button class="tab-btn {% if not pretensao %}ativo{% endif %}" data-valor="">Todos</button>
+            <button class="tab-btn {% if pretensao == 'Venda' %}ativo{% endif %}" data-valor="Venda">Compra</button>
+            <button class="tab-btn {% if pretensao == 'Aluguel' %}ativo{% endif %}" data-valor="Aluguel">Aluguel</button>
+        </div>
+
+        <div class="pesquisa-minimalista">
+            <div class="campo-pesquisa-container">
+                <input type="text" id="termo-pesquisa" placeholder="Bairro, cidade, nome ou ID…"
+                    autocomplete="off" class="campo-pesquisa-simples" />
+                <div id="sugestoes-pesquisa" class="sugestoes"></div>
+            </div>
+            <button id="limpar-pesquisa" class="btn-limpar-simples">✕</button>
+        </div>
+
+        <button class="btn-abrir-filtros" id="btn-abrir-filtros">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none" />
+                <line x1="4" y1="13" x2="20" y2="13" />
+                <circle cx="16" cy="13" r="2.5" fill="currentColor" stroke="none" />
+                <line x1="4" y1="20" x2="20" y2="20" />
+                <circle cx="11" cy="20" r="2.5" fill="currentColor" stroke="none" />
+            </svg>
+            <span>Filtros</span>
+        </button>
+
+    </div>
+
+
+    <!-- Painel de filtros retrátil -->
+    <div class="painel-filtros" id="painel-filtros">
+        <form action="/pesquisa" method="get" id="form-filtros">
+            <input type="hidden" name="pretensao" id="pretensao" value="{{ pretensao }}">
+            <input type="hidden" name="termo" value="{{ termo }}">
+
+            <div class="filtros-grid">
+
+                <div class="campo">
+                    <label for="tipo">Tipo de imóvel</label>
+                    <select name="tipo" id="tipo">
+                        <option value="">Todos</option>
+                        <option value="empreendimento" {% if tipo=='empreendimento' %}selected{% endif %}>Empreendimentos</option>
+                        <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
+                        <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento</option>
+                        <option value="loft" {% if tipo=='loft' %}selected{% endif %}>Loft</option>
+                        <option value="terreno" {% if tipo=='terreno' %}selected{% endif %}>Terreno</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="localizacao">Localização</label>
+                    <input type="text" name="localizacao" id="localizacao"
+                        value="{{ request.args.get('localizacao', '') }}"
+                        placeholder="Cidade, Bairro, UF">
+                </div>
+
+                <div class="campo">
+                    <label for="preco-editavel">Preço Máximo</label>
+                    <div class="campo-preco-dinamico">
+                        <div id="preco-editavel" contenteditable="true" class="preco-digitavel"
+                            data-placeholder="Ex: 120.000,00">
+                            {% if max_preco %}{{ "{:,}".format(max_preco|int).replace(",", ".") }},00{% endif %}
+                        </div>
+                    </div>
+                    <input type="hidden" name="max_preco" id="max_preco_real">
+                </div>
+
+                <div class="campo">
+                    <label for="area_min">Área mínima (m²)</label>
+                    <input type="number" name="area_min" id="area_min"
+                        value="{{ request.args.get('area_min', '') }}">
+                </div>
+
+                <div class="campo">
+                    <label for="area_max">Área máxima (m²)</label>
+                    <input type="number" name="area_max" id="area_max"
+                        value="{{ request.args.get('area_max', '') }}">
+                </div>
+
+                <div class="campo">
+                    <label for="quartos">Quartos</label>
+                    <input type="number" name="quartos" id="quartos"
+                        value="{{ request.args.get('quartos', '') }}" min="0">
+                </div>
+
+                <div class="campo">
+                    <label for="banheiros">Banheiros</label>
+                    <input type="number" name="banheiros" id="banheiros"
+                        value="{{ request.args.get('banheiros', '') }}" min="0">
+                </div>
+
+                <div class="campo">
+                    <label for="vagas">Vagas de garagem</label>
+                    <input type="number" name="vagas" id="vagas"
+                        value="{{ request.args.get('vagas', '') }}" min="0">
+                </div>
+
+                <div class="campo campo-check">
+                    <label>
+                        <input type="checkbox" name="piscina" value="1" {% if piscina=='1' %}checked{% endif %}>
+                        Piscina
+                    </label>
+                </div>
+
+                <div class="campo campo-check">
+                    <label>
+                        <input type="checkbox" name="churrasqueira" value="1" {% if churrasqueira=='1' %}checked{% endif %}>
+                        Churrasqueira
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="filtros-acoes">
+                <a href="/pesquisa" class="btn-limpar">Limpar</a>
+                <button type="button" class="btn-filtrar" id="btn-aplicar-filtros">Aplicar</button>
+            </div>
+
+        </form>
+    </div>
+
+
+    <!-- Conteúdo principal -->
     <main class="conteudo-pesquisa">
 
-        <!-- Painel lateral de filtros -->
-        <aside class="filtros">
-
-            <!-- Botão para abrir/fechar os filtros no mobile -->
-            <button id="btn-toggle-filtros" class="btn-toggle-filtros">Filtrar Imóveis ▼</button>
-
-            <!-- Conteúdo que será exibido ou escondido -->
-            <div class="filtros-conteudo">
-                <h3>Filtrar Imóveis</h3>
-
-                <form action="/pesquisa" method="get">
-                    <input type="hidden" name="termo" value="{{ termo }}">
-
-                    <!-- PRETENSÃO -->
-                    <div class="campo">
-                        <label for="pretensao">Pretensão</label>
-                        <select name="pretensao" id="pretensao">
-                            <option value="">Todos</option>
-                            <option value="Venda" {% if pretensao=='Venda' %}selected{% endif %}>Comprar</option>
-                            <option value="Aluguel" {% if pretensao=='Aluguel' %}selected{% endif %}>Alugar</option>
-                        </select>
-                    </div>
-
-                    <!-- TIPO -->
-                    <div class="campo">
-                        <label for="tipo">Tipo de imóvel</label>
-                        <select name="tipo" id="tipo">
-                            <option value="">Todos</option>
-                            <option value="empreendimento" {% if tipo=='empreendimento' %}selected{% endif %}>
-                                Empreendimentos</option>
-                            <option value="casa" {% if tipo=='casa' %}selected{% endif %}>Casa</option>
-                            <option value="apartamento" {% if tipo=='apartamento' %}selected{% endif %}>Apartamento
-                            </option>
-                            <option value="loft" {% if tipo=='loft' %}selected{% endif %}>Loft</option>
-                            <option value="terreno" {% if tipo=='terreno' %}selected{% endif %}>Terreno</option>
-                        </select>
-                    </div>
-
-                    <!-- ID
-                    <div class="campo">
-                        <label for="id">ID do imóvel</label>
-                        <input type="text" name="id" id="id" value="{{ request.args.get('id', '') }}"
-                            placeholder="Ex: 123">
-                    </div> -->
-
-                    <!-- LOCALIZAÇÃO (CIDADE, BAIRRO, UF UNIFICADOS) -->
-                    <div class="campo">
-                        <label for="localizacao">Localização</label>
-                        <input type="text" name="localizacao" id="localizacao" 
-                               value="{{ request.args.get('localizacao', '') }}"
-                               placeholder="Cidade, Bairro, UF">
-                    </div>
-
-                    <!-- PREÇO MÁXIMO -->
-                    <div class="campo">
-                        <label for="preco-editavel">Preço Máximo</label>
-                        <div class="campo-preco-dinamico">
-                            <div id="preco-editavel" contenteditable="true" class="preco-digitavel"
-                                data-placeholder="Ex: 120.000,00">
-                                {% if max_preco %}{{ "{:,}".format(max_preco|int).replace(",", ".") }},00{% endif %}
-                            </div>
-                        </div>
-                        <input type="hidden" name="max_preco" id="max_preco_real">
-                    </div>
-
-                    <!-- ÁREA MÍNIMA -->
-                    <div class="campo">
-                        <label for="area_min">Área mínima (m²)</label>
-                        <input type="number" name="area_min" id="area_min"
-                            value="{{ request.args.get('area_min', '') }}">
-                    </div>
-
-                    <!-- ÁREA MÁXIMA -->
-                    <div class="campo">
-                        <label for="area_max">Área máxima (m²)</label>
-                        <input type="number" name="area_max" id="area_max"
-                            value="{{ request.args.get('area_max', '') }}">
-                    </div>
-
-                    <!-- QUARTOS -->
-                    <div class="campo">
-                        <label for="quartos">Quartos</label>
-                        <input type="number" name="quartos" id="quartos" value="{{ request.args.get('quartos', '') }}"
-                            min="0">
-                    </div>
-
-                    <!-- BANHEIROS -->
-                    <div class="campo">
-                        <label for="banheiros">Banheiros</label>
-                        <input type="number" name="banheiros" id="banheiros"
-                            value="{{ request.args.get('banheiros', '') }}" min="0">
-                    </div>
-
-                    <!-- VAGAS -->
-                    <div class="campo">
-                        <label for="vagas">Vagas de garagem</label>
-                        <input type="number" name="vagas" id="vagas" value="{{ request.args.get('vagas', '') }}"
-                            min="0">
-                    </div>
-
-                    <!-- ESTÁGIO
-                    <div class="campo">
-                        <label for="estagio">Estágio da obra</label>
-                        <select name="estagio" id="estagio">
-                            <option value="">Todos</option>
-                            <option value="PRONTA" {% if request.args.get('estagio')=='PRONTA' %}selected{% endif %}>
-                                Pronta</option>
-                            <option value="EM CONSTRUÇÃO" {% if request.args.get('estagio')=='EM CONSTRUÇÃO'
-                                %}selected{% endif %}>Em construção</option>
-                        </select>
-                    </div> -->
-
-                    <!-- ENTREGA
-                    <div class="campo">
-                        <label for="entrega">Ano de entrega</label>
-                        <input type="text" name="entrega" id="entrega" value="{{ request.args.get('entrega', '') }}"
-                            placeholder="Ex: 2026">
-                    </div> -->
-
-
-                    <!-- PISCINA -->
-                    <div class="campo">
-                        <label>
-                            <input type="checkbox" name="piscina" value="1" {% if piscina=='1' %}checked{% endif %}>
-                            Possui Piscina
-                        </label>
-                    </div>
-
-                    <!-- CHURRASQUEIRA -->
-                    <div class="campo">
-                        <label>
-                            <input type="checkbox" name="churrasqueira" value="1" {% if churrasqueira=='1' %}checked{%
-                                endif %}>
-                            Possui Churrasqueira
-                        </label>
-                    </div>
-
-                    <!-- BOTÕES -->
-                    <div class="grupo-botoes">
-                        <button type="button" class="btn-filtrar btn-filtrar-mobile" onclick="aplicarFiltrosCompletos(); document.querySelector('.filtros').classList.remove('ativo'); document.getElementById('btn-toggle-filtros').textContent = 'Filtrar Imóveis ▼';">Aplicar Filtros</button>
-                        <a href="/pesquisa" class="btn-limpar">Limpar</a>
-                    </div>
-                </form>
-            </div>
-        </aside>
-
-
-        <div class="area-resultados">
-            <!-- Barra superior com contador e pesquisa -->
-            <div class="barra-superior-mobile">
-
-                 <!-- Pesquisa rápida minimalista -->
-                <div class="pesquisa-minimalista">
-                    <div class="campo-pesquisa-container">
-                        <input type="text" id="termo-pesquisa" placeholder="Digite região, bairro, nome ou ID" autocomplete="off" class="campo-pesquisa-simples" />
-                        <div id="sugestoes-pesquisa" class="sugestoes"></div>
-                    </div>
-                    <button id="limpar-pesquisa" class="btn-limpar-simples">✕</button>
-                </div>
-
-                <!-- Contador de resultados -->
-                <p class="contador-imoveis">
-                    {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
-                    {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if
-                    total_resultados > 1 else 'encontrado' }}
-                    {% if empreendimentos|length > 0 and imoveis|length > 0 %}
-                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
-                    }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                    {% elif empreendimentos|length > 0 %}
-                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
-                    }})
-                    {% elif imoveis|length > 0 %}
-                    ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                    {% endif %}
-                </p>
-
-               
-            </div>
-
-             <!-- Barra superior com contador e pesquisa -->
-            <div class="barra-superior-desktop">
-                <!-- Contador de resultados -->
-                <p class="contador-imoveis">
-                    {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
-                    {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if
-                    total_resultados > 1 else 'encontrado' }}
-                    {% if empreendimentos|length > 0 and imoveis|length > 0 %}
-                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
-                    }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                    {% elif empreendimentos|length > 0 %}
-                    ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento'
-                    }})
-                    {% elif imoveis|length > 0 %}
-                    ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                    {% endif %}
-                </p>
-
-                <!-- Pesquisa rápida minimalista -->
-                <div class="pesquisa-minimalista">
-                    <div class="campo-pesquisa-container">
-                        <input type="text" id="termo-pesquisa-desktop" placeholder="Digite região, bairro, nome ou ID" autocomplete="off" class="campo-pesquisa-simples" />
-                        <div id="sugestoes-pesquisa-desktop" class="sugestoes"></div>
-                    </div>
-                    <button id="limpar-pesquisa-desktop" class="btn-limpar-simples">✕</button>
-                </div>
-            </div>
-
-            <!-- Área dos resultados -->
-            <section class="resultados">
-                <!-- Empreendimentos primeiro -->
-                {% if empreendimentos %}
-                {% for empreendimento in empreendimentos %}
-                {% include 'partials/card_empreendimento.html' %}
-                {% endfor %}
+        <div class="barra-info">
+            <p class="contador-imoveis">
+                {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
+                {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if total_resultados > 1 else 'encontrado' }}
+                {% if empreendimentos|length > 0 and imoveis|length > 0 %}
+                ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento' }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
+                {% elif empreendimentos|length > 0 %}
+                ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento' }})
+                {% elif imoveis|length > 0 %}
+                ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
                 {% endif %}
-
-                <!-- Imóveis depois -->
-                {% if imoveis %}
-                {% for imovel in imoveis %}
-                {% include 'partials/card_imovel.html' %}
-                {% endfor %}
-                {% endif %}
-
-                <!-- Mensagem quando não há resultados -->
-                {% if not empreendimentos and not imoveis %}
-                <p class="nenhum-encontrado">Nenhum resultado encontrado.</p>
-                {% endif %}
-            </section>
+            </p>
         </div>
+
+        <section class="resultados">
+            {% if empreendimentos %}
+            {% for empreendimento in empreendimentos %}
+            {% include 'partials/card_empreendimento.html' %}
+            {% endfor %}
+            {% endif %}
+
+            {% if imoveis %}
+            {% for imovel in imoveis %}
+            {% include 'partials/card_imovel.html' %}
+            {% endfor %}
+            {% endif %}
+
+            {% if not empreendimentos and not imoveis %}
+            <p class="nenhum-encontrado">Nenhum resultado encontrado.</p>
+            {% endif %}
+        </section>
+
     </main>
 
-    <!----------------------  Rodapé  ----------------->
     {% include 'partials/footer.html' %}
-
 
     <script src="/static/js/pesquisa.js"></script>
 </body>

@@ -18,19 +18,12 @@ html {
 }
 
 body {
-  background-color: white;
+  background-color: #f5f5f5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-main {
-  min-height: 50vh;
-}
-
-/* ================================
-   LINKS E ÂNCORAS
-================================== */
 a {
   text-decoration: none;
   color: inherit;
@@ -40,10 +33,6 @@ a:visited,
 a:active,
 a:hover {
   color: inherit;
-}
-
-.footer {
-  margin-top: auto;
 }
 
 /* ================================
@@ -101,101 +90,175 @@ a:hover {
 }
 
 /* ================================
-   MÓDULO: LAYOUT PRINCIPAL
+   MÓDULO: BARRA DE CONTROLES
 ================================== */
-.conteudo-pesquisa {
+.barra-controles {
   display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 1rem;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border-bottom: 1px solid #e8e8e8;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ================================
+   MÓDULO: TABS PRETENSÃO
+================================== */
+.tabs-pretensao {
+  display: flex;
+  background: #f0f0f0;
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #555;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-btn.ativo {
+  background: #1d1d1d;
+  color: white;
+}
+
+.tab-btn:hover:not(.ativo) {
+  background: #e0e0e0;
+  color: #333;
+}
+
+/* ================================
+   MÓDULO: BOTÃO ABRIR FILTROS
+================================== */
+.btn-abrir-filtros {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: white;
+  border: 1.5px solid #1d1d1d;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1d1d1d;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-abrir-filtros.ativo,
+.btn-abrir-filtros:hover {
+  background: #1d1d1d;
+  color: white;
+}
+
+.btn-abrir-filtros.ativo svg,
+.btn-abrir-filtros:hover svg {
+  stroke: white;
+}
+
+.btn-abrir-filtros.ativo svg circle,
+.btn-abrir-filtros:hover svg circle {
+  fill: white;
 }
 
 /* ================================
    MÓDULO: PAINEL DE FILTROS
 ================================== */
-/* Container principal dos filtros */
-.filtros {
-  background: #f8f8f8;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  text-align: center;
-  margin-right: 4vw;
-  margin-left: 4vw;
+.painel-filtros {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  background: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-/* Botão toggle para mobile */
-.btn-toggle-filtros {
-  background-color: #1d1d1d;
-  color: white;
-  display: block;
-  padding: 3vw 17vw;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 0 auto;
+.painel-filtros.aberto {
+  max-height: 700px;
 }
 
-/* Conteúdo dos filtros (oculto por padrão no mobile) */
-.filtros-conteudo {
-  display: none;
-  flex-direction: column;
-  gap: 1rem;
+.painel-filtros form {
+  padding: 1.25rem 1rem 1rem;
 }
 
-/* Estado ativo dos filtros no mobile */
-.filtros.ativo .filtros-conteudo {
-  display: flex;
-}
-
-/* Título dos filtros */
-.filtros h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
 }
 
 /* ================================
    MÓDULO: CAMPOS DE FORMULÁRIO
 ================================== */
-/* Container dos campos */
 .campo {
-  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
 }
 
-/* Labels dos campos */
 .campo label {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.8rem;
   font-weight: 500;
-  text-align: left;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-  color: #333;
+  color: #555;
+  margin-bottom: 4px;
 }
 
-/* Inputs e selects */
 .campo input,
 .campo select {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d0d0d0;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: #1d1d1d;
+}
+
+.campo-check {
+  justify-content: flex-end;
+  padding-bottom: 2px;
+}
+
+.campo-check label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-weight: 400;
+  color: #444;
+  margin-bottom: 0;
 }
 
 /* ================================
    MÓDULO: CAMPO DE PREÇO DINÂMICO
 ================================== */
 .campo-preco-dinamico {
-  display: inline-block;
-  border: 1px solid #ccc;
+  border: 1px solid #d0d0d0;
   border-radius: 6px;
-  padding: 0.6rem;
+  padding: 0.5rem 0.7rem;
   background: white;
-  width: 100%;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: #333;
 }
 
@@ -206,185 +269,114 @@ a:hover {
 
 .preco-digitavel:empty::before {
   content: attr(data-placeholder);
-  color: #999;
+  color: #aaa;
   pointer-events: none;
 }
 
 /* ================================
-   MÓDULO: BOTÕES DE AÇÃO
+   MÓDULO: AÇÕES DO PAINEL
 ================================== */
-/* Container dos botões */
-.grupo-botoes {
+.filtros-acoes {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid #e8e8e8;
+  padding-top: 1rem;
 }
 
-/* Botão filtrar (apenas mobile) */
-.btn-filtrar-mobile {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #1d1d1d;
+.btn-limpar {
+  padding: 0.55rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  background: #ebebeb;
+  border: none;
+  text-align: center;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-limpar:hover {
+  background: #ddd;
+  color: #333;
+}
+
+.btn-filtrar {
+  padding: 0.55rem 1.5rem;
+  background: #1d1d1d;
   color: white;
   border: none;
   border-radius: 6px;
   font-weight: 600;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  margin-bottom: 0.5rem;
+  transition: background 0.2s ease;
 }
 
-.btn-filtrar-mobile:hover {
-  background-color: #333;
-}
-
-/* Botão limpar */
-.btn-limpar {
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-weight: 600;
-  background: #eaeaea;
-  border: none;
-  text-align: center;
-  text-decoration: none;
-  color: #333;
-  cursor: pointer;
-}
-
-.btn-limpar:hover {
-  background-color: #ddd;
-}
-
-/* ================================
-   MÓDULO: CONTADOR DE RESULTADOS
-================================== */
-.contador-imoveis {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #333;
-  text-align: left;
-  padding: 1vw 9vw;
-  margin-bottom: 1vw;
-}
-
-/* ================================
-   MÓDULO: ÁREA DE RESULTADOS
-================================== */
-.resultados {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Mensagem quando nenhum imóvel é encontrado */
-.nenhum-encontrado {
-  font-size: 1.2rem;
-  color: #888;
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem;
+.btn-filtrar:hover {
+  background: #333;
 }
 
 /* ================================
    MÓDULO: PESQUISA RÁPIDA
 ================================== */
-/* Barra superior mobile */
-.barra-superior-mobile {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 1vw;
-  margin-right: 1.2vw;
-}
-
-/* Barra superior desktop (oculta por padrão) */
-.barra-superior-desktop {
-  display: none;
-}
-
-/* Configurações específicas para mobile */
-.barra-superior-mobile .pesquisa-minimalista {
-  order: 1;
-  max-width: 100%;
-  margin: 0 40px;
-}
-
-.barra-superior-mobile .contador-imoveis {
-  order: 2;
-  font-size: 0.9rem;
-  text-align: center;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-/* Container da pesquisa minimalista */
 .pesquisa-minimalista {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex: 1;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: 40px;
+  min-width: 0;
 }
 
-/* Container do campo de pesquisa */
 .campo-pesquisa-container {
   position: relative;
   flex: 1;
 }
 
-/* Campo de pesquisa simples */
 .campo-pesquisa-simples {
   width: 100%;
-  padding: 12px 18px;
-  border: 2px solid #e0e0e0;
-  border-radius: 25px;
-  background: #ffffff;
-  color: #333333;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border: 1.5px solid #bebebe;
+  border-radius: 24px;
+  background: #fafafa;
+  color: #333;
+  font-size: 0.85rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .campo-pesquisa-simples:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-  transform: translateY(-1px);
+  border-color: #1d1d1d;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 .campo-pesquisa-simples::placeholder {
-  color: #999;
-  font-size: 14px;
+  color: #bbb;
+  font-size: 0.82rem;
 }
 
-/* Botão limpar pesquisa */
 .btn-limpar-simples {
-  width: 36px;
-  height: 36px;
-  background: #f8f9fa;
-  color: #6c757d;
-  border: 2px solid #e0e0e0;
+  width: 30px;
+  height: 30px;
+  background: #f0f0f0;
+  color: #888;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .btn-limpar-simples:hover {
-  background: #dc3545;
+  background: #1d1d1d;
   color: white;
-  border-color: #dc3545;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 /* ================================
@@ -395,29 +387,28 @@ a:hover {
   top: 100%;
   left: 0;
   right: 0;
-  background: #ffffff;
-  border: 2px solid #e0e0e0;
+  background: white;
+  border: 1.5px solid #e0e0e0;
   border-top: none;
-  border-radius: 0 0 15px 15px;
+  border-radius: 0 0 14px 14px;
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
   display: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sugestoes div {
-  padding: 12px 18px;
-  color: #333333;
+  padding: 10px 16px;
+  color: #333;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
+  font-size: 0.85rem;
 }
 
 .sugestoes div:hover {
-  background: #f8f9fa;
-  color: #007bff;
+  background: #f5f5f5;
+  color: #1d1d1d;
 }
 
 .sugestoes div:last-child {
@@ -425,118 +416,139 @@ a:hover {
 }
 
 /* ================================
-   MEDIA QUERIES - RESPONSIVIDADE
+   MÓDULO: LAYOUT PRINCIPAL
 ================================== */
+.conteudo-pesquisa {
+  padding: 1rem;
+  min-height: 50vh;
+}
+
+.barra-info {
+  padding: 0 0.25rem 0.75rem;
+}
+
+.contador-imoveis {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #666;
+}
+
+/* ================================
+   MÓDULO: RESULTADOS
+================================== */
+.resultados {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* Mobile: 2 cards por linha */
+.resultados .card-link,
+.resultados .card-empreendimento-link {
+  width: calc(50% - 0.4rem) !important;
+}
+
+.resultados .card-container {
+  width: 100% !important;
+  height: 310px !important;
+}
+
+.resultados .card-info_principal h1,
+.resultados .card-info_principal h2 {
+  font-size: 0.72rem !important;
+}
+
+.resultados .card-info_secundaria p {
+  font-size: 0.72rem !important;
+}
+
+.resultados .card-preco p {
+  font-size: 0.85rem !important;
+}
+
+.resultados .info-item {
+  font-size: 0.75rem !important;
+  gap: 0.2rem !important;
+}
+
+.resultados .info-icon {
+  width: 13px !important;
+}
+
+.nenhum-encontrado {
+  font-size: 1.1rem;
+  color: #999;
+  text-align: center;
+  padding: 3rem 1rem;
+}
 
 /* ================================
    TABLET (768px+)
 ================================== */
 @media (min-width: 768px) {
-  /* Layout principal */
+  .barra-controles {
+    padding: 10px 24px;
+    flex-wrap: nowrap;
+  }
+
+  .tab-btn {
+    padding: 7px 18px;
+    font-size: 0.88rem;
+  }
+
   .conteudo-pesquisa {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 0vw;
-    padding: 2vw 2vw 2vw 2vw;
-    max-width: 100vw;
-    margin: 0 auto;
+    padding: 1.5rem 2rem;
   }
 
-  /* Painel de filtros */
-  .filtros {
-    position: sticky;
-    top: 2rem;
-    width: 270px;
-    flex-shrink: 0;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    height: fit-content;
-    margin: 0;
-  }
-
-  /* Ocultar botão toggle no tablet/desktop */
-  .btn-toggle-filtros {
-    display: none !important;
-  }
-
-  /* Mostrar conteúdo dos filtros sempre */
-  .filtros-conteudo {
-    display: flex !important;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  /* Botões em linha no tablet/desktop */
-  .grupo-botoes {
-    flex-direction: row;
-  }
-
-  /* Ocultar botão filtrar no tablet/desktop */
-  .btn-filtrar-mobile {
-    display: none !important;
-  }
-
-  /* Campos de filtro */
-  .campo {
-    margin-bottom: 0.5vw;
-  }
-
-  .campo label {
-    font-weight: 500;
-    font-size: 0.95rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .campo input,
-  .campo select {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.95rem;
-  }
-
-  /* Contador de imóveis */
-  .contador-imoveis {
-    font-size: 1vw;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 1rem;
-    padding: 0;
-    text-align: left;
-    line-height: 1;
-  }
-
-  /* Área de resultados */
-  .area-resultados {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Grid de resultados */
   .resultados {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
     flex-direction: row;
-    gap: 1.5rem;
-    padding: 0 0vw;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
   }
 
-  .resultados > * {
+  /* Desfaz overrides mobile — tamanho e fontes voltam ao do card_imovel.css */
+  .resultados .card-link,
+  .resultados .card-empreendimento-link {
     width: auto !important;
-    margin: 0 !important;
   }
 
-  /* Pesquisa rápida */
-  .campos-pesquisa-rapida {
-    grid-template-columns: 1fr;
+  .resultados .card-container {
+    width: 15vw !important;
+    height: 21vw !important;
   }
 
-  .pesquisa-minimalista {
-    margin-right: 0;
+  .resultados .card-info_principal h1,
+  .resultados .card-info_principal h2 {
+    font-size: 0.8vw !important;
+  }
+
+  .resultados .card-info_secundaria p {
+    font-size: 0.90vw !important;
+  }
+
+  .resultados .card-preco p {
+    font-size: 1.1vw !important;
+  }
+
+  .resultados .info-item {
+    font-size: 1.0rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .resultados .info-icon {
+    width: 1.2vw !important;
+  }
+
+  .filtros-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .painel-filtros form {
+    padding: 1.5rem 2rem;
   }
 }
 
@@ -544,94 +556,37 @@ a:hover {
    DESKTOP (1024px+)
 ================================== */
 @media (min-width: 1024px) {
-  /* Layout principal */
+  .barra-controles {
+    padding: 10px 3vw;
+    gap: 12px;
+  }
+
   .conteudo-pesquisa {
-    gap: 0vw;
-    padding: 2vw 0vw 2vw 2vw;
-    max-width: 100vw;
-    margin: 0 auto;
+    padding: 1.5rem 3vw;
   }
 
-  /* Painel de filtros */
-  .filtros {
-    top: 2rem;
-    width: 250px;
-    flex-shrink: 0;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    margin: 0;
-  }
-
-  .filtros h3 {
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-
-  .filtros-conteudo {
-    gap: 1rem;
-  }
-
-  /* Campos de filtro */
-  .campo {
-    margin-bottom: 0.8rem;
-  }
-
-  .campo label {
-    font-weight: 500;
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .campo input,
-  .campo select {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.9rem;
-  }
-
-  /* Contador de imóveis */
-  .contador-imoveis {
-    font-size: 1vw;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    padding: 0;
-    line-height: 1;
-  }
-
-  /* Área de resultados */
-  .area-resultados {
-    flex-grow: 1;
-    padding-left: 2vw;
-  }
-
-  /* Grid de resultados */
   .resultados {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    flex-direction: row;
-    gap: 1vw;
-    padding: 0 0vw;
+    gap: 1.2vw;
   }
 
-  .resultados > * {
-    width: auto !important;
-    margin: 0 !important;
+  .resultados .info-item {
+    font-size: 1vw !important;
+    gap: 0.3vw !important;
   }
 
-  /* Barras superiores */
-  .barra-superior-mobile {
-    display: none;
+  .resultados .info-icon {
+    width: 1vw !important;
   }
 
-  .barra-superior-desktop {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1vw;
-    margin-right: 1.2vw;
-    gap: 1vw;
+  .filtros-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .painel-filtros form {
+    padding: 1.5rem 3vw;
+  }
+
+  .campo-pesquisa-simples {
+    font-size: 0.88rem;
   }
 }
