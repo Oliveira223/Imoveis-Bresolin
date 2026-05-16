@@ -14,22 +14,39 @@ jobs:
         uses: actions/checkout@v4
 
       - name: SSH into VPS and deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
+
             echo "[INFO] Criando backup do banco..."
             mkdir -p ~/backups
-            docker exec bresolin_db pg_dump -U admin bresolin_db > ~/backups/backup_$(date +'%Y%m%d_%H%M%S').dump
+            DB_USER=$(docker exec bresolin_db printenv POSTGRES_USER)
+            DB_NAME=$(docker exec bresolin_db printenv POSTGRES_DB)
+            docker exec bresolin_db pg_dump -U "$DB_USER" "$DB_NAME" > ~/backups/backup_$(date +'%Y%m%d_%H%M%S').dump
 
             echo "[INFO] Atualizando aplicação..."
             cd ~/Imoveis-Bresolin
             git fetch origin
             git reset --hard origin/main
 
-            echo "[INFO] Reconstruindo containers..."
-            docker compose up -d --build
+            echo "[INFO] Reiniciando aplicação..."
+            docker compose restart bresolin_app
+
+            echo "[INFO] Verificando saúde da aplicação..."
+            for i in $(seq 1 10); do
+              if curl -sf http://localhost:5000/health > /dev/null; then
+                echo "[INFO] Aplicação respondendo com sucesso!"
+                break
+              fi
+              if [ "$i" -eq 10 ]; then
+                echo "[ERROR] Aplicação não respondeu após 30 segundos!"
+                exit 1
+              fi
+              sleep 3
+            done
 
             echo "[INFO] Deploy finalizado com sucesso!"
