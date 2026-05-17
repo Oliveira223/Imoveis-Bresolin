@@ -1265,6 +1265,14 @@ def imagens_do_imovel(imovel_id):
             prefixo = f"/static/img/uploads/imoveis/{imovel_id}"
             url = mover_tmp_para_destino(url, destino_dir, prefixo)
 
+            # Rejeita se a URL já está cadastrada para este imóvel
+            ja_existe = con.execute(
+                text('SELECT id FROM imagens_imovel WHERE imovel_id = :id AND url = :url'),
+                {'id': imovel_id, 'url': url}
+            ).fetchone()
+            if ja_existe:
+                return jsonify({'erro': 'Imagem já cadastrada'}), 409
+
             # Busca a última ordem para inserir no final
             result_ordem = con.execute(
                 text('SELECT COALESCE(MAX(ordem), -1) + 1 as prox_ordem FROM imagens_imovel WHERE imovel_id = :id'),
@@ -1319,6 +1327,14 @@ def imagens_do_empreendimento(empreendimento_id):
             destino_dir = os.path.join(UPLOAD_FOLDER, 'empreendimentos', str(empreendimento_id))
             prefixo = f"/static/img/uploads/empreendimentos/{empreendimento_id}"
             url = mover_tmp_para_destino(url, destino_dir, prefixo)
+
+            # Rejeita se a URL já está cadastrada para este empreendimento
+            ja_existe = con.execute(
+                text('SELECT id FROM imagens_empreendimento WHERE empreendimento_id = :id AND url = :url'),
+                {'id': empreendimento_id, 'url': url}
+            ).fetchone()
+            if ja_existe:
+                return jsonify({'erro': 'Imagem já cadastrada'}), 409
 
             # Busca a última ordem para inserir no final
             result_ordem = con.execute(
