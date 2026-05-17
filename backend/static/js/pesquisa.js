@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
       churrasqueira: churrasqueiraCheckbox?.checked || false
     };
 
-    const filtrosEspecificosImoveis = filtros.quartos !== null || filtros.banheiros !== null || filtros.vagas !== null;
+    const filtrosEspecificosImoveis = filtros.quartos !== null || filtros.banheiros !== null || filtros.vagas !== null || filtros.piscina || filtros.churrasqueira;
 
     cards.forEach(card => {
       let isVisible = true;
