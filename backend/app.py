@@ -1177,6 +1177,19 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def comprimir_imagem(caminho, max_width=1200, quality=82):
+    from PIL import Image
+    try:
+        with Image.open(caminho) as img:
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            if img.width > max_width:
+                ratio = max_width / img.width
+                img = img.resize((max_width, int(img.height * ratio)), Image.LANCZOS)
+            img.save(caminho, 'JPEG', quality=quality, optimize=True)
+    except Exception:
+        pass  # mantém o arquivo original se falhar
+
 @app.route('/api/upload', methods=['POST'])
 @requires_auth
 def upload_local():
@@ -1189,8 +1202,7 @@ def upload_local():
 
     imovel_id = request.form.get('imovel_id')
     empreendimento_id = request.form.get('empreendimento_id')
-    ext = file.filename.rsplit('.', 1)[1].lower()
-    nome_arquivo = f"{uuid4().hex}.{ext}"
+    nome_arquivo = f"{uuid4().hex}.jpg"
 
     if imovel_id:
         pasta = os.path.join(UPLOAD_FOLDER, 'imoveis', str(imovel_id))
@@ -1203,7 +1215,9 @@ def upload_local():
         url = f"/static/img/uploads/tmp/{nome_arquivo}"
 
     os.makedirs(pasta, exist_ok=True)
-    file.save(os.path.join(pasta, nome_arquivo))
+    caminho_final = os.path.join(pasta, nome_arquivo)
+    file.save(caminho_final)
+    comprimir_imagem(caminho_final)
     return jsonify({'url': url}), 201
 
 
