@@ -80,12 +80,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const pretensaoInput = document.getElementById('pretensao');
   const tabBtns = document.querySelectorAll('.tab-btn');
 
+  const resultadosEl = document.querySelector('.resultados');
+
+  // Indicador deslizante do segmented control
+  const tabsEl = document.querySelector('.tabs-pretensao');
+  let indicador = null;
+
+  function posicionarIndicador(btn, comTransicao = true) {
+    if (!indicador || !tabsEl) return;
+    if (!comTransicao) indicador.style.transition = 'none';
+    indicador.style.left   = btn.offsetLeft   + 'px';
+    indicador.style.top    = btn.offsetTop    + 'px';
+    indicador.style.width  = btn.offsetWidth  + 'px';
+    indicador.style.height = btn.offsetHeight + 'px';
+    if (!comTransicao) requestAnimationFrame(() => { indicador.style.transition = ''; });
+  }
+
+  if (tabsEl) {
+    indicador = document.createElement('div');
+    indicador.className = 'tabs-indicador';
+    tabsEl.prepend(indicador);
+    const btnAtivo = tabsEl.querySelector('.tab-btn.ativo');
+    if (btnAtivo) posicionarIndicador(btnAtivo, false);
+  }
+
+  function animarTroca(callback) {
+    if (!resultadosEl) { callback(); return; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    resultadosEl.style.opacity = '0';
+    resultadosEl.style.transform = 'translateY(8px)';
+    setTimeout(() => {
+      callback();
+      resultadosEl.style.opacity = '1';
+      resultadosEl.style.transform = 'translateY(0)';
+    }, 180);
+  }
+
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       tabBtns.forEach(b => b.classList.remove('ativo'));
       btn.classList.add('ativo');
       if (pretensaoInput) pretensaoInput.value = btn.dataset.valor;
-      aplicarFiltrosCompletos();
+      posicionarIndicador(btn);
+      animarTroca(aplicarFiltrosCompletos);
     });
   });
 
@@ -140,20 +177,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const churrasqueiraCheckbox = document.querySelector('input[name="churrasqueira"]');
 
   // ================================
+  // Utilitário: debounce
+  // ================================
+  function debounce(fn, delay) {
+    let timer;
+    return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
+  }
+
+  // ================================
   // Função para atualizar contador
   // ================================
-  function atualizarContador(total, empreendimentos, imoveis) {
-    let texto = `${total} ${total > 1 ? 'resultados' : 'resultado'} ${total > 1 ? 'encontrados' : 'encontrado'}`;
-
-    if (empreendimentos > 0 && imoveis > 0) {
-      texto += ` (${empreendimentos} ${empreendimentos > 1 ? 'empreendimentos' : 'empreendimento'} e ${imoveis} ${imoveis > 1 ? 'imóveis' : 'imóvel'})`;
-    } else if (empreendimentos > 0) {
-      texto += ` (${empreendimentos} ${empreendimentos > 1 ? 'empreendimentos' : 'empreendimento'})`;
-    } else if (imoveis > 0) {
-      texto += ` (${imoveis} ${imoveis > 1 ? 'imóveis' : 'imóvel'})`;
-    }
-
+  function atualizarContador(total) {
+    const texto = `${total} ${total > 1 ? 'resultados' : 'resultado'} ${total > 1 ? 'encontrados' : 'encontrado'}`;
     document.querySelectorAll('.contador-imoveis').forEach(c => { c.textContent = texto; });
+  }
+
+  // ================================
+  // Badge de filtros ativos
+  // ================================
+  function atualizarBadgeFiltros() {
+    const ativos = [
+      tipoSelect?.value,
+      localizacaoInput?.value?.trim(),
+      precoReal?.value,
+      areaMinInput?.value,
+      areaMaxInput?.value,
+      quartosInput?.value,
+      banheirosInput?.value,
+      vagasInput?.value,
+      piscinaCheckbox?.checked || false,
+      churrasqueiraCheckbox?.checked || false,
+    ].filter(v => v && v !== '' && v !== false).length;
+
+    const btn = document.getElementById('btn-abrir-filtros');
+    const span = btn?.querySelector('span');
+    if (span) span.textContent = ativos > 0 ? `Filtros (${ativos})` : 'Filtros';
+    btn?.classList.toggle('com-filtros-ativos', ativos > 0);
   }
 
   // ================================
@@ -306,7 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    atualizarContador(visiveisCount, empreendimentosVisiveis, imoveisVisiveis);
+    atualizarContador(visiveisCount);
+    atualizarBadgeFiltros();
 
     const nenhumEncontrado = document.querySelector('.nenhum-encontrado');
     if (nenhumEncontrado) nenhumEncontrado.style.display = visiveisCount === 0 ? 'block' : 'none';
@@ -315,8 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ================================
   // Pesquisa rápida com sugestões
   // ================================
+  const filtrarDebounced = debounce(aplicarFiltrosCompletos, 300);
+
   if (termoInput) {
     termoInput.addEventListener('input', function () {
+      btnLimpar?.classList.toggle('visivel', this.value.length > 0);
+
       const termo = this.value.toLowerCase().trim();
 
       if (termo.length >= 2) {
@@ -344,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sugestoesBox.querySelectorAll('.sugestao-item').forEach(item => {
             item.addEventListener('click', () => {
               termoInput.value = item.textContent;
+              btnLimpar?.classList.add('visivel');
               sugestoesBox.style.display = 'none';
               aplicarFiltrosCompletos();
             });
@@ -355,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sugestoesBox.style.display = 'none';
       }
 
-      aplicarFiltrosCompletos();
+      filtrarDebounced();
     });
   }
 
@@ -363,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnLimpar.addEventListener('click', () => {
       if (termoInput) termoInput.value = '';
       if (sugestoesBox) sugestoesBox.style.display = 'none';
+      btnLimpar.classList.remove('visivel');
       aplicarFiltrosCompletos();
     });
   }
@@ -381,12 +447,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners filtros do painel
   // ================================
   tipoSelect?.addEventListener('change', aplicarFiltrosCompletos);
-  localizacaoInput?.addEventListener('input', aplicarFiltrosCompletos);
-  areaMinInput?.addEventListener('input', aplicarFiltrosCompletos);
-  areaMaxInput?.addEventListener('input', aplicarFiltrosCompletos);
-  quartosInput?.addEventListener('input', aplicarFiltrosCompletos);
-  banheirosInput?.addEventListener('input', aplicarFiltrosCompletos);
-  vagasInput?.addEventListener('input', aplicarFiltrosCompletos);
+  localizacaoInput?.addEventListener('input', filtrarDebounced);
+  areaMinInput?.addEventListener('input', filtrarDebounced);
+  areaMaxInput?.addEventListener('input', filtrarDebounced);
+  quartosInput?.addEventListener('input', filtrarDebounced);
+  banheirosInput?.addEventListener('input', filtrarDebounced);
+  vagasInput?.addEventListener('input', filtrarDebounced);
   piscinaCheckbox?.addEventListener('change', aplicarFiltrosCompletos);
   churrasqueiraCheckbox?.addEventListener('change', aplicarFiltrosCompletos);
 
@@ -433,6 +499,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.filtrarImoveis = aplicarFiltrosCompletos;
 
   setTimeout(() => {
+    if (termoInput && btnLimpar) {
+      btnLimpar.classList.toggle('visivel', termoInput.value.length > 0);
+    }
     aplicarFiltrosCompletos();
     setTimeout(syncBarraComCards, 50);
   }, 100);

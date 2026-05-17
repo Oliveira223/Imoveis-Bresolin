@@ -188,13 +188,6 @@
             <p class="contador-imoveis">
                 {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
                 {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if total_resultados > 1 else 'encontrado' }}
-                {% if empreendimentos|length > 0 and imoveis|length > 0 %}
-                ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento' }} e {{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                {% elif empreendimentos|length > 0 %}
-                ({{ empreendimentos|length }} {{ 'empreendimentos' if empreendimentos|length > 1 else 'empreendimento' }})
-                {% elif imoveis|length > 0 %}
-                ({{ imoveis|length }} {{ 'imóveis' if imoveis|length > 1 else 'imóvel' }})
-                {% endif %}
             </p>
         </div>
 

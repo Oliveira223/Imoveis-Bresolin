@@ -116,6 +116,7 @@ a:hover {
   padding: 3px;
   gap: 2px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .tab-btn {
@@ -131,9 +132,27 @@ a:hover {
   white-space: nowrap;
 }
 
+.tab-btn {
+  position: relative;
+  z-index: 1;
+}
+
 .tab-btn.ativo {
-  background: #1d1d1d;
+  background: transparent;
   color: white;
+}
+
+/* Indicador deslizante do segmented control */
+.tabs-indicador {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #1d1d1d;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 0;
+  transition: left 0.22s ease, width 0.22s ease;
 }
 
 .tab-btn:hover:not(.ativo) {
@@ -162,18 +181,21 @@ a:hover {
 }
 
 .btn-abrir-filtros.ativo,
-.btn-abrir-filtros:hover {
+.btn-abrir-filtros:hover,
+.btn-abrir-filtros.com-filtros-ativos {
   background: #1d1d1d;
   color: white;
 }
 
 .btn-abrir-filtros.ativo svg,
-.btn-abrir-filtros:hover svg {
+.btn-abrir-filtros:hover svg,
+.btn-abrir-filtros.com-filtros-ativos svg {
   stroke: white;
 }
 
 .btn-abrir-filtros.ativo svg circle,
-.btn-abrir-filtros:hover svg circle {
+.btn-abrir-filtros:hover svg circle,
+.btn-abrir-filtros.com-filtros-ativos svg circle {
   fill: white;
 }
 
@@ -371,7 +393,14 @@ a:hover {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.2s ease, color 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+
+.btn-limpar-simples.visivel {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .btn-limpar-simples:hover {
@@ -443,39 +472,7 @@ a:hover {
   justify-content: center;
   align-items: flex-start;
   gap: 0.75rem;
-}
-
-/* Mobile: 2 cards por linha */
-.resultados .card-link,
-.resultados .card-empreendimento-link {
-  width: calc(50% - 0.4rem) !important;
-}
-
-.resultados .card-container {
-  width: 100% !important;
-  height: 310px !important;
-}
-
-.resultados .card-info_principal h1,
-.resultados .card-info_principal h2 {
-  font-size: 0.72rem !important;
-}
-
-.resultados .card-info_secundaria p {
-  font-size: 0.72rem !important;
-}
-
-.resultados .card-preco p {
-  font-size: 0.85rem !important;
-}
-
-.resultados .info-item {
-  font-size: 0.75rem !important;
-  gap: 0.2rem !important;
-}
-
-.resultados .info-icon {
-  width: 13px !important;
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .nenhum-encontrado {
@@ -489,16 +486,294 @@ a:hover {
    MOBILE EXCLUSIVO (max 767px)
 ================================== */
 @media (max-width: 767px) {
-  /* Pesquisa ocupa linha própria abaixo dos tabs e do botão filtros */
-  .pesquisa-minimalista {
-    order: 3;
+  /* Barra de controles: 3 linhas alinhadas — tabs / pesquisa / filtros */
+
+  /* Linha 1: pill de tabs — mesma largura da pesquisa abaixo */
+  .tabs-pretensao {
+    order: 1;
     flex: 0 0 100%;
   }
 
-  /* Ícones do card: reduz gap entre items e padding lateral para caber em 2 colunas */
-  .resultados .card-icones {
-    gap: 0.35rem !important;
-    padding-left: 0.5rem !important;
+  /* Distribui os 3 botões igualmente dentro do pill */
+  .tabs-pretensao .tab-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Linha 2: campo de pesquisa — X fica dentro do input */
+  .pesquisa-minimalista {
+    order: 2;
+    flex: 0 0 100%;
+    min-width: 0;
+    position: relative;
+  }
+
+  .btn-limpar-simples {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .campo-pesquisa-simples {
+    padding-right: 44px;
+  }
+
+  /* Linha 3: botão filtros — mesma largura */
+  .btn-abrir-filtros {
+    order: 3;
+    flex: 0 0 100%;
+    justify-content: center;
+  }
+
+  /* ================================
+     PAINEL DE FILTROS MOBILE
+  ================================== */
+
+  .painel-filtros {
+    background: #fff;
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .painel-filtros.aberto {
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .painel-filtros form {
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  /* Coluna única — sem truncamento de labels */
+  .filtros-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Cada campo: linha completa com divisor visual */
+  .filtros-grid .campo {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .filtros-grid .campo:last-child {
+    border-bottom: none;
+  }
+
+  .campo label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  /* Inputs e selects — altura confortável para toque */
+  .campo input,
+  .campo select {
+    height: 46px;
+    font-size: 0.92rem;
+    padding: 0 0.9rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  .campo input:focus,
+  .campo select:focus {
+    border-color: #1d1d1d;
+    background: #fff;
+  }
+
+  .campo-preco-dinamico {
+    height: 46px;
+    padding: 0 0.9rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    font-size: 0.92rem;
+  }
+
+  /* Checkboxes — linha de toque generosa */
+  .campo-check {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.7rem 0;
+    min-height: 46px;
+  }
+
+  .campo-check label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.92rem;
+    font-weight: 400;
+    color: #333;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+
+  .campo-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    accent-color: #1d1d1d;
+    cursor: pointer;
+  }
+
+  /* Botões de ação — sticky no fundo */
+  .filtros-acoes {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #ebebeb;
+    padding: 0.85rem 0 0.85rem;
+    gap: 0.75rem;
+    margin-top: 0;
+  }
+
+  .btn-limpar,
+  .btn-filtrar {
+    flex: 1;
+    height: 48px;
+    font-size: 0.92rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 1 card por linha, layout horizontal: imagem esquerda + info direita */
+  .resultados .card-link,
+  .resultados .card-empreendimento-link {
+    width: 100% !important;
+  }
+
+  /* Alturas fixas por linha (26+46+26+38=136px) — evita colapso do auto com overflow:hidden */
+  .resultados .card-container,
+  .resultados .card-empreendimento-container {
+    width: 100% !important;
+    height: 136px !important;
+    display: grid !important;
+    grid-template-columns: 40% 60%;
+    grid-template-rows: 26px 46px 26px 38px;
+  }
+
+  .resultados .card-container .card-imagem,
+  .resultados .card-empreendimento-container .card-imagem {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    flex: none !important;
+    height: 136px !important;
+    overflow: hidden;
+  }
+
+  .resultados .card-container .card-info_principal,
+  .resultados .card-empreendimento-container .card-info_principal {
+    grid-column: 2;
+    grid-row: 1;
+    flex: none !important;
+    overflow: hidden;
+    padding: 0.35rem 0.7rem 0 !important;
+  }
+
+  .resultados .card-info_principal h1 {
+    font-size: 0.68rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ID é redundante no card mobile — visível na página do imóvel */
+  .resultados .card-info_principal h2 {
+    display: none !important;
+  }
+
+  .resultados .card-container .card-info_secundaria,
+  .resultados .card-empreendimento-container .card-info_secundaria {
+    grid-column: 2;
+    grid-row: 2;
+    flex: none !important;
+    overflow: hidden !important;
+    padding: 0.1rem 0.7rem 0 !important;
+    gap: 0 !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+
+  .resultados .card-info_secundaria p {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .resultados .card-container .card-preco,
+  .resultados .card-empreendimento-container .card-preco {
+    grid-column: 2;
+    grid-row: 3;
+    flex: none !important;
+    overflow: hidden;
+    padding: 0.2rem 0.7rem 0 !important;
+    align-items: flex-start !important;
+  }
+
+  .resultados .card-preco p {
+    font-size: 0.82rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .resultados .card-container .card-icones,
+  .resultados .card-empreendimento-container .card-icones {
+    grid-column: 2;
+    grid-row: 4;
+    flex: none !important;
+    overflow: hidden;
+    padding: 0.2rem 0.7rem 0 !important;
+    gap: 0.5rem !important;
+    align-items: center !important;
+  }
+
+  .resultados .info-item {
+    font-size: 0.68rem !important;
+    gap: 0.2rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+  }
+
+  .resultados .info-icon {
+    width: 12px !important;
+  }
+
+  /* Badge do empreendimento: reposiciona sobre a imagem */
+  .resultados .card-empreendimento-container::before {
+    font-size: 0.55rem !important;
+    padding: 2px 5px !important;
+    top: 6px !important;
+    right: auto !important;
+    left: 6px !important;
+  }
+
+  /* Touch feedback nos cards */
+  .card-link:active .card-container,
+  .card-empreendimento-link:active .card-empreendimento-container {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
   }
 }
 
@@ -533,7 +808,10 @@ a:hover {
     width: auto !important;
   }
 
-  .resultados .card-container {
+  .resultados .card-container,
+  .resultados .card-empreendimento-container {
+    display: flex !important;
+    flex-direction: column !important;
     width: 15vw !important;
     height: 21vw !important;
   }
