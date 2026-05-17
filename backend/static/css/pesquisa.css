@@ -486,6 +486,23 @@ a:hover {
 }
 
 /* ================================
+   MOBILE EXCLUSIVO (max 767px)
+================================== */
+@media (max-width: 767px) {
+  /* Pesquisa ocupa linha própria abaixo dos tabs e do botão filtros */
+  .pesquisa-minimalista {
+    order: 3;
+    flex: 0 0 100%;
+  }
+
+  /* Ícones do card: reduz gap entre items e padding lateral para caber em 2 colunas */
+  .resultados .card-icones {
+    gap: 0.35rem !important;
+    padding-left: 0.5rem !important;
+  }
+}
+
+/* ================================
    TABLET (768px+)
 ================================== */
 @media (min-width: 768px) {
