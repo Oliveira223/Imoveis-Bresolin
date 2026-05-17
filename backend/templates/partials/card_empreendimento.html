@@ -8,7 +8,7 @@
 
         <!-- 50% | Imagem -->
         <div class="card-imagem">
-            <img src="{{ empreendimento.imagem or '/static/img/no-photo.jpg' }}" alt="{{ empreendimento.nome }}">
+            <img src="{{ empreendimento.imagem or '/static/img/no-photo.jpg' }}" alt="{{ empreendimento.nome }}" loading="lazy" decoding="async">
         </div>
 
         <!-- 10% | Nome & ID-->

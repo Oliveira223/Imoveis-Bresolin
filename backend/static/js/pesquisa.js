@@ -494,6 +494,47 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', syncBarraComCards);
 
   // ================================
+  // Fade-in nas imagens dos cards
+  // ================================
+  function ativarFadeInImagens() {
+    document.querySelectorAll('.resultados .card-imagem img').forEach(img => {
+      if (img.complete) {
+        img.classList.add('carregada');
+      } else {
+        img.addEventListener('load', () => img.classList.add('carregada'), { once: true });
+      }
+    });
+  }
+
+  // ================================
+  // Ordenação dos cards
+  // ================================
+  const selectOrdenar = document.getElementById('ordenar');
+  const resultadosContainer = document.querySelector('.resultados');
+
+  function extrairPreco(card) {
+    const texto = card.querySelector('.card-preco p')?.textContent || '';
+    const num = parseFloat(texto.replace(/[R$\s\.]/g, '').replace(',', '.'));
+    return isNaN(num) ? 0 : num;
+  }
+
+  function sortarCards(ordem) {
+    if (!resultadosContainer) return;
+    const cards = [...resultadosContainer.querySelectorAll('.card-link')];
+    if (ordem === 'padrao') {
+      cards.sort((a, b) => parseInt(a.dataset.ordemOriginal || 0) - parseInt(b.dataset.ordemOriginal || 0));
+    } else {
+      cards.sort((a, b) => {
+        const diff = extrairPreco(a) - extrairPreco(b);
+        return ordem === 'menor_preco' ? diff : -diff;
+      });
+    }
+    cards.forEach(card => resultadosContainer.appendChild(card));
+  }
+
+  selectOrdenar?.addEventListener('change', () => sortarCards(selectOrdenar.value));
+
+  // ================================
   // Exposição global e inicialização
   // ================================
   window.filtrarImoveis = aplicarFiltrosCompletos;
@@ -502,7 +543,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (termoInput && btnLimpar) {
       btnLimpar.classList.toggle('visivel', termoInput.value.length > 0);
     }
+    // Grava ordem original dos cards para restaurar no "Padrão"
+    document.querySelectorAll('.resultados .card-link').forEach((card, i) => {
+      card.dataset.ordemOriginal = i;
+    });
     aplicarFiltrosCompletos();
+    ativarFadeInImagens();
     setTimeout(syncBarraComCards, 50);
   }, 100);
 });

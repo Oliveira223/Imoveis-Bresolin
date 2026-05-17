@@ -189,6 +189,11 @@
                 {% set total_resultados = (empreendimentos|length) + (imoveis|length) %}
                 {{ total_resultados }} {{ 'resultados' if total_resultados > 1 else 'resultado' }} {{ 'encontrados' if total_resultados > 1 else 'encontrado' }}
             </p>
+            <select id="ordenar" class="select-ordenar">
+                <option value="padrao">Ordenar</option>
+                <option value="menor_preco">Menor preço</option>
+                <option value="maior_preco">Maior preço</option>
+            </select>
         </div>
 
         <section class="resultados">
