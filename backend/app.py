@@ -1178,9 +1178,10 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def comprimir_imagem(caminho, max_width=1200, quality=82):
-    from PIL import Image
+    from PIL import Image, ImageOps
     try:
         with Image.open(caminho) as img:
+            img = ImageOps.exif_transpose(img)  # corrige rotação do EXIF antes de salvar
             if img.mode in ('RGBA', 'P'):
                 img = img.convert('RGB')
             if img.width > max_width:
