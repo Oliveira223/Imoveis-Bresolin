@@ -56,18 +56,21 @@
 
 }
 
-.card-info_principal h1 {
+.card-info_principal .card-tipo {
   text-transform: uppercase;
   color: #333;
   font-size: 0.8rem;
+  font-weight: bold;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
+  margin: 0;
 }
 
-.card-info_principal h2 {
+.card-info_principal .card-id {
   color: #616161e8;
   font-size: 0.8rem;
+  font-weight: normal;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
 }
 
 
@@ -199,13 +202,15 @@
     }
   }
 
-  .card-info_principal h1 {
+  .card-info_principal .card-tipo {
     color: #333;
     font-size: 0.8vw;
+    font-weight: bold;
   }
 
-  .card-info_principal h2 {
+  .card-info_principal .card-id {
     font-size: 0.8vw;
+    font-weight: normal;
   }
 
   /* INFO ==================================== */
@@ -291,11 +296,11 @@
     }
   }
   
-  .card-info_principal h1 {
+  .card-info_principal .card-tipo {
     font-size: 0.8vw;
   }
 
-  .card-info_principal h2 {
+  .card-info_principal .card-id {
     color: #616161e8;
     font-size: 0.8vw;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

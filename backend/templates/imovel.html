@@ -25,8 +25,8 @@
 
       <!-- Botão Voltar -->
       <div class="header-left">
-        <button class="btn-voltar" onclick="history.back()">
-          <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="Voltar">
+        <button class="btn-voltar" onclick="history.back()" aria-label="Voltar">
+          <img src="/static/img/icons/icons8-back-arrow-100.svg" alt="">
         </button>
       </div>
 
@@ -70,7 +70,7 @@
     {% if imovel.descricao %}
     <div class="sobre-imovel">
       <h3>Sobre o Imóvel</h3>
-      <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+      <p class="descricao">{{ imovel.descricao | e | replace('\n', '<br>') | safe }}</p>
     </div>
     {% endif %}
 
@@ -236,7 +236,7 @@
         {% if imovel.descricao %}
         <div class="sobre-imovel">
           <h3>Sobre o Imóvel</h3>
-          <p class="descricao">{{ imovel.descricao | replace('\n', '<br>') | safe }}</p>
+          <p class="descricao">{{ imovel.descricao | e | replace('\n', '<br>') | safe }}</p>
         </div>
         {% endif %}
 
@@ -350,6 +350,7 @@
 
   <a href="https://wa.me/5551981702045" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
     <img src="/static/img/icons/whatsapp_logo.png" alt="WhatsApp" />
+  </a>
 </body>
 
 </html>

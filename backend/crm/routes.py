@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import check_password_hash
+from flask_wtf.csrf import validate_csrf
+from wtforms import ValidationError
 from sqlalchemy import text
 from database import engine
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Define o Blueprint 'crm'
 crm_bp = Blueprint('crm', __name__, 
@@ -38,10 +43,7 @@ def verificar_autenticacao():
                 flash('Sua sessão expirou ou o usuário não existe mais.', 'warning')
                 return redirect(url_for('crm.login'))
     except Exception as e:
-        print(f"Erro ao verificar sessão: {e}")
-        # Em caso de erro de conexão, pode ser melhor deixar passar ou falhar seguro
-        # Aqui, vamos logar e deixar o fluxo seguir, o erro aparecerá na rota
-        pass
+        logger.error("Erro ao verificar sessão: %s", e)
 
 @crm_bp.route('/')
 def dashboard():
@@ -54,26 +56,33 @@ def login():
         return redirect(url_for('crm.dashboard'))
 
     if request.method == 'POST':
+        # Validação CSRF explícita (WTF_CSRF_ENABLED=False desliga a verificação automática)
+        try:
+            validate_csrf(request.form.get('csrf_token'))
+        except ValidationError:
+            flash('Token de segurança inválido. Recarregue a página.', 'danger')
+            return render_template('login.html')
+
         nome = request.form.get('nome')
         senha = request.form.get('senha')
-        
+
         if not nome or not senha:
             flash('Preencha todos os campos.', 'danger')
             return render_template('login.html')
-            
+
         with engine.connect() as conn:
-            # Busca corretor pelo nome
             result = conn.execute(
                 text("SELECT id, nome, senha_hash, ativo FROM corretores WHERE nome = :nome"),
                 {'nome': nome}
             )
             corretor = result.mappings().first()
-            
+
             if corretor and check_password_hash(corretor['senha_hash'], senha):
                 if not corretor['ativo']:
                     flash('Conta inativa. Contate o administrador.', 'danger')
                 else:
-                    # Login bem-sucedido
+                    # Regenera sessão para evitar session fixation
+                    session.clear()
                     session['corretor_id'] = corretor['id']
                     session['corretor_nome'] = corretor['nome']
                     return redirect(url_for('crm.dashboard'))
@@ -150,7 +159,7 @@ def busca_simples_imoveis():
             return jsonify(resultados[:10]) # Limita total
             
     except Exception as e:
-        print(f"Erro na busca simples: {e}")
+        logger.error("Erro na busca simples: %s", e)
         return jsonify([])
 
 # ==============================
@@ -198,7 +207,7 @@ def create_lead():
         return jsonify({'sucesso': True}), 201
 
     except Exception as e:
-        print(f"Erro ao criar lead: {e}")
+        logger.error("Erro ao criar lead: %s", e)
         return jsonify({'erro': 'Erro ao criar lead'}), 500
 
 @crm_bp.route('/api/leads', methods=['GET'])
@@ -262,7 +271,7 @@ def get_leads():
         return response
 
     except Exception as e:
-        print(f"Erro ao buscar leads: {e}")
+        logger.error("Erro ao buscar leads: %s", e)
         return jsonify({'erro': 'Erro ao buscar leads'}), 500
 
 # ==============================
@@ -307,7 +316,7 @@ def update_lead_status():
         return jsonify({'sucesso': True})
 
     except Exception as e:
-        print(f"Erro ao atualizar status: {e}")
+        logger.error("Erro ao atualizar status: %s", e)
         return jsonify({'erro': 'Erro ao atualizar status'}), 500
 
 # ==============================
@@ -341,7 +350,7 @@ def update_lead_checklist():
         return jsonify({'sucesso': True})
 
     except Exception as e:
-        print(f"Erro ao atualizar checklist: {e}")
+        logger.error("Erro ao atualizar checklist: %s", e)
         return jsonify({'erro': 'Erro ao atualizar checklist'}), 500
 
 # ==============================
@@ -393,7 +402,7 @@ def update_lead_info():
         return jsonify({'sucesso': True})
 
     except Exception as e:
-        print(f"Erro ao atualizar info do lead: {e}")
+        logger.error("Erro ao atualizar info do lead: %s", e)
         return jsonify({'erro': 'Erro ao atualizar informações'}), 500
 
 # ==============================
@@ -423,7 +432,7 @@ def api_lead_comentarios(lead_id):
             response.headers.add('Pragma', 'no-cache')
             return response
         except Exception as e:
-            print(f"Erro ao buscar comentários: {e}")
+            logger.error("Erro ao buscar comentários: %s", e)
             return jsonify({'erro': 'Erro ao buscar comentários'}), 500
 
     if request.method == 'POST':
@@ -448,7 +457,7 @@ def api_lead_comentarios(lead_id):
             return jsonify({'sucesso': True}), 201
             
         except Exception as e:
-            print(f"Erro ao adicionar comentário: {e}")
+            logger.error("Erro ao adicionar comentário: %s", e)
             return jsonify({'erro': 'Erro ao adicionar comentário'}), 500
 
 @crm_bp.route('/api/leads/<int:lead_id>/comentarios/<int:comentario_id>', methods=['DELETE'])
@@ -466,7 +475,7 @@ def api_delete_comentario(lead_id, comentario_id):
                 
         return jsonify({'sucesso': True})
     except Exception as e:
-        print(f"Erro ao deletar comentário: {e}")
+        logger.error("Erro ao deletar comentário: %s", e)
         return jsonify({'erro': 'Erro ao deletar comentário'}), 500
 
 @crm_bp.route('/api/leads/<int:lead_id>', methods=['DELETE'])
@@ -501,7 +510,7 @@ def delete_lead(lead_id):
             
         return jsonify({'sucesso': True})
     except Exception as e:
-        print(f"Erro ao deletar lead: {e}")
+        logger.error("Erro ao deletar lead: %s", e)
         return jsonify({'erro': 'Erro ao deletar lead'}), 500
 
 # ==============================
@@ -535,7 +544,7 @@ def api_tarefas():
                 
             return jsonify(tarefas)
         except Exception as e:
-            print(f"Erro ao buscar tarefas: {e}")
+            logger.error("Erro ao buscar tarefas: %s", e)
             return jsonify({'erro': 'Erro ao buscar tarefas'}), 500
 
     if request.method == 'POST':
@@ -563,7 +572,7 @@ def api_tarefas():
                 
             return jsonify({'sucesso': True}), 201
         except Exception as e:
-            print(f"Erro ao criar tarefa: {e}")
+            logger.error("Erro ao criar tarefa: %s", e)
             return jsonify({'erro': 'Erro ao criar tarefa'}), 500
 
 @crm_bp.route('/api/tarefas/<int:tarefa_id>/concluir', methods=['PUT'])
@@ -581,5 +590,5 @@ def api_concluir_tarefa(tarefa_id):
             
         return jsonify({'sucesso': True})
     except Exception as e:
-        print(f"Erro ao concluir tarefa: {e}")
+        logger.error("Erro ao concluir tarefa: %s", e)
         return jsonify({'erro': 'Erro ao atualizar tarefa'}), 500
