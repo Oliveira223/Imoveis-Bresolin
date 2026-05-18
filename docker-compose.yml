@@ -1,8 +1,8 @@
 services:
   bresolin_app:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: bresolin_app
     restart: always
     ports:

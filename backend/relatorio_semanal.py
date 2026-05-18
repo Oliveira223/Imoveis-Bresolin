@@ -1,8 +1,10 @@
 import smtplib
 import subprocess
 import os
+import logging
 from email.message import EmailMessage
 from datetime import datetime
+from pathlib import Path
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
@@ -10,40 +12,35 @@ from dotenv import load_dotenv
 # ======================
 # CONFIGURAÇÕES GERAIS
 # ======================
-load_dotenv() 
+load_dotenv()
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
+logger = logging.getLogger(__name__)
 
 EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")
 SENHA_APP_GMAIL = os.getenv("SENHA_APP_GMAIL")
 DESTINATARIOS = [e.strip() for e in os.getenv("EMAIL_DESTINATARIOS", "").split(",") if e.strip()]
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise EnvironmentError("Variável DATABASE_URL não definida.")
+
+# Usa variável de ambiente BACKUP_DIR ou fallback portátil em ~/backups/bresolin
+BACKUP_DIR = Path(os.getenv("BACKUP_DIR", str(Path.home() / "backups" / "bresolin")))
+BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+
+BACKUP_PATH = BACKUP_DIR / f"backup_{datetime.now().strftime('%Y-%m-%d')}.sql"
 
 # ======================
 # GERA BACKUP DO POSTGRES
 # ======================
-# Caminho completo fora do projeto
-BACKUP_DIR = r"E:\PROJECTS\Bresolin Imóveis\Backups\BANCO_DE_DADOS"
-os.makedirs(BACKUP_DIR, exist_ok=True)
-
-BACKUP_PATH = os.path.join(
-    BACKUP_DIR,
-    f"backup_{datetime.now().strftime('%Y-%m-%d')}.sql"
-)
-
 def gerar_backup():
-    print("[INFO] Gerando backup do banco...")
-
-    os.environ["PGPASSWORD"] = os.getenv("DB_PASSWORD", "")
-
-    subprocess.run([
-        "pg_dump",
-        "-h", "dpg-d1pik63uibrs73dpto50-a.oregon-postgres.render.com",
-        "-U", "bresolin_user",
-        "-d", "bresolin",
-        "-f", BACKUP_PATH
-    ], check=True)
-
-    print(f"[INFO] Backup salvo em {BACKUP_PATH}")
+    logger.info("Gerando backup do banco...")
+    subprocess.run(
+        ["pg_dump", DATABASE_URL, "-f", str(BACKUP_PATH)],
+        check=True
+    )
+    logger.info("Backup salvo em %s", BACKUP_PATH)
 
 # ======================
 # CONSULTA RELATÓRIO
@@ -96,7 +93,7 @@ def enviar_email(total_acessos, ranking):
     msg.set_content("Relatório semanal em HTML.")
     msg.add_alternative(html, subtype='html')
 
-    with open(BACKUP_PATH, "rb") as f:
+    with open(str(BACKUP_PATH), "rb") as f:
         msg.add_attachment(
             f.read(),
             maintype="application",
@@ -108,7 +105,7 @@ def enviar_email(total_acessos, ranking):
         smtp.login(EMAIL_REMETENTE, SENHA_APP_GMAIL)
         smtp.send_message(msg)
 
-    print("[INFO] E-mail enviado com sucesso.")
+    logger.info("E-mail enviado com sucesso.")
 
 # ======================
 # EXECUÇÃO

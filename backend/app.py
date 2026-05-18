@@ -1,86 +1,110 @@
 # ==============================
 # Bresolin Imóveis - Backend Flask com PostgreSQL
 # ==============================
-from flask import Flask, render_template, request, jsonify, Response, send_file, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, Response, redirect, url_for, session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from uuid import uuid4
 import os
-import shutil
 import json
 import time
 import subprocess
 import csv
 import io
 import zipfile
+import logging
 from datetime import datetime
+from typing import Optional
 from database import engine, DATABASE_URL
+from config import (
+    UPLOAD_FOLDER, SLIDES_CONFIG_PATH,
+    MAX_UPLOAD_SIZE,
+    DEFAULT_SLIDE_INTERVAL, MIN_SLIDE_INTERVAL, MAX_SLIDE_INTERVAL,
+    MAX_FEATURED_PROPERTIES,
+)
+from utils.auth import make_requires_auth, verify_admin
+from utils.helpers import serialize_dates
+from services.image_service import allowed_file, comprimir_imagem, validar_imagem, mover_tmp_para_destino
+
+logger = logging.getLogger(__name__)
 
 # ==============================
-# Configurações de diretórios e uploads
+# Configurações iniciais
 # ==============================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s [%(name)s] %(message)s'
+)
 
-# Importa e Registra o Blueprint do CRM
 from crm.routes import crm_bp
-app = Flask(
-    __name__,
-    static_folder='static',
-    template_folder='templates'
-)
+
+app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.getenv('SECRET_KEY')
-app.register_blueprint(crm_bp)
 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=[],
-    storage_uri="memory://"
-)
+# Cookies de sessão seguros
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+if not app.debug:
+    app.config['SESSION_COOKIE_SECURE'] = True
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'img', 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-SLIDES_CONFIG_PATH = os.path.join(BASE_DIR, 'slides_config.json')
+# CSRF: proteção global desabilitada (APIs usam JSON + SameSite=Lax);
+# validação explícita em rotas de formulário (ex.: login do CRM).
+app.config['WTF_CSRF_ENABLED'] = False
+csrf = CSRFProtect(app)  # registra {{ csrf_token() }} no Jinja2
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+limiter = Limiter(get_remote_address, app=app, default_limits=[], storage_uri="memory://")
+requires_auth = make_requires_auth(limiter)
+
+app.register_blueprint(crm_bp)
 
 
-def serialize_dates(data_list):
-    for item in data_list:
-        for key, value in item.items():
-            if isinstance(value, datetime):
-                item[key] = value.strftime('%Y-%m-%d %H:%M:%S')
-    return data_list
+@app.after_request
+def add_security_headers(response: Response) -> Response:
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
+
+
+def _validar_env():
+    faltando = [v for v in ('SECRET_KEY', 'ADMIN_USERNAME', 'ADMIN_PASSWORD') if not os.getenv(v)]
+    if faltando:
+        logger.warning("Variáveis de ambiente ausentes: %s", ', '.join(faltando))
 
 
 # ================================
 # Gerar ID dos empreendimentos
 # ================================
-def gerar_proximo_codigo_empreendimento():
+def gerar_proximo_codigo_empreendimento() -> str:
     with engine.connect() as con:
         result = con.execute(text("SELECT COUNT(*) FROM empreendimentos"))
         count = result.fetchone()[0]
         return f"EMP{count + 1}"
 
 
-def carregar_config_slides():
+def carregar_config_slides() -> tuple[list, int]:
     if os.path.exists(SLIDES_CONFIG_PATH):
         try:
             with open(SLIDES_CONFIG_PATH, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             ids = data.get('ids', [])
-            interval_seconds = int(data.get('interval_seconds', 8))
+            interval_seconds = int(data.get('interval_seconds', DEFAULT_SLIDE_INTERVAL))
             return ids, interval_seconds
         except Exception:
-            return [], 8
-    return [], 8
+            return [], DEFAULT_SLIDE_INTERVAL
+    return [], DEFAULT_SLIDE_INTERVAL
 
 
-def salvar_config_slides(ids, interval_seconds):
+def salvar_config_slides(ids: list, interval_seconds: int) -> None:
     dados = {
         'ids': ids,
         'interval_seconds': int(interval_seconds)
@@ -88,39 +112,6 @@ def salvar_config_slides(ids, interval_seconds):
     with open(SLIDES_CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(dados, f)
 
-
-# ================================
-# SEGURANÇA - Autenticação básica para rotas admin
-# ================================
-from flask import Response
-
-def check_auth(username, password):
-    admin_user = os.getenv('ADMIN_USERNAME', 'admin')
-    admin_pass = os.getenv('ADMIN_PASSWORD', 'change_this_password')
-    return username == admin_user and password == admin_pass
-
-def authenticate():
-    return Response(
-        'Acesso restrito.\n', 401,
-        {'WWW-Authenticate': 'Basic realm="Painel Admin"'}
-    )
-
-def requires_auth(f):
-    @limiter.limit("10 per minute")
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    decorated.__name__ = f.__name__
-    return decorated
-
-def verify_admin():
-    """Verifica autenticação admin manualmente dentro de rotas"""
-    auth = request.authorization
-    if not auth or not check_auth(auth.username, auth.password):
-        return authenticate()
-    return None
 
 # ================================
 # HEALTH CHECKS
@@ -308,7 +299,7 @@ def pagina_imovel(imovel_id):
         return render_template('imovel.html', imovel=imovel, imagens=imagens, imoveis_similares=imoveis_similares)
 
     except Exception as e:
-        print(f"[ERRO] Falha ao carregar imóvel {imovel_id}: {e}")
+        logger.error("Falha ao carregar imóvel %s: %s", imovel_id, e)
         # Em caso de erro de banco ou outro, retorna 500 mas com página amigável (ou 404 se preferir ocultar erro)
         return render_template('404.html', mensagem="Erro ao carregar imóvel. Tente novamente mais tarde."), 500
     
@@ -422,7 +413,7 @@ def admin_backup():
         process = subprocess.run(command, capture_output=True, text=True)
 
         if process.returncode != 0:
-            print(f"[ERRO] Falha no pg_dump: {process.stderr}")
+            logger.error("Falha no pg_dump: %s", process.stderr)
             return jsonify({"erro": "Falha ao gerar backup"}), 500
 
         # Envia o arquivo para download e depois o remove
@@ -432,7 +423,7 @@ def admin_backup():
             try:
                 os.remove(filepath)
             except Exception as e:
-                print(f"[AVISO] Não foi possível remover o arquivo temporário de backup: {e}")
+                logger.warning("Não foi possível remover arquivo temporário de backup: %s", e)
 
         return Response(
             generate(),
@@ -441,7 +432,7 @@ def admin_backup():
         )
 
     except Exception as e:
-        print(f"[ERRO] Erro inesperado no backup: {e}")
+        logger.error("Erro inesperado no backup: %s", e)
         return jsonify({"erro": str(e)}), 500
 
 # ==============================
@@ -514,7 +505,7 @@ def admin_exportar_completo():
         )
 
     except Exception as e:
-        print(f"[ERRO] Erro na exportação completa: {e}")
+        logger.error("Erro na exportação completa: %s", e)
         return jsonify({"erro": str(e)}), 500
 
 # ==============================
@@ -573,34 +564,57 @@ def api_card_empreendimento(empreendimento_id):
 
 
 # ==============================
+# Filtros de pesquisa encapsulados
+# ==============================
+class FiltrosPesquisa:
+    """Encapsula e sanitiza os parâmetros de query da página de pesquisa."""
+    def __init__(self, args):
+        self.termo       = args.get('termo', '')
+        self.pretensao   = args.get('pretensao', '')
+        self.localizacao = args.get('localizacao', '')
+        self.cidade      = args.get('cidade', '')
+        self.uf          = args.get('uf', '')
+        self.bairro      = args.get('bairro', '')
+        self.tipo        = args.get('tipo', '')
+        self.quartos     = args.get('quartos', '')
+        self.banheiros   = args.get('banheiros', '')
+        self.vagas       = args.get('vagas', '')
+        self.area_min    = args.get('area_min', '')
+        self.area_max    = args.get('area_max', '')
+        self.estagio     = args.get('estagio', '')
+        self.entrega     = args.get('entrega', '')
+        self.piscina     = args.get('piscina', '')
+        self.churrasqueira = args.get('churrasqueira', '')
+        self.destaque    = args.get('destaque', '')
+        self.id_         = args.get('id', '')
+        raw_preco = args.get('max_preco', '').replace('.', '')
+        self.max_preco: int | str = int(raw_preco) if raw_preco.isdigit() else ''
+
+
+# ==============================
 # Página de Pesquisa com Filtros
 # ==============================
 @app.route('/pesquisa')
 def pagina_pesquisa():
-    termo      = request.args.get('termo', '')
-    pretensao  = request.args.get('pretensao', '')
-    localizacao = request.args.get('localizacao', '')  # Novo campo unificado
-    cidade     = request.args.get('cidade', '')
-    uf         = request.args.get('uf', '')
-    bairro     = request.args.get('bairro', '')
-    tipo       = request.args.get('tipo', '')
-    quartos    = request.args.get('quartos', '')
-    banheiros  = request.args.get('banheiros', '')
-    vagas      = request.args.get('vagas', '')
-    area_min   = request.args.get('area_min', '')
-    area_max   = request.args.get('area_max', '')
-    estagio    = request.args.get('estagio', '')
-    entrega    = request.args.get('entrega', '')
-    piscina           = request.args.get('piscina', '')
-    churrasqueira     = request.args.get('churrasqueira', '')
-    destaque    = request.args.get('destaque', '')
-
-    max_preco = request.args.get('max_preco', '').replace('.', '')
-    if max_preco.isdigit():
-        max_preco = int(max_preco)
-    else:
-        max_preco = ''
-    id_        = request.args.get('id', '')
+    f = FiltrosPesquisa(request.args)
+    termo         = f.termo
+    pretensao     = f.pretensao
+    localizacao   = f.localizacao
+    cidade        = f.cidade
+    uf            = f.uf
+    bairro        = f.bairro
+    tipo          = f.tipo
+    quartos       = f.quartos
+    banheiros     = f.banheiros
+    vagas         = f.vagas
+    area_min      = f.area_min
+    area_max      = f.area_max
+    estagio       = f.estagio
+    entrega       = f.entrega
+    piscina       = f.piscina
+    churrasqueira = f.churrasqueira
+    max_preco     = f.max_preco
+    id_           = f.id_
 
     # ==============================
     # BUSCA POR EMPREENDIMENTOS
@@ -611,85 +625,78 @@ def pagina_pesquisa():
     mostrar_empreendimentos = (tipo == '' or tipo == 'empreendimento')
     
     if mostrar_empreendimentos:
-        emp_query = "SELECT * FROM empreendimentos WHERE ativo = TRUE"
+        # JOIN com subquery de stats elimina o N+1 de queries anterior
+        emp_query = """
+            SELECT
+                e.*,
+                COALESCE(s.imoveis_disponiveis, 0) as imoveis_disponiveis,
+                s.preco_min,
+                s.preco_max,
+                s.area_min,
+                s.area_max
+            FROM empreendimentos e
+            LEFT JOIN (
+                SELECT
+                    empreendimento_id,
+                    COUNT(*) as imoveis_disponiveis,
+                    MIN(preco) as preco_min,
+                    MAX(preco) as preco_max,
+                    MIN(area) as area_min,
+                    MAX(area) as area_max
+                FROM imoveis WHERE ativo = true
+                GROUP BY empreendimento_id
+            ) s ON e.id = s.empreendimento_id
+            WHERE e.ativo = TRUE
+        """
         emp_params = {}
 
-        # Filtro por termo genérico nos empreendimentos
         if termo:
             if termo.isdigit():
-                emp_query += " AND id = :id"
+                emp_query += " AND e.id = :id"
                 emp_params['id'] = termo
             else:
                 emp_query += """
                 AND (
-                    unaccent(nome) ILIKE unaccent(:termo) OR
-                    unaccent(descricao) ILIKE unaccent(:termo) OR
-                    unaccent(cidade) ILIKE unaccent(:termo) OR
-                    unaccent(bairro) ILIKE unaccent(:termo) OR
-                    unaccent(uf) ILIKE unaccent(:termo)
+                    unaccent(e.nome) ILIKE unaccent(:termo) OR
+                    unaccent(e.descricao) ILIKE unaccent(:termo) OR
+                    unaccent(e.cidade) ILIKE unaccent(:termo) OR
+                    unaccent(e.bairro) ILIKE unaccent(:termo) OR
+                    unaccent(e.uf) ILIKE unaccent(:termo)
                 )
                 """
                 emp_params['termo'] = f"%{termo}%"
 
-        # Filtro por localização unificada
         if localizacao:
             emp_query += """
             AND (
-                unaccent(cidade) ILIKE unaccent(:localizacao) OR
-                unaccent(bairro) ILIKE unaccent(:localizacao) OR
-                unaccent(uf) ILIKE unaccent(:localizacao)
+                unaccent(e.cidade) ILIKE unaccent(:localizacao) OR
+                unaccent(e.bairro) ILIKE unaccent(:localizacao) OR
+                unaccent(e.uf) ILIKE unaccent(:localizacao)
             )
             """
             emp_params['localizacao'] = f"%{localizacao}%"
 
-        # Filtros específicos para empreendimentos
         if cidade:
-            emp_query += " AND unaccent(cidade) ILIKE unaccent(:cidade)"
+            emp_query += " AND unaccent(e.cidade) ILIKE unaccent(:cidade)"
             emp_params['cidade'] = f"%{cidade}%"
 
         if uf:
-            emp_query += " AND uf = :uf"
+            emp_query += " AND e.uf = :uf"
             emp_params['uf'] = uf
 
         if bairro:
-            emp_query += " AND unaccent(bairro) ILIKE unaccent(:bairro)"
+            emp_query += " AND unaccent(e.bairro) ILIKE unaccent(:bairro)"
             emp_params['bairro'] = f"%{bairro}%"
 
         if estagio:
-            emp_query += " AND estagio = :estagio"
+            emp_query += " AND e.estagio = :estagio"
             emp_params['estagio'] = estagio
 
-        emp_query += " ORDER BY id DESC"
+        emp_query += " ORDER BY e.id DESC"
 
-        # Execução da consulta de empreendimentos
         with engine.connect() as conn:
             emp_resultado = conn.execute(text(emp_query), emp_params).mappings()
-            empreendimentos_raw = [dict(row) for row in emp_resultado]
-            
-            # Para cada empreendimento, buscar estatísticas dos imóveis
-            for emp in empreendimentos_raw:
-                stats_result = conn.execute(text("""
-                    SELECT 
-                        COUNT(*) as imoveis_disponiveis,
-                        MIN(preco) as preco_min,
-                        MAX(preco) as preco_max,
-                        MIN(area) as area_min,
-                        MAX(area) as area_max
-                    FROM imoveis 
-                    WHERE empreendimento_id = :empreendimento_id AND ativo = true
-                """), {"empreendimento_id": emp['id']})
-                
-                stats = stats_result.fetchone()
-                if stats:
-                    emp.update({
-                        'imoveis_disponiveis': stats.imoveis_disponiveis or 0,
-                        'preco_min': stats.preco_min,
-                        'preco_max': stats.preco_max,
-                        'area_min': stats.area_min,
-                        'area_max': stats.area_max
-                    })
-                
-                empreendimentos.append(emp)
+            empreendimentos = [dict(row) for row in emp_resultado]
 
     # ==============================
     # BUSCA POR IMÓVEIS
@@ -842,7 +849,7 @@ def api_imoveis_destaques():
             
         return html_content
     except Exception as e:
-        print(f"[ERRO] Falha ao carregar destaques: {e}")
+        logger.error("Falha ao carregar destaques: %s", e)
         return "", 500
 
 
@@ -861,12 +868,7 @@ def api_imoveis():
             if auth_error:
                 return auth_error
 
-            data = request.json
-            for campo in ['entrega', 'estagio', 'maps_iframe', 'campo_extra2']:
-                if campo not in data:
-                    data[campo] = None
-
-            data = request.json
+            data = request.json or {}
 
             # Converte strings vazias para None nos campos opcionais
             for campo in ['entrega', 'estagio', 'maps_iframe', 'campo_extra2']:
@@ -1001,8 +1003,8 @@ def toggle_ativo(imovel_id):
 @requires_auth
 def definir_destaques():
     ids = request.json.get('ids', [])
-    if not isinstance(ids, list) or len(ids) > 6:
-        return jsonify({'erro': 'Selecione até 6 imóveis.'}), 400
+    if not isinstance(ids, list) or len(ids) > MAX_FEATURED_PROPERTIES:
+        return jsonify({'erro': f'Selecione até {MAX_FEATURED_PROPERTIES} imóveis.'}), 400
 
     with engine.begin() as con:
         con.execute(text('UPDATE imoveis SET destaque = FALSE'))
@@ -1032,7 +1034,7 @@ def reordenar_imagens_imovel(imovel_id):
                 )
         return jsonify({'sucesso': True})
     except Exception as e:
-        print(f"[ERRO] Falha ao reordenar imagens do imóvel: {e}")
+        logger.error("Falha ao reordenar imagens do imóvel: %s", e)
         return jsonify({'erro': str(e)}), 500
 
 # Rota para reordenar imagens do empreendimento
@@ -1054,7 +1056,7 @@ def reordenar_imagens_empreendimento(emp_id):
                 )
         return jsonify({'sucesso': True})
     except Exception as e:
-        print(f"[ERRO] Falha ao reordenar imagens do empreendimento: {e}")
+        logger.error("Falha ao reordenar imagens do empreendimento: %s", e)
         return jsonify({'erro': str(e)}), 500
 
 # Rota para buscar estatísticas de visualizações
@@ -1116,10 +1118,10 @@ def slides_config():
     except (TypeError, ValueError):
         intervalo = intervalo_config
 
-    if intervalo < 3:
-        intervalo = 3
-    if intervalo > 60:
-        intervalo = 60
+    if intervalo < MIN_SLIDE_INTERVAL:
+        intervalo = MIN_SLIDE_INTERVAL
+    if intervalo > MAX_SLIDE_INTERVAL:
+        intervalo = MAX_SLIDE_INTERVAL
 
     salvar_config_slides(ids_filtrados, intervalo)
     return jsonify({'sucesso': True})
@@ -1172,25 +1174,6 @@ def slides_data():
 # ==============================
 # API - Upload de arquivo local
 # ==============================
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def comprimir_imagem(caminho, max_width=1200, quality=82):
-    from PIL import Image, ImageOps
-    try:
-        with Image.open(caminho) as img:
-            img = ImageOps.exif_transpose(img)  # corrige rotação do EXIF antes de salvar
-            if img.mode in ('RGBA', 'P'):
-                img = img.convert('RGB')
-            if img.width > max_width:
-                ratio = max_width / img.width
-                img = img.resize((max_width, int(img.height * ratio)), Image.LANCZOS)
-            img.save(caminho, 'JPEG', quality=quality, optimize=True)
-    except Exception:
-        pass  # mantém o arquivo original se falhar
-
 @app.route('/api/upload', methods=['POST'])
 @requires_auth
 def upload_local():
@@ -1218,22 +1201,13 @@ def upload_local():
     os.makedirs(pasta, exist_ok=True)
     caminho_final = os.path.join(pasta, nome_arquivo)
     file.save(caminho_final)
+
+    if not validar_imagem(caminho_final):
+        os.remove(caminho_final)
+        return jsonify({'erro': 'Arquivo inválido ou corrompido'}), 400
+
     comprimir_imagem(caminho_final)
     return jsonify({'url': url}), 201
-
-
-def mover_tmp_para_destino(url_atual, destino_dir, prefixo_url):
-    """Se a URL for de tmp, move o arquivo para a pasta definitiva e retorna a nova URL."""
-    if not url_atual or '/tmp/' not in url_atual:
-        return url_atual
-    nome = url_atual.split('/')[-1]
-    origem = os.path.join(UPLOAD_FOLDER, 'tmp', nome)
-    if not os.path.exists(origem):
-        return url_atual
-    os.makedirs(destino_dir, exist_ok=True)
-    destino = os.path.join(destino_dir, nome)
-    shutil.move(origem, destino)
-    return f"{prefixo_url}/{nome}"
 
 
 # ==============================
@@ -1693,21 +1667,31 @@ def pagina_cadastro_identificador(identificador):
 @app.route('/api/interesse', methods=['POST'])
 def api_interesse():
     try:
-        data = request.json
-        
-        # Validação básica
-        if not data.get('nome') or not data.get('whatsapp'):
-            return jsonify({'erro': 'Nome e WhatsApp são obrigatórios'}), 400
-        
-        # Formatação do WhatsApp para padrão internacional (+55...)
-        whatsapp_raw = data.get('whatsapp', '').replace(' ', '').replace('(', '').replace(')', '').replace('-', '')
-        if not whatsapp_raw.startswith('+'):
-            whatsapp_formatted = f"+55{whatsapp_raw}"
-        else:
-            whatsapp_formatted = whatsapp_raw
+        data = request.json or {}
 
-        # Validação de email (opcional no novo CRM, mas bom ter)
-        email = data.get('email')
+        nome = (data.get('nome') or '').strip()
+        whatsapp_raw = (data.get('whatsapp') or '').strip()
+
+        if not nome:
+            return jsonify({'erro': 'Nome é obrigatório'}), 400
+        if len(nome) > 255:
+            return jsonify({'erro': 'Nome muito longo (máx. 255 caracteres)'}), 400
+        if not whatsapp_raw:
+            return jsonify({'erro': 'WhatsApp é obrigatório'}), 400
+
+        # Sanitiza e formata o número
+        whatsapp_limpo = whatsapp_raw.replace(' ', '').replace('(', '').replace(')', '').replace('-', '')
+        if not whatsapp_limpo.lstrip('+').isdigit():
+            return jsonify({'erro': 'WhatsApp inválido'}), 400
+        if len(whatsapp_limpo) > 20:
+            return jsonify({'erro': 'WhatsApp muito longo'}), 400
+        whatsapp_formatted = whatsapp_limpo if whatsapp_limpo.startswith('+') else f"+55{whatsapp_limpo}"
+
+        email = (data.get('email') or '').strip() or None
+        if email and len(email) > 255:
+            return jsonify({'erro': 'E-mail muito longo'}), 400
+        if email and ('@' not in email or '.' not in email.split('@')[-1]):
+            return jsonify({'erro': 'E-mail inválido'}), 400
         
         imovel_id_raw = data.get('imovel_interesse_id')
         imovel_id = None
@@ -1728,23 +1712,25 @@ def api_interesse():
                 except ValueError:
                     imovel_id = None
 
+        objetivo = (data.get('objetivo') or '').strip()[:500] or None
+
         with engine.begin() as conn:
             conn.execute(text("""
                 INSERT INTO clientes (nome, email, telefone, objetivo, imovel_interesse_id, empreendimento_interesse_id, status, nivel_funil)
                 VALUES (:nome, :email, :whatsapp, :objetivo, :imovel_id, :empreendimento_id, 'Novo', 1)
             """), {
-                'nome': data['nome'],
+                'nome': nome,
                 'email': email,
                 'whatsapp': whatsapp_formatted,
-                'objetivo': data.get('objetivo'),
+                'objetivo': objetivo,
                 'imovel_id': imovel_id,
                 'empreendimento_id': empreendimento_id
             })
-        
+
         return jsonify({'sucesso': True, 'mensagem': 'Interesse cadastrado com sucesso!'}), 201
-    
+
     except Exception as e:
-        print(f"[ERROR] Erro ao cadastrar interesse: {e}")
+        logger.error("Erro ao cadastrar interesse: %s", e)
         return jsonify({'erro': 'Erro interno do servidor'}), 500
 
 # ==============================
@@ -1777,7 +1763,7 @@ def api_corretores():
                 """), {'nome': nome, 'senha_hash': senha_hash})
             return jsonify({'sucesso': True}), 201
         except Exception as e:
-            print(f"[ERROR] Erro ao criar corretor: {e}")
+            logger.error("Erro ao criar corretor: %s", e)
             return jsonify({'erro': 'Erro ao criar corretor'}), 500
 
 @app.route('/api/corretores/<int:id>', methods=['DELETE', 'PUT'])
@@ -1815,19 +1801,16 @@ def api_corretor_id(id):
 @requires_auth
 def api_listar_interesse():
     try:
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT id, nome, email, whatsapp, atendido, timestamp
-                    FROM interesse
-                    ORDER BY timestamp DESC
-                """)
-                interesses = cur.fetchall()
-        
-        return jsonify([dict(interesse) for interesse in interesses])
-    
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT id, nome, email, whatsapp, atendido, timestamp
+                FROM interesse
+                ORDER BY timestamp DESC
+            """))
+            interesses = [dict(row._mapping) for row in result]
+        return jsonify(interesses)
     except Exception as e:
-        print(f"[ERROR] Erro ao listar interesses: {e}")
+        logger.error("Erro ao listar interesses: %s", e)
         return jsonify({'erro': 'Erro interno do servidor'}), 500
 
 # ==============================
@@ -1837,17 +1820,16 @@ def api_listar_interesse():
 @requires_auth
 def api_excluir_interesse(interesse_id):
     try:
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("DELETE FROM interesse WHERE id = %s", (interesse_id,))
-                if cur.rowcount == 0:
-                    return jsonify({'erro': 'Interesse não encontrado'}), 404
-                conn.commit()
-        
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("DELETE FROM interesse WHERE id = :id"),
+                {'id': interesse_id}
+            )
+            if result.rowcount == 0:
+                return jsonify({'erro': 'Interesse não encontrado'}), 404
         return jsonify({'sucesso': True, 'mensagem': 'Interesse excluído com sucesso!'}), 200
-    
     except Exception as e:
-        print(f"[ERROR] Erro ao excluir interesse: {e}")
+        logger.error("Erro ao excluir interesse: %s", e)
         return jsonify({'erro': 'Erro interno do servidor'}), 500
 
 # ==============================
@@ -1859,22 +1841,17 @@ def api_marcar_atendido(interesse_id):
     try:
         data = request.json
         atendido = data.get('atendido', True)
-        
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE interesse SET atendido = %s WHERE id = %s",
-                    (atendido, interesse_id)
-                )
-                if cur.rowcount == 0:
-                    return jsonify({'erro': 'Interesse não encontrado'}), 404
-                conn.commit()
-        
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("UPDATE interesse SET atendido = :atendido WHERE id = :id"),
+                {'atendido': atendido, 'id': interesse_id}
+            )
+            if result.rowcount == 0:
+                return jsonify({'erro': 'Interesse não encontrado'}), 404
         status = 'atendido' if atendido else 'não atendido'
         return jsonify({'sucesso': True, 'mensagem': f'Interesse marcado como {status}!'}), 200
-    
     except Exception as e:
-        print(f"[ERROR] Erro ao atualizar status do interesse: {e}")
+        logger.error("Erro ao atualizar status do interesse: %s", e)
         return jsonify({'erro': 'Erro interno do servidor'}), 500
 
 
@@ -1886,15 +1863,6 @@ def page_not_found(e):
     # Caso contrário, renderiza o template HTML de 404
     return render_template('404.html'), 404
 
-
-# ==============================
-# CONEXÃO COM O POSTGRES (Render)
-# ==============================
-def get_connection():
-    # Usa a pool do SQLAlchemy para obter uma conexão raw DBAPI
-    # Isso evita criar múltiplas conexões psycopg2 soltas que estouram o limite
-    connection = engine.raw_connection()
-    return connection
 
 # ==============================
 # CRIA TABELA DE ACESSOS (se não existir)
@@ -1927,23 +1895,28 @@ def criar_tabela_interesse():
         """))
 
 
-def inicializar_banco(max_tentativas=20, atraso=3):
+def inicializar_banco(max_tentativas: int = 20, atraso: int = 3) -> None:
+    # Em dev local sem Docker, reduz tentativas para não bloquear 60s
+    if os.getenv('FLASK_ENV') != 'production' and not os.path.exists('/.dockerenv'):
+        max_tentativas = 3
+        atraso = 2
     for tentativa in range(1, max_tentativas + 1):
         try:
             criar_tabela_acessos()
             criar_tabela_interesse()
-            print("[INFO] Tabelas acessos/interesse verificadas com sucesso")
+            logger.info("Tabelas acessos/interesse verificadas com sucesso")
             return
         except Exception as e:
-            print(f"[WARN] Erro ao inicializar banco (tentativa {tentativa}/{max_tentativas}): {e}")
+            logger.warning("Erro ao inicializar banco (tentativa %s/%s): %s", tentativa, max_tentativas, e)
             time.sleep(atraso)
-    print("[ERROR] Não foi possível inicializar o banco após múltiplas tentativas")
+    logger.error("Não foi possível inicializar o banco após múltiplas tentativas")
 
 
+_validar_env()
 inicializar_banco()
 
 
-def registrar_acesso(imovel_id=None):
+def registrar_acesso(imovel_id: Optional[int] = None) -> None:
     try:
         with engine.begin() as conn:
             conn.execute(
@@ -1951,7 +1924,7 @@ def registrar_acesso(imovel_id=None):
                 {"imovel_id": imovel_id}
             )
     except Exception as e:
-        print(f"[ERROR] Falha ao registrar acesso: {e}")
+        logger.error("Falha ao registrar acesso: %s", e)
 
 
             
@@ -1960,5 +1933,5 @@ def registrar_acesso(imovel_id=None):
 # ==============================
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    print(f"[INFO] Servidor iniciado em http://localhost:{port}")
+    logger.info("Servidor iniciado em http://localhost:%s", port)
     app.run(host='0.0.0.0', port=port, debug=False)

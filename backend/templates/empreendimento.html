@@ -56,7 +56,7 @@
 
     <!-- Descrição -->
     {% if empreendimento.descricao %}
-    <p class="descricao">{{ empreendimento.descricao | replace('\n', '<br>') | safe }}</p>
+    <p class="descricao">{{ empreendimento.descricao | e | replace('\n', '<br>') | safe }}</p>
     {% endif %}
 
     <!-- Imagem principal -->
@@ -224,7 +224,7 @@
 
         <h1 class="sobre-empreendimento">Sobre o Empreendimento</h1>
         {% if empreendimento.descricao %}
-        <p class="descricao">{{ empreendimento.descricao | replace('\n', '<br>') | safe }}</p>
+        <p class="descricao">{{ empreendimento.descricao | e | replace('\n', '<br>') | safe }}</p>
         {% endif %}
 
         <!-- Faixa de Preços -->

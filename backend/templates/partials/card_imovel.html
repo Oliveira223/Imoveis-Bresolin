@@ -14,11 +14,11 @@
     <!-- 10% | Tipo & ID-->
     <div class="card-info_principal">
       {% if imovel.tipo %}
-      <h1>{{ imovel.tipo}}</h1>
+      <p class="card-tipo">{{ imovel.tipo}}</p>
         {% endif %}
 
         {% if imovel.id %}
-        <h2>ID: {{ imovel.id}} </h2>
+        <p class="card-id">ID: {{ imovel.id}} </p>
           {% endif %}
     </div>
 

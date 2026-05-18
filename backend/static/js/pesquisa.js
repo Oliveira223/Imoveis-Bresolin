@@ -1,3 +1,9 @@
+function escaparHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // ================================
   // Tela de carregamento
@@ -402,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sugestoes.size > 0 && sugestoesBox) {
           sugestoesBox.innerHTML = Array.from(sugestoes)
             .slice(0, 5)
-            .map(s => `<div class="sugestao-item">${s}</div>`)
+            .map(s => `<div class="sugestao-item">${escaparHtml(s)}</div>`)
             .join('');
           sugestoesBox.style.display = 'block';
           sugestoesBox.querySelectorAll('.sugestao-item').forEach(item => {
@@ -488,6 +494,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (barraInfo) {
       const mainPad = parseFloat(getComputedStyle(document.querySelector('.conteudo-pesquisa')).paddingLeft);
       barraInfo.style.paddingLeft = (padLeft - mainPad) + 'px';
+
+      const ordenar = barraInfo.querySelector('.select-ordenar');
+      if (ordenar) ordenar.style.marginRight = Math.max(0, padRight - mainPad) + 'px';
     }
   }
 
