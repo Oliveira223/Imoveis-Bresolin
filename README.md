@@ -1,130 +1,120 @@
 # Bresolin Imóveis
 
-Sistema de gestão imobiliária: site público de catálogo + CRM interno para corretores.
+Site público de catálogo de imóveis + CRM interno para corretores, desenvolvido para a Bresolin Negócios Imobiliários.
 
-## Stack
+**Stack:** Python/Flask · PostgreSQL · HTML + CSS + JavaScript · Jinja2 · Docker · Cloudflare CDN
 
-| Camada | Tecnologia |
-|---|---|
-| Backend | Python 3.11 + Flask + SQLAlchemy (raw SQL via `text()`) |
-| Banco | PostgreSQL 16 |
-| Frontend | HTML + CSS + JavaScript + jQuery + Jinja2 |
-| Infra | Docker + Docker Compose + Nginx (proxy reverso) |
-| CDN | Cloudflare (cache e otimização de imagens) |
-| CI/CD | GitHub Actions → deploy automático no VPS via SSH |
+---
 
-## Estrutura
+## Páginas e Funcionalidades
+
+### Site Público
+
+| Página | Template | Descrição |
+|---|---|---|
+| Home | `index.html` | Slideshow de destaques, busca rápida, link para pesquisa |
+| Pesquisa | `pesquisa.html` | Listagem com filtros, ordenação e busca por texto |
+| Imóvel | `imovel.html` | Galeria de fotos, detalhes, botão WhatsApp |
+| Empreendimento | `empreendimento.html` | Página do empreendimento com unidades disponíveis |
+| Slides | `slides.html` | Slideshow em tela cheia para exibição interna |
+
+### Painel Admin
+
+| Página | Template | Descrição |
+|---|---|---|
+| Dashboard | `dashboard.html` | Visão geral: imóveis, acessos, interesses |
+| Cadastro | `cadastro.html` | Formulário de novo imóvel/empreendimento + upload de imagens |
+| Editar imóvel | `editar_imovel.html` | Edição completa + reordenação de fotos |
+| Editar empreendimento | `editar_empreendimento.html` | Edição do empreendimento e suas unidades |
+
+---
+
+## Estrutura Frontend
 
 ```
-Imoveis-Bresolin/
-├── requirements.txt          # dependências Python
-├── docker-compose.yml
-├── backend/
-│   ├── app.py                # rotas públicas + admin
-│   ├── database.py           # engine SQLAlchemy
-│   ├── config.py             # constantes (UPLOAD_FOLDER, MAX_UPLOAD_SIZE…)
-│   ├── utils/
-│   │   ├── auth.py           # HTTP Basic auth + rate limiting
-│   │   └── helpers.py        # api_error, api_success, serialize_dates
-│   ├── services/
-│   │   └── image_service.py  # allowed_file, comprimir_imagem, validar_imagem
-│   ├── crm/
-│   │   ├── routes.py         # blueprint /corretores
-│   │   ├── templates/        # templates do CRM
-│   │   └── static/           # CSS/JS do CRM
-│   ├── migrations/
-│   │   └── crm_schema.sql    # schema do CRM (referência)
-│   ├── static/               # assets públicos (CSS, JS, uploads)
-│   ├── templates/            # templates do site público
-│   ├── relatorio_semanal.py  # gera PDF e envia email com métricas
-│   ├── slides_config.json    # IDs de imóveis no slideshow da home
-│   ├── .env.example
-│   └── Dockerfile
-└── .github/workflows/deploy.yml
+backend/
+├── templates/
+│   ├── index.html
+│   ├── pesquisa.html
+│   ├── imovel.html
+│   ├── empreendimento.html
+│   ├── slides.html
+│   ├── cadastro.html
+│   ├── dashboard.html
+│   ├── editar_imovel.html
+│   ├── editar_empreendimento.html
+│   ├── 404.html
+│   └── partials/
+│       ├── card_imovel.html        # card reutilizável na pesquisa
+│       ├── card_empreendimento.html
+│       └── footer.html
+└── static/
+    ├── css/
+    │   ├── global.css              # reset, tipografia, variáveis globais
+    │   ├── style.css               # home
+    │   ├── pesquisa.css
+    │   ├── imovel.css
+    │   ├── empreendimento.css
+    │   ├── slides.css
+    │   ├── cadastro.css
+    │   ├── dashboard.css
+    │   ├── editar_imovel.css
+    │   ├── editar_empreendimento.css
+    │   ├── components/
+    │   │   ├── card_imovel.css
+    │   │   └── card_empreendimento.css
+    │   └── dashboard-modules/      # CSS modular do admin (19 arquivos)
+    │       ├── _variables.css
+    │       ├── _base.css
+    │       ├── _layout.css
+    │       ├── _cards.css
+    │       └── ...
+    └── js/
+        ├── main.js                 # home: slideshow, animação do logo
+        ├── pesquisa.js             # filtros, autocomplete, ordenação
+        ├── imovel.js               # galeria de fotos, navegação
+        ├── cadastro.js             # preview de upload, validações
+        ├── editar_imovel.js        # drag-and-drop de fotos, edição inline
+        ├── editar_empreendimento.js
+        ├── dashboard.js            # gráficos, tabelas dinâmicas
+        └── slides.js               # slideshow automático
 ```
 
-## Desenvolvimento Local
+---
 
-O dev local não usa Docker — conecta direto ao banco de produção via SSH tunnel.
+## Funcionalidades de Destaque
 
-Setup inicial (na pasta `01_Imoveis_Bresolin/`, fora do repo):
+**Pesquisa (`pesquisa.js`)**
+- Autocomplete de bairros e cidades em tempo real
+- Filtros combinados: tipo, localização, preço máximo, área, quartos, banheiros, vagas, piscina, churrasqueira
+- Ordenação client-side por menor/maior preço
+- Tabs de pretensão (Todos / Compra / Aluguel)
 
-```powershell
-python -m venv dev\venv_app
-dev\venv_app\Scripts\pip install -r Imoveis-Bresolin\requirements.txt
+**Galeria (`imovel.js`)**
+- Navegação por toque (swipe) e teclado
+- Troca de imagem com lazy load
+- Modo tela cheia
 
-copy Imoveis-Bresolin\backend\.env.example Imoveis-Bresolin\backend\.env
-# editar .env com credenciais reais
-```
+**Upload e edição de imagens (`cadastro.js`, `editar_imovel.js`)**
+- Preview antes de enviar
+- Reordenação por drag-and-drop
+- Exclusão com confirmação inline
 
-Rodar (dois terminais):
+**Slideshow (`slides.js`, `main.js`)**
+- Intervalo configurável por imóvel via `slides_config.json`
+- Animação SVG do logo na home
 
-```powershell
-# Terminal 1 — túnel SSH para o banco:
-.\dev\tunnel_db.bat
+**Integração WhatsApp**
+- Botão flutuante na página do imóvel
+- Mensagem pré-formatada com ID, tipo e localização do imóvel
 
-# Terminal 2 — servidor Flask:
-.\dev\run_dev.bat
-# app em http://localhost:5000
-```
-
-`database.py` detecta automaticamente se está dentro do Docker e escolhe `DATABASE_URL` ou `DATABASE_URL_LOCAL`.
+---
 
 ## Deploy
 
-Push para `main` dispara o GitHub Actions automaticamente:
+Push para `main` → GitHub Actions → VPS:
 
-1. `pg_dump` → backup em `~/backups/` no VPS
-2. `ssh-keyscan github.com` → atualiza `known_hosts`
-3. `git reset --hard origin/main` → atualiza código no VPS
-4. `docker compose up -d` → recria containers se a config mudou
-5. `docker compose restart bresolin_app` → força gunicorn a reler os arquivos do volume
-6. `curl /health` → 10 tentativas × 3s para confirmar que o app subiu
-
-O container usa volume mount `./backend:/app`, então a imagem não precisa ser reconstruída a cada deploy. **Exceção:** quando `requirements.txt` muda, rodar manualmente no VPS:
-
-```bash
-cd ~/Imoveis-Bresolin
-docker compose up -d --build
-```
-
-## Rotas
-
-| Prefixo | Módulo | Auth |
-|---|---|---|
-| `/` | `app.py` | pública |
-| `/admin` | `app.py` | HTTP Basic (`@requires_auth`) |
-| `/corretores` | `crm/routes.py` | session (`corretor_id`) |
-| `/health`, `/health/db` | `app.py` | pública |
-| `/api/...` | `app.py` | mista |
-
-## Variáveis de Ambiente
-
-Copiar `backend/.env.example` e preencher:
-
-| Variável | Uso |
-|---|---|
-| `DATABASE_URL` | Conexão dentro do Docker (host: `bresolin_db`) |
-| `DATABASE_URL_LOCAL` | Conexão local/tunnel (host: `127.0.0.1:5433`) |
-| `SECRET_KEY` | Chave Flask para sessions |
-| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Credenciais do painel `/admin` |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Container PostgreSQL |
-| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ZONE_ID` | Cache purge do Cloudflare |
-| `EMAIL_REMETENTE` / `SENHA_APP_GMAIL` / `EMAIL_DESTINATARIOS` | Relatório semanal |
-
-Gerar `SECRET_KEY`:
-
-```bash
-python -c "import secrets; print(secrets.token_hex(32))"
-```
-
-## Segurança
-
-- **Headers HTTP:** `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy` — adicionados em todas as respostas via `@app.after_request`
-- **Cookies:** `HttpOnly=True`, `SameSite=Lax`, `Secure=True` (em produção)
-- **CSRF:** `SameSite=Lax` como defesa principal; token flask-wtf apenas no login do CRM (`WTF_CSRF_ENABLED=False` globalmente para não exigir token nas APIs JSON)
-- **XSS templates:** `{{ var | e | replace('\n', '<br>') | safe }}` — nunca `| safe` diretamente em conteúdo do usuário
-- **XSS JavaScript:** `escaparHtml()` via `div.textContent + div.innerHTML` antes de injetar em `innerHTML`
-- **Uploads:** dupla verificação — extensão (whitelist) + `PIL Image.verify()` para confirmar que é imagem real
-- **Admin:** HTTP Basic Auth com rate limiting (10 req/min via `flask-limiter`)
-- **Session fixation:** `session.clear()` antes de setar `corretor_id` no login do CRM
+1. Backup do banco (`pg_dump`)
+2. `git reset --hard origin/main`
+3. `docker compose restart bresolin_app`
+4. Health check em `/health`
